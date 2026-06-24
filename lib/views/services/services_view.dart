@@ -63,8 +63,8 @@ class ServicesView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Shows card
-                  SizedBox(
-                    width: 220,
+                  Expanded(
+                    flex: 20,
                     child: InfoCard(
                       imagePath: 'assets/images/facilities/shows.jpg',
                       titleKey: 'shows',
@@ -82,6 +82,7 @@ class ServicesView extends StatelessWidget {
 
                   // Savines hotel card
                   Expanded(
+                    flex: 40,
                     child: InfoCard(
                       imagePath: 'assets/images/facilities/savines.png',
                       title: 'Hotel Ses Savines',
@@ -99,6 +100,7 @@ class ServicesView extends StatelessWidget {
 
                   // Arenal hotel card
                   Expanded(
+                    flex: 40,
                     child: InfoCard(
                       imagePath: 'assets/images/facilities/arenal.png',
                       title: 'Hotel Arenal',

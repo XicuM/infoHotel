@@ -10,6 +10,8 @@ class ImageViewerView extends StatefulWidget {
   final String title;
   final Color backgroundColor;
   final String? parentRoute;
+  final String? logoPath;
+  final bool isLogoLocal;
 
   const ImageViewerView({
     super.key,
@@ -17,6 +19,8 @@ class ImageViewerView extends StatefulWidget {
     required this.title,
     this.backgroundColor = Colors.blue,
     this.parentRoute,
+    this.logoPath,
+    this.isLogoLocal = false,
   });
 
   @override
@@ -41,6 +45,8 @@ class _ImageViewerViewState extends State<ImageViewerView> {
         titleKey: widget.title,
         backgroundColor: widget.backgroundColor,
         parentRoute: widget.parentRoute,
+        logoPath: widget.logoPath,
+        isLogoLocal: widget.isLogoLocal,
       ),
       body: Stack(
         alignment: Alignment.bottomCenter,

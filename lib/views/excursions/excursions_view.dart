@@ -102,6 +102,8 @@ class ExcursionsView extends StatelessWidget {
             title: excursion.name,
             backgroundColor: AppColors.excursions,
             isLocal: !(excursion.content as String).startsWith('assets/'),
+            logoPath: excursion.imagePath,
+            isLogoLocal: excursion.isLocalImage,
           ),
         ),
       );
@@ -113,6 +115,8 @@ class ExcursionsView extends StatelessWidget {
             title: excursion.name,
             backgroundColor: AppColors.excursions,
             parentRoute: '/excursions',
+            logoPath: excursion.imagePath,
+            isLogoLocal: excursion.isLocalImage,
           ),
         ),
       );

@@ -17,6 +17,8 @@ class PdfViewerView extends StatefulWidget {
   final bool enableBookMode;
   final bool initialPage;
   final bool isLocal;
+  final String? logoPath;
+  final bool isLogoLocal;
 
   const PdfViewerView({
     super.key,
@@ -26,6 +28,8 @@ class PdfViewerView extends StatefulWidget {
     this.enableBookMode = true,
     this.initialPage = true,
     this.isLocal = false,
+    this.logoPath,
+    this.isLogoLocal = false,
   });
 
   @override
@@ -82,6 +86,8 @@ class _PdfViewerViewState extends State<PdfViewerView> {
         titleKey: widget.title,
         backgroundColor: widget.backgroundColor,
         parentRoute: '/excursions',
+        logoPath: widget.logoPath,
+        isLogoLocal: widget.isLogoLocal,
       ),
       body: _buildBody(),
     );

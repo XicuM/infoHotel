@@ -32,8 +32,10 @@ class MapsView extends StatelessWidget {
                 color: Colors.black.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: ListView.separated(
-                padding: const EdgeInsets.all(16),
+              child: Material(
+                color: Colors.transparent,
+                child: ListView.separated(
+                  padding: const EdgeInsets.all(16),
                 itemCount: MapsData.cities.length,
                 separatorBuilder: (context, index) => const Divider(color: Colors.white24, height: 1),
                 itemBuilder: (context, index) {
@@ -52,6 +54,7 @@ class MapsView extends StatelessWidget {
                     onTap: () => _navigateToCity(context, city),
                   );
                 },
+              ),
               ),
             ),
           ),

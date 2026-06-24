@@ -45,27 +45,19 @@ class _WeatherViewState extends State<WeatherView> {
           Expanded(
             child: Consumer<WeatherService>(
               builder: (context, weatherService, child) {
-                if (weatherService.isLoading) {
+                final weather = weatherService.weatherData;
+                
+                if (weatherService.isLoading && weather == null) {
                   return const Center(
                     child: CircularProgressIndicator(color: Colors.white),
                   );
                 }
 
-                if (weatherService.error != null) {
+                if (weather == null) {
                   return Center(
                     child: Text(
-                      weatherService.error!,
+                      weatherService.error ?? 'No weather data available',
                       style: const TextStyle(color: Colors.white),
-                    ),
-                  );
-                }
-
-                final weather = weatherService.weatherData;
-                if (weather == null) {
-                  return const Center(
-                    child: Text(
-                      'No weather data available',
-                      style: TextStyle(color: Colors.white),
                     ),
                   );
                 }
@@ -86,7 +78,7 @@ class _WeatherViewState extends State<WeatherView> {
           margin: const EdgeInsets.symmetric(vertical: 8),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Colors.grey[850],
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -100,24 +92,37 @@ class _WeatherViewState extends State<WeatherView> {
                     children: [
                       Text(
                         langService.translate('last_update'),
-                        style: const TextStyle(color: Colors.black54, fontSize: 12),
+                        style: const TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                       if (weatherService.lastUpdate != null)
-                        Text(
-                          '${weatherService.lastUpdate!.hour}:${weatherService.lastUpdate!.minute.toString().padLeft(2, '0')}',
-                          style: const TextStyle(
-                              color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (weatherService.error != null)
+                              const Padding(
+                                padding: EdgeInsets.only(right: 6),
+                                child: Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 16),
+                              ),
+                            Text(
+                              '${weatherService.lastUpdate!.hour}:${weatherService.lastUpdate!.minute.toString().padLeft(2, '0')}',
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ],
                         ),
                     ],
                   );
                 },
               ),
               const SizedBox(width: 12),
-              AppImage(path: 
-                'assets/images/weather/aemet.png',
-                height: 40,
-                errorBuilder: (context, error, stackTrace) =>
-                    const SizedBox.shrink(),
+              Transform.scale(
+                scale: 1.4,
+                child: AppImage(
+                  path: 'assets/images/weather/aemet.png',
+                  height: 40,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const SizedBox.shrink(),
+                ),
               ),
             ],
           ),
@@ -166,16 +171,46 @@ class _WeatherViewState extends State<WeatherView> {
         border: Border.all(color: Colors.white12),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // UV Index
+          // UV Index on top
           _buildUvIndex(weather),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
 
-          // Sun arc with sunrise/sunset
-          _buildSunArc(weather),
+          // Row with Today/Conditions on the left, and Sun Arc on the right
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Left: Today + Current Conditions
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Consumer<LanguageService>(
+                      builder: (context, langService, child) {
+                        return Text(
+                          langService.translate('today').toUpperCase(),
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.2,
+                            color: Colors.white,
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    _buildCurrentConditions(weather),
+                  ],
+                ),
+              ),
+              // Right: Sun Arc
+              _buildSunArc(weather),
+            ],
+          ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
 
           // Temperature graph
           Expanded(
@@ -183,6 +218,52 @@ class _WeatherViewState extends State<WeatherView> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCurrentConditions(WeatherData weather) {
+    return Consumer<LanguageService>(
+      builder: (context, langService, child) {
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            AppImage(
+              path: 'assets/images/weather/sky_states/${weather.skyStateKey}.png',
+              width: 80,
+              height: 80,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.cloud, size: 80, color: Colors.white),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${weather.currentTemp}°C',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      height: 1.0,
+                    ),
+                  ),
+                  Text(
+                    weather.skyState.isNotEmpty 
+                        ? langService.translate(weather.skyStateKey) 
+                        : '',
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -279,54 +360,62 @@ class _WeatherViewState extends State<WeatherView> {
   Widget _buildSunArc(WeatherData weather) {
     return Consumer<LanguageService>(
       builder: (context, langService, child) {
-        return Column(
-          children: [
-            // Sun arc visualization
-            SizedBox(
-              height: 100,
-              child: CustomPaint(
-                size: const Size(200, 100),
-                painter: SunArcPainter(
-                  sunrise: weather.sunrise,
-                  sunset: weather.sunset,
+        return SizedBox(
+          width: 160,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Sun arc visualization
+              Center(
+                child: SizedBox(
+                  height: 120,
+                  width: 120,
+                  child: CustomPaint(
+                    size: const Size(120, 120),
+                    painter: SunArcPainter(
+                      sunrise: weather.sunrise,
+                      sunset: weather.sunset,
+                    ),
+                  ),
                 ),
               ),
-            ),
-            // Sunrise/sunset times
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      langService.translate('sunrise'),
-                      style: const TextStyle(color: Colors.white70, fontSize: 14),
-                    ),
-                    Text(
-                      weather.sunrise,
-                      style: const TextStyle(
-                          color: Colors.white, fontSize: 20, fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      langService.translate('sunset'),
-                      style: const TextStyle(color: Colors.white70, fontSize: 14),
-                    ),
-                    Text(
-                      weather.sunset,
-                      style: const TextStyle(
-                          color: Colors.white, fontSize: 20, fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        langService.translate('sunrise'),
+                        style: const TextStyle(color: Colors.white70, fontSize: 12),
+                      ),
+                      Text(
+                        weather.sunrise,
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        langService.translate('sunset'),
+                        style: const TextStyle(color: Colors.white70, fontSize: 12),
+                      ),
+                      Text(
+                        weather.sunset,
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         );
       },
     );
@@ -349,17 +438,22 @@ class _WeatherViewState extends State<WeatherView> {
   Widget _buildWeeklyForecast(WeatherData weather) {
     return Consumer<LanguageService>(
       builder: (context, langService, child) {
+        // Skip today (index 0) and take up to 6 days to form a 2x3 grid
+        final futureForecasts = weather.dailyForecasts.skip(1).take(6).toList();
+
         return GridView.builder(
+          physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
+            crossAxisCount: 3,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio: 0.7,
+            childAspectRatio: 0.85,
           ),
-          itemCount: weather.dailyForecasts.length,
+          itemCount: futureForecasts.length,
           itemBuilder: (context, index) {
-            final forecast = weather.dailyForecasts[index];
-            return _buildDayCard(forecast, index, langService);
+            final forecast = futureForecasts[index];
+            // Pass index + 1 so 'Tomorrow' logic (index == 1) still works correctly
+            return _buildDayCard(forecast, index + 1, langService);
           },
         );
       },
@@ -455,13 +549,38 @@ class _WeatherViewState extends State<WeatherView> {
           const SizedBox(height: 2),
 
           // Wind
-          _WeatherStat(
-            icon: Icons.air,
-            label: '${forecast.windSpeed}',
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Transform.rotate(
+                angle: _getWindAngle(forecast.windDirection),
+                child: const Icon(Icons.arrow_upward, size: 14, color: Colors.white54),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '${forecast.windSpeed}',
+                style: const TextStyle(color: Colors.white70, fontSize: 13),
+              ),
+            ],
           ),
         ],
       ),
     );
+  }
+
+  double _getWindAngle(String dir) {
+    switch (dir) {
+      case 'N': return 0;
+      case 'NE': return pi / 4;
+      case 'E': return pi / 2;
+      case 'SE': return 3 * pi / 4;
+      case 'S': return pi;
+      case 'SO': return 5 * pi / 4;
+      case 'O': return 3 * pi / 2;
+      case 'NO': return 7 * pi / 4;
+      default: return 0;
+    }
   }
 }
 
@@ -515,7 +634,7 @@ class _WeatherStat extends StatelessWidget {
   }
 }
 
-/// Custom painter for sun arc visualization
+/// Custom painter for full day/night 24h circle
 class SunArcPainter extends CustomPainter {
   final String sunrise;
   final String sunset;
@@ -524,42 +643,83 @@ class SunArcPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.grey[400]!
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = min(size.width, size.height) / 2 - 12;
+
+    final nightPaint = Paint()
+      ..color = Colors.black26
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
+      ..strokeWidth = 8;
+      
+    final dayPaint = Paint()
+      ..color = Colors.amber.withOpacity(0.4)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 8;
 
-    final center = Offset(size.width / 2, size.height);
-    final radius = size.width / 2 - 20;
+    // Draw full 24h circle (Night)
+    canvas.drawCircle(center, radius, nightPaint);
 
-    // Draw arc
-    canvas.drawArc(
-      Rect.fromCenter(center: center, width: radius * 2, height: radius * 2),
-      pi,
-      pi,
-      false,
-      paint,
-    );
-
-    // Calculate sun position based on current time
-    final now = DateTime.now();
     final sunriseMinutes = _parseTime(sunrise);
     final sunsetMinutes = _parseTime(sunset);
+
+    // Calculate angles
+    // 00:00 -> bottom (pi/2)
+    // 06:00 -> left (pi)
+    // 12:00 -> top (-pi/2)
+    // 18:00 -> right (0)
+    // Map time in minutes to angle: angle = (minutes / (24*60)) * 2*pi + pi/2
+    double getAngle(int minutes) {
+      return (minutes / (24.0 * 60.0)) * 2 * pi + pi / 2;
+    }
+
+    final startAngle = getAngle(sunriseMinutes);
+    final endAngle = getAngle(sunsetMinutes);
+    double sweepAngle = endAngle - startAngle;
+    if (sweepAngle < 0) sweepAngle += 2 * pi;
+
+    // Draw day arc
+    canvas.drawArc(
+      Rect.fromCenter(center: center, width: radius * 2, height: radius * 2),
+      startAngle,
+      sweepAngle,
+      false,
+      dayPaint,
+    );
+
+    // Calculate sun/moon position
+    final now = DateTime.now();
     final nowMinutes = now.hour * 60 + now.minute;
+    final nowAngle = getAngle(nowMinutes);
 
-    if (nowMinutes >= sunriseMinutes && nowMinutes <= sunsetMinutes) {
-      final progress =
-          (nowMinutes - sunriseMinutes) / (sunsetMinutes - sunriseMinutes);
-      final angle = pi + (progress * pi);
-      final sunX = center.dx + radius * cos(angle);
-      final sunY = center.dy + radius * sin(angle);
+    final isDay = nowMinutes >= sunriseMinutes && nowMinutes <= sunsetMinutes;
+    
+    final iconRadius = radius;
+    final iconX = center.dx + iconRadius * cos(nowAngle);
+    final iconY = center.dy + iconRadius * sin(nowAngle);
 
+    if (isDay) {
       // Draw sun
       final sunPaint = Paint()
         ..color = Colors.amber
         ..style = PaintingStyle.fill;
-
-      canvas.drawCircle(Offset(sunX, sunY), 12, sunPaint);
+      canvas.drawCircle(Offset(iconX, iconY), 8, sunPaint);
+      final glowPaint = Paint()
+        ..color = Colors.amber.withOpacity(0.4)
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(Offset(iconX, iconY), 12, glowPaint);
+    } else {
+      // Draw moon (crescent)
+      final moonPaint = Paint()
+        ..color = Colors.white
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(Offset(iconX, iconY), 7, moonPaint);
+      
+      final shadowPaint = Paint()
+        ..color = Colors.black45
+        ..blendMode = BlendMode.srcOver
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(Offset(iconX + 3, iconY - 3), 6, shadowPaint);
     }
   }
 
@@ -594,12 +754,24 @@ class TempGraphPainter extends CustomPainter {
     final meaningfulRange = range == 0 ? 1.0 : range.toDouble();
 
     final paint = Paint()
-      ..color = Colors.red
+      ..color = Colors.white
       ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
       ..strokeWidth = 3;
 
+    final fillPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.amber.withOpacity(0.5),
+          Colors.amber.withOpacity(0.0),
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..style = PaintingStyle.fill;
+
     final axisPaint = Paint()
-      ..color = Colors.white24
+      ..color = Colors.white12
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
 
@@ -608,6 +780,7 @@ class TempGraphPainter extends CustomPainter {
     );
 
     final path = Path();
+    final fillPath = Path();
 
     // Padding settings
     const leftPad = 30.0;
@@ -633,47 +806,61 @@ class TempGraphPainter extends CustomPainter {
         
         textPainter.text = TextSpan(
             text: '${val.round()}°', 
-            style: const TextStyle(color: Colors.white70, fontSize: 10)
+            style: const TextStyle(color: Colors.white70, fontSize: 14)
         );
         textPainter.layout();
         textPainter.paint(canvas, Offset(0, y - textPainter.height / 2));
     }
 
-    // Plot Points
+    // Plot Points with Bezier curves
+    final points = <Offset>[];
     for (var i = 0; i < tempValues.length; i++) {
-      // X coordinate
       final x = leftPad + (i / (tempValues.length - 1)) * graphW;
-      
-      // Y coordinate
-      // We normalize: tMin - 2 to tMax + 2
-      final y = graphH -
-          ((tempValues[i] - tMin + 2) / meaningfulRange) * graphH;
-          
-      if (i == 0) {
-        path.moveTo(x, y);
-      } else {
-        path.lineTo(x, y);
-      }
-
-      // Draw X Axis Labels (Time)
-      // Show every 4th label to avoid clutter
-      if (tempValues.length < 12 || i % 4 == 0) {
-          if (i < tempTimes.length) {
-              textPainter.text = TextSpan(
-                  text: tempTimes[i], 
-                  style: const TextStyle(color: Colors.white70, fontSize: 10)
-              );
-              textPainter.layout();
-              textPainter.paint(
-                  canvas, 
-                  Offset(x - textPainter.width/2, size.height - 15)
-              );
-          }
-      }
+      final y = graphH - ((tempValues[i] - tMin + 2) / meaningfulRange) * graphH;
+      points.add(Offset(x, y));
     }
 
-    // Draw graph line
-    canvas.drawPath(path, paint);
+    if (points.isNotEmpty) {
+      path.moveTo(points[0].dx, points[0].dy);
+      fillPath.moveTo(points[0].dx, points[0].dy);
+      
+      for (var i = 1; i < points.length; i++) {
+        final p0 = points[i - 1];
+        final p1 = points[i];
+        final controlX = (p0.dx + p1.dx) / 2;
+        
+        path.cubicTo(controlX, p0.dy, controlX, p1.dy, p1.dx, p1.dy);
+        fillPath.cubicTo(controlX, p0.dy, controlX, p1.dy, p1.dx, p1.dy);
+      }
+
+      // Close fill path
+      fillPath.lineTo(points.last.dx, graphH);
+      fillPath.lineTo(points.first.dx, graphH);
+      fillPath.close();
+
+      // Draw gradient fill
+      canvas.drawPath(fillPath, fillPaint);
+      
+      // Draw smooth line
+      canvas.drawPath(path, paint);
+
+      // Draw Time Labels
+      for (var i = 0; i < points.length; i++) {
+        if (tempValues.length < 12 || i % 4 == 0) {
+          if (i < tempTimes.length) {
+            textPainter.text = TextSpan(
+              text: tempTimes[i], 
+              style: const TextStyle(color: Colors.white70, fontSize: 14)
+            );
+            textPainter.layout();
+            textPainter.paint(
+              canvas, 
+              Offset(points[i].dx - textPainter.width/2, size.height - 15)
+            );
+          }
+        }
+      }
+    }
   }
 
   @override

@@ -60,4 +60,5 @@ app.*.map.json
 /macos/Flutter/ephemeral/
 /macos/Flutter/GeneratedPluginRegistrant.swift
 /macos/Flutter/generated_plugins.cmake
-.api
+
+*.api

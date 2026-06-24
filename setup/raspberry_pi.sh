@@ -80,13 +80,36 @@ else
     echo "=========================================================="
 fi
 
-if [ -n "$API_KEY" ]; then
-    echo "--> Building with AEMET API key..."
-    flutter build linux --release --dart-define=AEMET_API_KEY="$API_KEY"
+FLIGHT_KEY=""
+if [ -f ".flight_api" ]; then
+    echo "Found .flight_api file. Using it for Flight API key..."
+    FLIGHT_KEY="$(cat .flight_api)"
 else
-    echo "--> Building without AEMET API key (weather will be disabled)..."
-    flutter build linux --release
+    echo ""
+    echo "=========================================================="
+    echo "RapidAPI Key is required for flight board functionality."
+    read -p "Please enter your RapidAPI Key (or press Enter to skip): " FLIGHT_KEY
+    echo "=========================================================="
 fi
+
+BUILD_ARGS="--release"
+
+if [ -n "$API_KEY" ]; then
+    echo "--> Adding AEMET API key to build..."
+    BUILD_ARGS="$BUILD_ARGS --dart-define=AEMET_API_KEY=\"$API_KEY\""
+else
+    echo "--> No AEMET API key provided (weather will be disabled)."
+fi
+
+if [ -n "$FLIGHT_KEY" ]; then
+    echo "--> Adding FLIGHT API key to build..."
+    BUILD_ARGS="$BUILD_ARGS --dart-define=FLIGHT_API_KEY=\"$FLIGHT_KEY\""
+else
+    echo "--> No FLIGHT API key provided (flight board will be disabled)."
+fi
+
+echo "--> Running flutter build..."
+eval flutter build linux $BUILD_ARGS
 
 # 6. Create a smart launch script and desktop icon
 echo "--> Creating launcher and desktop icon..."
@@ -102,12 +125,9 @@ if [ -z "$APP_PATH" ]; then
 fi
 
 echo "Starting infoHotel..."
-# Force Mesa to expose OpenGL 3.3 to Flutter so it doesn't crash on glBlitFramebuffer
-# This tricks the Pi 3 GPU into accelerating what it can, rather than falling back entirely to CPU software rendering.
 export MESA_GL_VERSION_OVERRIDE=3.3
 export MESA_GLSL_VERSION_OVERRIDE=330
-
-GDK_BACKEND=x11 "$APP_PATH" || LIBGL_ALWAYS_SOFTWARE=1 "$APP_PATH"
+LIBGL_ALWAYS_SOFTWARE=1 "$APP_PATH"
 EOF
 
 chmod +x run_hotel.sh

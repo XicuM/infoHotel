@@ -12,6 +12,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onBack;
   final List<Widget>? actions;
   final Color? titleColor;
+  final String? logoPath;
+  final bool isLogoLocal;
 
   const CustomAppBar({
     super.key,
@@ -22,6 +24,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBack,
     this.actions,
     this.titleColor,
+    this.logoPath,
+    this.isLogoLocal = false,
   });
 
   @override
@@ -49,13 +53,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               end: Alignment.centerRight,
               colors: [backgroundColor, darkerBg],
             ),
-            boxShadow: [
-              BoxShadow(
-                color: backgroundColor.withOpacity(0.45),
-                blurRadius: 12,
-                offset: const Offset(0, 3),
-              ),
-            ],
+            boxShadow: backgroundColor.a > 0
+                ? [
+                    BoxShadow(
+                      color: backgroundColor.withValues(alpha: 0.45),
+                      blurRadius: 12,
+                      offset: const Offset(0, 3),
+                    ),
+                  ]
+                : null,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: SafeArea(
@@ -82,6 +88,23 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       height: 32,
                       errorBuilder: (context, error, stackTrace) =>
                           Icon(Icons.arrow_back, color: iconColor, size: 28),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                ],
+                
+                // Company Logo
+                if (logoPath != null) ...[
+                  ClipOval(
+                    child: Container(
+                      color: Colors.white, // background for transparent logos
+                      child: AppImage(
+                        path: logoPath,
+                        isLocal: isLogoLocal,
+                        width: 44,
+                        height: 44,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),

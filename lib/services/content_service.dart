@@ -350,7 +350,6 @@ class ContentService extends ChangeNotifier {
       debugPrint('Error loading default hotels.json: $e');
       _hotels = {'Savines': [], 'Arenal': []};
     }
-    await _saveHotels();
   }
 
   Future<void> _saveHotels() async {

@@ -13,6 +13,7 @@ import 'excursions/excursions_view.dart';
 import 'weather/weather_view.dart';
 import 'webpages_view.dart';
 import 'welcome_view.dart';
+import 'information/flight_board_view.dart';
 import '../widgets/help_popup.dart';
 import '../widgets/app_image.dart';
 
@@ -41,6 +42,7 @@ class _MainLayoutState extends State<MainLayout> {
       const ServicesView(),
       const InformationView(),
       const ExcursionsView(),
+      const FlightBoardView(),
       const WebpagesView(),
     ];
 
@@ -70,6 +72,11 @@ class _MainLayoutState extends State<MainLayout> {
         titleKey: 'excursions',
         icon: Icons.directions_bus,
         color: AppColors.excursions,
+      ),
+      _NavigationItem(
+        titleKey: 'flight_board',
+        icon: Icons.flight_takeoff,
+        color: Colors.amber,
       ),
       _NavigationItem(
         titleKey: 'webpages',
@@ -491,23 +498,7 @@ class _NavItemState extends State<_NavItem> {
                   ),
                 ),
               ),
-              // Right glow dot for selected
-              if (widget.isSelected)
-                Container(
-                  width: 6,
-                  height: 6,
-                  margin: const EdgeInsets.only(right: 12),
-                  decoration: BoxDecoration(
-                    color: color,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: color.withOpacity(0.7),
-                        blurRadius: 6,
-                      ),
-                    ],
-                  ),
-                ),
+
             ],
           ),
         ),

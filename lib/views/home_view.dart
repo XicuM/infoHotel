@@ -11,6 +11,7 @@ import 'information/information_view.dart';
 import 'excursions/excursions_view.dart';
 import 'weather/weather_view.dart';
 import 'webpages_view.dart';
+import 'information/flight_board_view.dart';
 import '../widgets/app_image.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -322,6 +323,13 @@ class _HomeViewState extends State<HomeView> {
             color: AppColors.weather,
             icon: Icons.wb_sunny,
             onTap: () => _navigateTo(const WeatherView()),
+          ),
+          const SizedBox(height: 12),
+          NavigationButton(
+            titleKey: 'flight_board',
+            color: Colors.black87,
+            icon: Icons.flight_takeoff,
+            onTap: () => _navigateTo(const FlightBoardView()),
           ),
           const SizedBox(height: 12),
           NavigationButton(

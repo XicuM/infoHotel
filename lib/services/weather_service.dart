@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import '../models/weather_data.dart';
 import '../config/env.dart';
 
+import '../utils/cache_helper.dart';
+
 /// Service for fetching weather data from AEMET API
 /// Ported from scripts/weather.py in Pygame prototype
 class WeatherService extends ChangeNotifier {
@@ -23,8 +25,39 @@ class WeatherService extends ChangeNotifier {
   String? get error => _error;
   DateTime? get lastUpdate => _lastUpdate;
 
+  Future<void> _loadDiskCache() async {
+    final cacheData = await CacheHelper.readCache('weather_cache.json');
+    if (cacheData != null) {
+      try {
+        final decoded = jsonDecode(cacheData);
+        if (decoded is Map<String, dynamic> && decoded.containsKey('timestamp')) {
+          _lastUpdate = DateTime.parse(decoded['timestamp']);
+          final hourlyData = decoded['hourlyData'] as List<dynamic>? ?? [];
+          final dailyData = decoded['dailyData'] as List<dynamic>? ?? [];
+          _weatherData = _parseWeatherData(hourlyData, dailyData);
+        }
+      } catch (e) {
+        debugPrint("Error parsing weather disk cache: $e");
+      }
+    }
+  }
+
+  Future<void> _saveDiskCache(List<dynamic> hourlyData, List<dynamic> dailyData) async {
+    final data = {
+      'timestamp': _lastUpdate?.toIso8601String(),
+      'hourlyData': hourlyData,
+      'dailyData': dailyData,
+    };
+    await CacheHelper.writeCache('weather_cache.json', jsonEncode(data));
+  }
+
   /// Fetch weather data from AEMET API
   Future<void> fetchWeather({bool force = false}) async {
+    // If we have nothing in memory, try to load from disk first to show *something* instantly
+    if (_weatherData == null) {
+      await _loadDiskCache();
+    }
+
     // Return early if we have recent data (less than 1 hour old)
     if (!force && _lastUpdate != null && _weatherData != null) {
       if (DateTime.now().difference(_lastUpdate!).inMinutes < 60) {
@@ -32,7 +65,7 @@ class WeatherService extends ChangeNotifier {
       }
     }
 
-    _isLoading = true;
+    _isLoading = _weatherData == null;
     _error = null;
     notifyListeners();
 
@@ -44,10 +77,12 @@ class WeatherService extends ChangeNotifier {
       if (hourlyData != null && dailyData != null) {
         _weatherData = _parseWeatherData(hourlyData, dailyData);
         _lastUpdate = DateTime.now();
+        await _saveDiskCache(hourlyData, dailyData);
       }
     } catch (e) {
       _error = 'Unable to connect to AEMET: $e';
       debugPrint(_error);
+      // If error occurs, we still have _weatherData from disk cache loaded above
     }
 
     _isLoading = false;

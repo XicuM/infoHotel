@@ -70,25 +70,10 @@ class ShowsView extends StatelessWidget {
 
               // Content Layout
               SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                  child: Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.4),
-                        borderRadius: BorderRadius.circular(32),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.3),
-                            blurRadius: 30,
-                            spreadRadius: 5,
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(32),
-                      child: _buildShowsGrid(context, isOddWeek, contentService),
-                    ),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 32),
+                    child: _buildShowsGrid(context, isOddWeek, contentService),
                   ),
                 ),
               ),
@@ -114,133 +99,150 @@ class ShowsView extends StatelessWidget {
       builder: (context, langService, child) {
         return LayoutBuilder(
           builder: (context, constraints) {
-            final cardWidth = constraints.maxWidth / 7 - 16;
+            final maxItemHeight = (constraints.maxHeight - 40) / 2;
+            final widthFromHeight = (maxItemHeight - 150) / 1.4142;
+            final widthFromWidth = constraints.maxWidth / 4 - 32;
+            final cardWidth = widthFromHeight < widthFromWidth ? widthFromHeight : widthFromWidth;
             
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: List.generate(7, (index) {
-                final day = days[index];
-                final isSavines = (index + (isOddWeek ? 1 : 0)) % 2 == 1;
-                final isToday = DateTime.now().weekday == index + 1;
+            Widget buildItem(int index) {
+              final day = days[index];
+              final isSavines = (index + (isOddWeek ? 1 : 0)) % 2 == 1;
+              final isToday = DateTime.now().weekday == index + 1;
 
-                return SizedBox(
-                  width: cardWidth,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min, 
-                    children: [
-                      // Day Name Badge
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(
-                          color: isToday ? Colors.amber.withValues(alpha: 0.9) : Colors.white.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: isToday ? Colors.amberAccent : Colors.white.withValues(alpha: 0.2),
-                          ),
-                        ),
-                        child: Text(
-                          langService.getWeekday(index).toUpperCase(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: isToday ? FontWeight.w800 : FontWeight.w600,
-                            letterSpacing: 1.2,
-                            color: isToday ? Colors.black : Colors.white,
-                          ),
+              return SizedBox(
+                width: cardWidth,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min, 
+                  children: [
+                    // Day Name Badge
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: isToday ? Colors.amber.withValues(alpha: 0.9) : Colors.black54,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isToday ? Colors.amberAccent : Colors.white.withValues(alpha: 0.2),
                         ),
                       ),
-                      
-                      const SizedBox(height: 16),
-
-                      // Show image poster
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.4),
-                              blurRadius: 15,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
+                      child: Text(
+                        langService.getWeekday(index).toUpperCase(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: isToday ? FontWeight.w800 : FontWeight.w600,
+                          letterSpacing: 1.0,
+                          color: isToday ? Colors.black : Colors.white,
                         ),
-                        child: Stack(
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 1 / 1.4142, // A4 ratio
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: AppImage(
-                                  path: contentService.getShowImage(day),
-                                  fit: BoxFit.fill,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      color: Colors.white.withValues(alpha: 0.05),
-                                      child: const Icon(Icons.theater_comedy, size: 48, color: Colors.white30),
-                                    );
-                                  },
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 16),
+
+                    // Show image poster
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.6),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        children: [
+                          AspectRatio(
+                            aspectRatio: 1 / 1.4142, // A4 ratio
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: AppImage(
+                                path: contentService.getShowImage(day),
+                                fit: BoxFit.fill,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.black45,
+                                    child: const Icon(Icons.theater_comedy, size: 64, color: Colors.white30),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          
+                          // Edit Mode Overlay
+                          if (contentService.isEditMode)
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: IconButton(
+                                  icon: const Icon(Icons.edit, color: Colors.white, size: 40),
+                                  onPressed: () => _pickImage(context, day, contentService),
                                 ),
                               ),
                             ),
-                            
-                            // Edit Mode Overlay
-                            if (contentService.isEditMode)
-                              Positioned.fill(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.black54,
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: IconButton(
-                                    icon: const Icon(Icons.edit, color: Colors.white, size: 40),
-                                    onPressed: () => _pickImage(context, day, contentService),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
+                        ],
                       ),
+                    ),
 
-                      const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
-                      // Venue indicator tag
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.95),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 6,
-                              offset: Offset(0, 3),
+                    // Venue indicator tag
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.black87,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.white24),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black54,
+                            blurRadius: 8,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: AppImage(
+                        path: isSavines
+                            ? 'assets/images/shows/savines.png'
+                            : 'assets/images/shows/arenal.png',
+                        height: 24,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Text(
+                            isSavines ? 'Savines' : 'Arenal',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
-                          ],
-                        ),
-                        child: AppImage(
-                          path: isSavines
-                              ? 'assets/images/shows/savines.png'
-                              : 'assets/images/shows/arenal.png',
-                          height: 24,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Text(
-                              isSavines ? 'Savines' : 'Arenal',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            );
-                          },
-                        ),
+                          );
+                        },
                       ),
-                    ],
-                  ),
-                );
-              }),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: List.generate(4, (index) => buildItem(index)),
+                ),
+                const SizedBox(height: 40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: List.generate(3, (index) => buildItem(index + 4)),
+                ),
+              ],
             );
           },
         );
