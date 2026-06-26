@@ -17,9 +17,18 @@ gum style \
 
 # 1. Gather API Keys
 API_KEY=""
-if [ -f ".api" ]; then
+if [ -f "aemet.api" ]; then
+    gum style --foreground 72 "Found aemet.api file. Using it for AEMET API key..."
+    API_KEY=$(grep -E '^AEMET_API_KEY=' aemet.api | cut -d= -f2- || true)
+    if [ -z "$API_KEY" ]; then
+        API_KEY=$(cat aemet.api)
+    fi
+elif [ -f ".api" ]; then
     gum style --foreground 72 "Found .api file. Using it for AEMET API key..."
-    API_KEY="$(cat .api)"
+    API_KEY=$(grep -E '^AEMET_API_KEY=' .api | cut -d= -f2- || true)
+    if [ -z "$API_KEY" ]; then
+        API_KEY=$(cat .api)
+    fi
 else
     while [ -z "$API_KEY" ]; do
         API_KEY=$(gum input --placeholder "Enter your AEMET API Key (or type 'skip' to skip)" --header "AEMET Weather API Key:")
@@ -30,9 +39,18 @@ else
 fi
 
 FLIGHT_KEY=""
-if [ -f ".flight_api" ]; then
+if [ -f "flight.api" ]; then
+    gum style --foreground 72 "Found flight.api file. Using it for Flight API key..."
+    FLIGHT_KEY=$(grep -E '^(FLIGHT|FIGHT)_API_KEY=' flight.api | cut -d= -f2- || true)
+    if [ -z "$FLIGHT_KEY" ]; then
+        FLIGHT_KEY=$(cat flight.api)
+    fi
+elif [ -f ".flight_api" ]; then
     gum style --foreground 72 "Found .flight_api file. Using it for Flight API key..."
-    FLIGHT_KEY="$(cat .flight_api)"
+    FLIGHT_KEY=$(grep -E '^(FLIGHT|FIGHT)_API_KEY=' .flight_api | cut -d= -f2- || true)
+    if [ -z "$FLIGHT_KEY" ]; then
+        FLIGHT_KEY=$(cat .flight_api)
+    fi
 else
     while [ -z "$FLIGHT_KEY" ]; do
         FLIGHT_KEY=$(gum input --placeholder "Enter your RapidAPI Key (or type 'skip' to skip)" --header "RapidAPI Flight Key:")
