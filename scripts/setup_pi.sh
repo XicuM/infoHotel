@@ -63,7 +63,10 @@ echo "Initializing Cage + Cog Kiosk Display..."
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export COG_PLATFORM_WL_VIEW_FULLSCREEN=1
 
-exec cage -- cog http://localhost:$PORT
+# Enable remote Web Inspector for debugging (access at http://<pi-ip>:8081)
+export WEBKIT_INSPECTOR_SERVER=0.0.0.0:8081
+
+exec cage -- cog --kiosk http://localhost:$PORT
 EOF
 
 chmod +x launch_kiosk.sh
