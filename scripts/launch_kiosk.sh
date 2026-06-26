@@ -21,9 +21,6 @@ socketserver.TCPServer(("", int(sys.argv[2])), Handler).serve_forever()
 PYEOF
 
 python3 "$HOME/infoHotel/scripts/serve.py" "$WEB_DIR" $PORT > /dev/null 2>&1 &
-SERVER_PID=$!
-
-trap "kill $SERVER_PID" EXIT
 
 echo "Initializing Cage + Cog Kiosk Display..."
 
@@ -46,4 +43,5 @@ export WEBKIT_IGNORE_GPU_BLACKLIST=1
 export WEBKIT_FORCE_COMPOSITING_MODE=1
 export COG_USE_WEBGL=1
 
-cage -d -- cog http://localhost:$PORT > /tmp/cage.log 2>&1
+# Execute cage as the main process, allowing logs to flow directly to systemd journal
+exec cage -d -- cog http://localhost:$PORT
