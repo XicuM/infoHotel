@@ -31,4 +31,4 @@ export WLR_LIBINPUT_NO_DEVICES=1
 export WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1
 export WPE_DISABLE_SANDBOX=1
 
-exec cage -d -- cog http://localhost:$PORT > /tmp/cage.log 2>&1
+cage -d -- cog http://localhost:$PORT > /tmp/cage.log 2>&1
