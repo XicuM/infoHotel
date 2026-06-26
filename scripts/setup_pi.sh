@@ -15,14 +15,13 @@ if [ "$EUID" -eq 0 ]; then
   exit 1
 fi
 
-# 1. Update system and install dependencies
-echo -e "${BLUE}--> Installing dependencies (you may be prompted for your sudo password)...${NC}"
-sudo apt-get update > /dev/null
-sudo apt-get install -y curl unzip xz-utils zip python3 cage cog > /dev/null
+# 1. Authenticate sudo upfront
+echo -e "${BLUE}--> Validating sudo credentials (you may be prompted for your password)...${NC}"
+sudo -v
 
-# Install Gum for beautiful CLI prompts
+# 2. Install Gum first for beautiful UI
 if ! command -v gum &> /dev/null; then
-    echo -e "${BLUE}--> Installing Gum for a beautiful CLI...${NC}"
+    echo -e "${BLUE}--> Installing Gum for progress spinners and prompts...${NC}"
     sudo mkdir -p /etc/apt/keyrings
     curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
     echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/charm.list > /dev/null
@@ -30,15 +29,19 @@ if ! command -v gum &> /dev/null; then
     sudo apt-get install -y gum > /dev/null
 fi
 
-echo -e "${BLUE}--> Configuring hardware permissions for $USER...${NC}"
-sudo usermod -a -G video,render,tty,input $USER
-
-# Clear the screen and show a beautiful header now that gum is installed
+# Clear screen and show header early
 clear
 gum style \
     --foreground 212 --border-foreground 212 --border double \
     --align center --width 60 --margin "1 2" --padding "1 2" \
     "InfoHotel Kiosk Setup" "Raspberry Pi Environment"
+
+# 3. Update system and install kiosk dependencies using Gum spinner
+gum spin --spinner dot --title "Updating package lists..." -- sudo apt-get update -y
+gum spin --spinner dot --title "Installing dependencies (curl, unzip, xz-utils, zip, python3, cage, cog)..." -- sudo apt-get install -y curl unzip xz-utils zip python3 cage cog
+
+echo -e "${BLUE}--> Configuring hardware permissions for $USER...${NC}"
+sudo usermod -a -G video,render,tty,input $USER
 
 gum style --foreground 212 -- "--> Configuring systemd service to start at boot..."
 sudo tee /etc/systemd/system/infohotel.service > /dev/null << EOF
