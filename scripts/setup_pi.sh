@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 REBOOT_REQUIRED=false
+KIO_RES=""
 
 RED='\033[0;31m'
 BLUE='\033[0;34m'
@@ -39,40 +40,10 @@ gum style \
 
 # 3. Update system and install kiosk dependencies using Gum spinner
 gum spin --spinner dot --title "Updating package lists..." -- sudo apt-get update -y
-gum spin --spinner dot --title "Installing dependencies (curl, unzip, xz-utils, zip, python3, cage, cog)..." -- sudo apt-get install -y curl unzip xz-utils zip python3 cage cog
+gum spin --spinner dot --title "Installing dependencies (curl, unzip, xz-utils, zip, python3, cage, cog, wlr-randr)..." -- sudo apt-get install -y curl unzip xz-utils zip python3 cage cog wlr-randr
 
 echo -e "${BLUE}--> Configuring hardware permissions for $USER...${NC}"
 sudo usermod -a -G video,render,tty,input $USER
-
-gum style --foreground 212 -- "--> Configuring systemd service to start at boot..."
-sudo tee /etc/systemd/system/infohotel.service > /dev/null << EOF
-[Unit]
-Description=InfoHotel Kiosk Service
-After=systemd-user-sessions.service plymouth-quit-wait.service network.target systemd-logind.service
-Wants=systemd-logind.service
-Conflicts=getty@tty1.service
-
-[Service]
-User=$USER
-Group=$USER
-SupplementaryGroups=video render tty input
-PAMName=login
-TTYPath=/dev/tty1
-StandardInput=tty-fail
-StandardOutput=journal
-Environment=HOME=$HOME
-WorkingDirectory=$HOME/infoHotel
-ExecStart=$HOME/infoHotel/scripts/launch_kiosk.sh
-Restart=always
-RestartSec=3
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-sudo systemctl daemon-reload
-sudo systemctl enable infohotel.service > /dev/null 2>&1
-gum style --foreground 72 "    ✓ Service registered and enabled."
 
 echo ""
 # Configure Screen Resolution
@@ -101,23 +72,55 @@ if gum confirm "Do you want to configure a custom screen resolution for the kios
         gum style --foreground 196 "Error: No active display connector detected!"
     else
         gum style --foreground 212 "Detected active display connector: $CONNECTOR"
-        RES=$(gum input --placeholder "Enter resolution (e.g., 1280x720, 800x480)" --value "1280x720" --header "Kiosk Resolution:")
+        KIO_RES=$(gum input --placeholder "Enter resolution (e.g., 1280x720, 800x480)" --value "1280x720" --header "Kiosk Resolution:")
         
-        if [[ "$RES" =~ ^[0-9]+x[0-9]+$ ]]; then
+        if [[ "$KIO_RES" =~ ^[0-9]+x[0-9]+$ ]]; then
             # Read, clean up existing video configs to avoid duplicates, and prepend the new one
             CONTENT=$(cat "$CMDLINE")
             CLEANED_CONTENT=$(echo "$CONTENT" | sed -E 's/\bvideo=[^ ]+ //g' | sed -E 's/\bvideo=[^ ]+$//g' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-            NEW_LINE="video=${CONNECTOR}:${RES}@60D ${CLEANED_CONTENT}"
+            NEW_LINE="video=${CONNECTOR}:${KIO_RES}@60D ${CLEANED_CONTENT}"
 
             # Write back to file safely
             echo -n "$NEW_LINE" | sudo tee "$CMDLINE" > /dev/null
-            gum style --foreground 72 "    ✓ Resolution configured to ${RES} on ${CONNECTOR} in ${CMDLINE}."
+            gum style --foreground 72 "    ✓ Resolution configured to ${KIO_RES} on ${CONNECTOR} in ${CMDLINE}."
             REBOOT_REQUIRED=true
         else
+            KIO_RES=""
             gum style --foreground 196 "Invalid resolution format. Skipping configuration."
         fi
     fi
 fi
+
+gum style --foreground 212 -- "--> Configuring systemd service to start at boot..."
+sudo tee /etc/systemd/system/infohotel.service > /dev/null << EOF
+[Unit]
+Description=InfoHotel Kiosk Service
+After=systemd-user-sessions.service plymouth-quit-wait.service network.target systemd-logind.service
+Wants=systemd-logind.service
+Conflicts=getty@tty1.service
+
+[Service]
+User=$USER
+Group=$USER
+SupplementaryGroups=video render tty input
+PAMName=login
+TTYPath=/dev/tty1
+StandardInput=tty-fail
+StandardOutput=journal
+Environment=HOME=$HOME
+Environment=KIO_RES=$KIO_RES
+WorkingDirectory=$HOME/infoHotel
+ExecStart=$HOME/infoHotel/scripts/launch_kiosk.sh
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable infohotel.service > /dev/null 2>&1
+gum style --foreground 72 "    ✓ Service registered and enabled."
 
 echo ""
 gum style \

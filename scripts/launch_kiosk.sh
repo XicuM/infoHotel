@@ -44,6 +44,31 @@ export WEBKIT_FORCE_COMPOSITING_MODE=1
 export COG_USE_WEBGL=1
 
 # Execute cage as the main process, allowing logs to flow directly to systemd journal
-# You can set the COG_SCALE environment variable (e.g. export COG_SCALE=1.25) to scale the UI (simulate smaller resolution).
-# Defaults to 1.0 if not specified.
+# You can set the COG_SCALE environment variable (e.g. export COG_SCALE=1.25) to scale the UI.
+# You can set the KIO_RES environment variable (e.g. export KIO_RES=1280x720) to change the display resolution.
+
+if [ -n "$KIO_RES" ]; then
+    (
+        # Wait for the Wayland compositor socket to be initialized
+        while [ ! -S "$XDG_RUNTIME_DIR/wayland-0" ]; do
+            sleep 0.5
+        done
+        export WAYLAND_DISPLAY=wayland-0
+        
+        # Wait for outputs to populate in wlroots
+        sleep 2
+        
+        # Find the active display connector name (e.g. HDMI-A-1 or DSI-1)
+        CONNECTOR=$(wlr-randr | grep -m1 '^[A-Za-z0-9-]' | awk '{print $1}')
+        
+        if [ -n "$CONNECTOR" ]; then
+            echo "Applying resolution ${KIO_RES} to output ${CONNECTOR}..."
+            wlr-randr --output "$CONNECTOR" --mode "${KIO_RES}@60.000000Hz" || \
+            wlr-randr --output "$CONNECTOR" --mode "${KIO_RES}@60Hz" || \
+            wlr-randr --output "$CONNECTOR" --mode "${KIO_RES}" || \
+            echo "Failed to set resolution with wlr-randr"
+        fi
+    ) &
+fi
+
 exec cage -d -- cog --scale="${COG_SCALE:-1.0}" http://localhost:$PORT
