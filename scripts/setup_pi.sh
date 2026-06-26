@@ -69,6 +69,9 @@ export COG_PLATFORM_WL_VIEW_FULLSCREEN=1
 # Enable remote Web Inspector for debugging (access at http://<pi-ip>:8081)
 export WEBKIT_INSPECTOR_SERVER=0.0.0.0:8081
 
+# Prevent wlroots/cage from crashing if no mouse or keyboard is plugged in
+export WLR_LIBINPUT_NO_DEVICES=1
+
 exec cage -- cog --kiosk http://localhost:$PORT
 EOF
 
