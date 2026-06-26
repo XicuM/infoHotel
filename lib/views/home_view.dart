@@ -276,7 +276,7 @@ class _HomeViewState extends State<HomeView> {
                       'assets/images/touch.png',
                       width: 32,
                       height: 32,
-                      color: Colors.white,
+                      colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                       errorBuilder: (context, error, stackTrace) =>
                           const Icon(Icons.touch_app, size: 32, color: Colors.white),
                     ),

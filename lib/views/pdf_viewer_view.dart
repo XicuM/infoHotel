@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart';
@@ -52,8 +53,9 @@ class _PdfViewerViewState extends State<PdfViewerView> {
 
   Future<void> _loadPdf() async {
     try {
-      final path = widget.isLocal ? widget.pdfPath : PathResolver.resolve(widget.pdfPath);
-      final document = await PdfDocument.openFile(path);
+      final document = kIsWeb
+          ? await PdfDocument.openAsset(widget.pdfPath)
+          : await PdfDocument.openFile(widget.isLocal ? widget.pdfPath : PathResolver.resolve(widget.pdfPath));
       if (mounted) {
         setState(() {
           _document = document;

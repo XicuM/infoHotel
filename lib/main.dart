@@ -8,6 +8,7 @@ import 'services/hotel_service.dart';
 import 'services/content_service.dart';
 import 'views/main_layout.dart';
 
+import 'package:flutter/foundation.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -22,20 +23,22 @@ void main() async {
     initializeDateFormatting('it', null),
     initializeDateFormatting('nl', null),
   ]);
-  await windowManager.ensureInitialized();
+  if (!kIsWeb) {
+    await windowManager.ensureInitialized();
 
-  WindowOptions windowOptions = const WindowOptions(
-    size: Size(1280, 720),
-    center: true,
-    backgroundColor: Colors.transparent,
-    skipTaskbar: false,
-    titleBarStyle: TitleBarStyle.normal,
-  );
-  
-  windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.show();
-    await windowManager.focus();
-  });
+    WindowOptions windowOptions = const WindowOptions(
+      size: Size(1280, 720),
+      center: true,
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.normal,
+    );
+    
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
 
   // Set preferred orientations for kiosk mode
   SystemChrome.setPreferredOrientations([

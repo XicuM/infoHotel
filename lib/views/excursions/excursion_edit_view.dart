@@ -148,8 +148,8 @@ class _ExcursionEditViewState extends State<ExcursionEditView> {
                         border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: _isLocalImage 
-                          ? Image.file(File(_imagePath), fit: BoxFit.cover)
+                        child: _isLocalImage 
+                          ? AppImage(path: _imagePath, fit: BoxFit.cover, errorBuilder: (_,__,___) => const Icon(Icons.broken_image))
                           : AppImage(path: _imagePath, fit: BoxFit.cover, errorBuilder: (_,__,___) => const Icon(Icons.broken_image)),
                     ),
                     const SizedBox(width: 16),
@@ -254,7 +254,7 @@ class _ExcursionEditViewState extends State<ExcursionEditView> {
                 fit: StackFit.expand,
                 children: [
                   isLocal 
-                     ? Image.file(File(strPath), fit: BoxFit.cover)
+                     ? AppImage(path: strPath, fit: BoxFit.cover, errorBuilder: (_,__,___) => const Icon(Icons.broken_image))
                      : AppImage(path: strPath, fit: BoxFit.cover),
                   Positioned(
                     top: 0,

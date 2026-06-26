@@ -25,7 +25,7 @@ class MarketsView extends StatelessWidget {
 
         List<CardData> cards = markets.map((market) {
           return CardData(
-            imagePath: market.isLocalImage
+            imagePath: market.isLocalImage || market.imagePath.startsWith('assets/')
                 ? market.imagePath
                 : 'assets/images/${market.imagePath}',
             title: market.name,
@@ -363,24 +363,13 @@ class _MarketDetailViewState extends State<MarketDetailView> {
   }
   
   Widget _buildImage(String path, bool isLocal) {
-    if (isLocal) {
-      return Image.file(
-        File(path),
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => Container(
-          color: Colors.grey[300],
-          child: const Center(child: Icon(Icons.broken_image)),
-        ),
-      );
-    } else {
-      return AppImage(path: 
-        path,
-        fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) => Container(
-          color: Colors.grey[300],
-          child: const Center(child: Icon(Icons.broken_image)),
-        ),
-      );
-    }
+    return AppImage(
+      path: path,
+      fit: isLocal ? BoxFit.cover : BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) => Container(
+        color: Colors.grey[300],
+        child: const Center(child: Icon(Icons.broken_image)),
+      ),
+    );
   }
 }
