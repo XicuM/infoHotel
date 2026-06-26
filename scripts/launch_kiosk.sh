@@ -27,4 +27,8 @@ export WEBKIT_INSPECTOR_SERVER=0.0.0.0:8081
 # Prevent wlroots/cage from crashing if no mouse or keyboard is plugged in
 export WLR_LIBINPUT_NO_DEVICES=1
 
+# Disable the WebKit sandbox to fix the 'bwrap' / 'dbus-proxy' crash on Raspbian
+export WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1
+export WPE_DISABLE_SANDBOX=1
+
 exec cage -d -- cog http://localhost:$PORT > /tmp/cage.log 2>&1
