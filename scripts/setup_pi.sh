@@ -63,7 +63,7 @@ echo "Initializing Cage + Cog Kiosk Display..."
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export COG_PLATFORM_WL_VIEW_FULLSCREEN=1
 
-exec cage -- cog --kiosk http://localhost:$PORT
+exec cage -- cog http://localhost:$PORT
 EOF
 
 chmod +x launch_kiosk.sh
