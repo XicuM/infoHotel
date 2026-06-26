@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 echo "=== infoHotel Setup ==="
 
@@ -47,7 +48,7 @@ echo "=========================================================="
 read -p "Press [Enter] ONLY after you have added the key to GitHub..."
 
 # Trust GitHub's host key automatically so it doesn't prompt the user
-ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts 2>/dev/null
+ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts 2>/dev/null || true
 
 # 4. Clone the infoHotel repository
 echo "--> Downloading infoHotel to home directory..."
