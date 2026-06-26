@@ -72,7 +72,7 @@ export WEBKIT_INSPECTOR_SERVER=0.0.0.0:8081
 # Prevent wlroots/cage from crashing if no mouse or keyboard is plugged in
 export WLR_LIBINPUT_NO_DEVICES=1
 
-exec cage -- cog --kiosk http://localhost:$PORT
+exec cage -d -- cog --kiosk http://localhost:$PORT > /tmp/cage.log 2>&1
 EOF
 
 chmod +x launch_kiosk.sh
