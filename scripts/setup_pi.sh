@@ -30,6 +30,9 @@ if ! command -v gum &> /dev/null; then
     sudo apt-get install -y gum > /dev/null
 fi
 
+echo -e "${BLUE}--> Configuring hardware permissions for $USER...${NC}"
+sudo usermod -a -G video,render,tty,input $USER
+
 # Clear the screen and show a beautiful header now that gum is installed
 clear
 gum style \
