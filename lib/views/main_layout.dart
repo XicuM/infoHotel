@@ -123,7 +123,9 @@ class _MainLayoutState extends State<MainLayout> {
       FocusScope.of(context).requestFocus(_focusNode);
     }
 
-    return KeyboardListener(
+    return MouseRegion(
+      cursor: SystemMouseCursors.none,
+      child: KeyboardListener(
       focusNode: _focusNode,
       autofocus: true,
       onKeyEvent: (event) {
@@ -395,7 +397,8 @@ class _MainLayoutState extends State<MainLayout> {
           ],
         ),
       ),
-    );
+    ),
+   );
   }
 }
 
