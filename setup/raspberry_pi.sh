@@ -9,10 +9,10 @@ if [ "$EUID" -eq 0 ]; then
   exit 1
 fi
 
-# 1. Update system and install Linux UI dependencies
+# 1. Update system and install dependencies for Web and Wayland Kiosk
 echo "--> Installing dependencies..."
 sudo apt-get update
-sudo apt-get install -y curl git unzip xz-utils zip libglu1-mesa clang cmake ninja-build pkg-config libgtk-3-dev
+sudo apt-get install -y curl git unzip xz-utils zip python3 cage cog
 
 # 2. Install the newest Stable Flutter
 if ! command -v flutter &> /dev/null; then
