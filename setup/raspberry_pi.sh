@@ -109,7 +109,7 @@ else
 fi
 
 echo "--> Running flutter build..."
-eval flutter build web $BUILD_ARGS --web-renderer canvaskit
+eval flutter build web $BUILD_ARGS
 
 echo "--> Incorporating assets folder..."
 mkdir -p build/web/assets
