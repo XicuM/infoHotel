@@ -44,12 +44,14 @@ gum style --foreground 212 -- "--> Configuring systemd service to start at boot.
 sudo tee /etc/systemd/system/infohotel.service > /dev/null << EOF
 [Unit]
 Description=InfoHotel Kiosk Service
-After=systemd-user-sessions.service plymouth-quit-wait.service network.target
+After=systemd-user-sessions.service plymouth-quit-wait.service network.target systemd-logind.service
+Wants=systemd-logind.service
 Conflicts=getty@tty1.service
 
 [Service]
 User=$USER
 Group=$USER
+SupplementaryGroups=video render tty input
 PAMName=login
 TTYPath=/dev/tty1
 StandardInput=tty
