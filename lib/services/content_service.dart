@@ -52,6 +52,7 @@ class ContentService extends ChangeNotifier {
   }
 
   Future<void> _initDataDir() async {
+    if (kIsWeb) return; // Web does not support local file system or dart:io
     // 1. Try to find 'infohotel_data' next to the executable (Portable Mode)
     // This allows easy management of data by just placing the folder next to the .exe
     if (Platform.isWindows || Platform.isLinux) {
@@ -79,6 +80,10 @@ class ContentService extends ChangeNotifier {
   }
 
   Future<void> _loadMarkets() async {
+    if (kIsWeb) {
+      _loadDefaultMarkets();
+      return;
+    }
     final file = File(p.join(_dataDir.path, _tagsFile));
     if (await file.exists()) {
       try {
@@ -156,6 +161,7 @@ class ContentService extends ChangeNotifier {
   }
 
   Future<void> _saveMarkets() async {
+    if (kIsWeb) return;
     final file = File(p.join(_dataDir.path, _tagsFile));
     final jsonString = json.encode(_markets.map((m) => m.toJson()).toList());
     await file.writeAsString(jsonString);
@@ -185,6 +191,10 @@ class ContentService extends ChangeNotifier {
   // --- Excursions ---
 
   Future<void> _loadExcursions() async {
+    if (kIsWeb) {
+      _loadDefaultExcursions();
+      return;
+    }
     final file = File(p.join(_dataDir.path, _excursionsFile));
     if (await file.exists()) {
       try {
@@ -255,6 +265,7 @@ class ContentService extends ChangeNotifier {
   }
 
   Future<void> _saveExcursions() async {
+    if (kIsWeb) return;
     final file = File(p.join(_dataDir.path, _excursionsFile));
     final jsonString = json.encode(_excursions.map((e) => e.toJson()).toList());
     await file.writeAsString(jsonString);
@@ -284,6 +295,10 @@ class ContentService extends ChangeNotifier {
   // --- Shows ---
 
   Future<void> _loadShows() async {
+    if (kIsWeb) {
+      _loadDefaultShows();
+      return;
+    }
     final file = File(p.join(_dataDir.path, _showsFile));
     if (await file.exists()) {
       try {
@@ -313,6 +328,7 @@ class ContentService extends ChangeNotifier {
   }
 
   Future<void> _saveShows() async {
+    if (kIsWeb) return;
     final file = File(p.join(_dataDir.path, _showsFile));
     final jsonString = json.encode(_showsImages);
     await file.writeAsString(jsonString);
@@ -331,6 +347,15 @@ class ContentService extends ChangeNotifier {
   // --- Hotels ---
 
   Future<void> _loadHotels() async {
+    if (kIsWeb) {
+      try {
+        final jsonString = await rootBundle.loadString('assets/data/hotels.json');
+        _hotels = json.decode(jsonString);
+      } catch (e) {
+        _hotels = {'Savines': [], 'Arenal': []};
+      }
+      return;
+    }
     final file = File(p.join(_dataDir.path, _hotelsFile));
     if (await file.exists()) {
       try {
@@ -353,6 +378,7 @@ class ContentService extends ChangeNotifier {
   }
 
   Future<void> _saveHotels() async {
+    if (kIsWeb) return;
     final file = File(p.join(_dataDir.path, _hotelsFile));
     final jsonString = json.encode(_hotels);
     await file.writeAsString(jsonString);
@@ -365,6 +391,7 @@ class ContentService extends ChangeNotifier {
   }
 
   Future<String> saveImage(String sourcePath, {String subFolder = 'markets'}) async {
+    if (kIsWeb) return sourcePath; // Can't save files on Web
     final fileName = p.basename(sourcePath);
     // Save directly to the asset folder as requested
     final assetFolder = 'assets/images/$subFolder';
