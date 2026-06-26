@@ -77,7 +77,12 @@ else
     echo ""
     echo "=========================================================="
     echo "AEMET Weather API Key is required for weather functionality."
-    read -p "Please enter your AEMET API Key (or press Enter to skip): " API_KEY
+    while [ -z "$API_KEY" ]; do
+        read -p "Please enter your AEMET API Key (or type 'skip' to skip): " API_KEY
+    done
+    if [ "$API_KEY" = "skip" ]; then
+        API_KEY=""
+    fi
     echo "=========================================================="
 fi
 
@@ -89,7 +94,12 @@ else
     echo ""
     echo "=========================================================="
     echo "RapidAPI Key is required for flight board functionality."
-    read -p "Please enter your RapidAPI Key (or press Enter to skip): " FLIGHT_KEY
+    while [ -z "$FLIGHT_KEY" ]; do
+        read -p "Please enter your RapidAPI Key (or type 'skip' to skip): " FLIGHT_KEY
+    done
+    if [ "$FLIGHT_KEY" = "skip" ]; then
+        FLIGHT_KEY=""
+    fi
     echo "=========================================================="
 fi
 
