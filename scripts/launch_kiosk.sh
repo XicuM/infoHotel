@@ -44,4 +44,6 @@ export WEBKIT_FORCE_COMPOSITING_MODE=1
 export COG_USE_WEBGL=1
 
 # Execute cage as the main process, allowing logs to flow directly to systemd journal
-exec cage -d -- cog http://localhost:$PORT
+# You can set the COG_SCALE environment variable (e.g. export COG_SCALE=1.25) to scale the UI (simulate smaller resolution).
+# Defaults to 1.0 if not specified.
+exec cage -d -- cog --scale="${COG_SCALE:-1.0}" http://localhost:$PORT
