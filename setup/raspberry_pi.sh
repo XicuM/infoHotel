@@ -52,19 +52,19 @@ ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts 2>/dev/null
 # 4. Clone the infoHotel repository
 echo "--> Downloading infoHotel..."
 if [ ! -d "infoHotel" ]; then
-    git clone git@github.com:XicuM/infoHotel.git
-    git submodule update --init --recursive
+    git clone --recurse-submodules git@github.com:XicuM/infoHotel.git
 else
     echo "--> infoHotel already exists, pulling latest..."
     cd infoHotel
     git pull
+    git submodule update --init --recursive
 fi
 
 # 5. Build the application
 echo "--> Building infoHotel application (this will take a while)..."
 cd ~/infoHotel
 
-flutter config --enable-linux-desktop
+flutter config --enable-web
 flutter clean
 flutter pub get
 
@@ -109,44 +109,72 @@ else
 fi
 
 echo "--> Running flutter build..."
-eval flutter build linux $BUILD_ARGS
+eval flutter build web $BUILD_ARGS --web-renderer canvaskit
+
+echo "--> Incorporating assets folder..."
+mkdir -p build/web/assets
+cp -r assets build/web/assets/
 
 # 6. Create a smart launch script and desktop icon
 echo "--> Creating launcher and desktop icon..."
 cd ~
-cat << 'EOF' > run_hotel.sh
+cat << 'EOF' > launch_kiosk.sh
 #!/bin/bash
-# Try to find the executable
-APP_PATH=$(find $HOME/infoHotel -name "info_hotel" -type f | grep "release/bundle" | head -n 1)
 
-if [ -z "$APP_PATH" ]; then
-    echo "Could not find the compiled app. Did the build fail?"
+# 1. Path dynamically targets savines' home directory
+WEB_DIR="/home/savines/Projects/infoHotel/build/web"
+PORT=8080
+
+if [ ! -d "$WEB_DIR" ]; then
+    echo "Error: Flutter Web directory not found at $WEB_DIR"
     exit 1
 fi
 
-echo "Starting infoHotel..."
-export MESA_GL_VERSION_OVERRIDE=3.3
-export MESA_GLSL_VERSION_OVERRIDE=330
-LIBGL_ALWAYS_SOFTWARE=1 "$APP_PATH"
+echo "Starting micro-webserver on port $PORT..."
+python3 -m http.server $PORT --directory "$WEB_DIR" > /dev/null 2>&1 &
+SERVER_PID=$!
+
+trap "kill $SERVER_PID" EXIT
+
+echo "Initializing Cage + Cog Kiosk Display..."
+
+# 2. Configure Wayland/EGL environment variables using the current user ID
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+export WAYLAND_DISPLAY=wayland-0
+export COG_PLATFORM_WL_VIEW_FULLSCREEN=1
+
+exec cage -- cog --kiosk http://localhost:$PORT
 EOF
 
-chmod +x run_hotel.sh
+chmod +x launch_kiosk.sh
 
-mkdir -p ~/.local/share/applications
-mkdir -p ~/Desktop
-cat << EOF > ~/.local/share/applications/infohotel.desktop
-[Desktop Entry]
-Version=1.0
-Type=Application
-Name=InfoHotel Kiosk
-Comment=Hotel Information Kiosk Application
-Exec=$HOME/run_hotel.sh
-Icon=utilities-terminal
-Terminal=false
-Categories=Utility;Application;
+echo "--> Configuring systemd service to start at boot..."
+sudo tee /etc/systemd/system/infohotel.service > /dev/null << EOF
+[Unit]
+Description=InfoHotel Kiosk Service
+After=systemd-user-sessions.service plymouth-quit-wait.service network.target
+Conflicts=getty@tty1.service
+
+[Service]
+User=$USER
+Group=$USER
+PAMName=login
+TTYPath=/dev/tty1
+StandardInput=tty
+StandardOutput=journal
+Environment=HOME=$HOME
+WorkingDirectory=$HOME
+ExecStart=$HOME/launch_kiosk.sh
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
 EOF
-cp ~/.local/share/applications/infohotel.desktop ~/Desktop/
-chmod +x ~/Desktop/infohotel.desktop
+
+sudo systemctl daemon-reload
+sudo systemctl enable infohotel.service
 
 echo "=== Setup Complete! ==="
-echo "You can now run your app by clicking the desktop icon or typing: ./run_hotel.sh"
+echo "The InfoHotel kiosk has been configured to start automatically at boot."
+echo "You can also start it manually now by running: sudo systemctl start infohotel.service"
