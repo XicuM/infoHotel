@@ -54,7 +54,7 @@ Group=$USER
 SupplementaryGroups=video render tty input
 PAMName=login
 TTYPath=/dev/tty1
-StandardInput=tty
+StandardInput=tty-fail
 StandardOutput=journal
 Environment=HOME=$HOME
 WorkingDirectory=$HOME/infoHotel
