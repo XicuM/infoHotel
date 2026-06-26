@@ -116,13 +116,12 @@ mkdir -p build/web/assets
 cp -r assets build/web/assets/
 
 # 6. Create a smart launch script and desktop icon
-echo "--> Creating launcher and desktop icon..."
+echo "--> Creating kiosk launch script..."
 cd ~
 cat << 'EOF' > launch_kiosk.sh
 #!/bin/bash
 
-# 1. Path dynamically targets savines' home directory
-WEB_DIR="/home/savines/Projects/infoHotel/build/web"
+WEB_DIR="$HOME/infoHotel/build/web"
 PORT=8080
 
 if [ ! -d "$WEB_DIR" ]; then
