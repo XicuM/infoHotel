@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+REBOOT_REQUIRED=false
 
 RED='\033[0;31m'
 BLUE='\033[0;34m'
@@ -74,6 +75,51 @@ sudo systemctl enable infohotel.service > /dev/null 2>&1
 gum style --foreground 72 "    ✓ Service registered and enabled."
 
 echo ""
+# Configure Screen Resolution
+if gum confirm "Do you want to configure a custom screen resolution for the kiosk?"; then
+    # 1. Locate cmdline.txt
+    if [ -f "/boot/firmware/cmdline.txt" ]; then
+        CMDLINE="/boot/firmware/cmdline.txt"
+    elif [ -f "/boot/cmdline.txt" ]; then
+        CMDLINE="/boot/cmdline.txt"
+    else
+        gum style --foreground 196 "Error: cmdline.txt not found!"
+        exit 1
+    fi
+
+    # 2. Detect active connector
+    CONNECTOR=""
+    for f in /sys/class/drm/*/status; do
+        if [ "$(cat "$f")" = "connected" ]; then
+            con=$(basename "$(dirname "$f")")
+            CONNECTOR="${con#*-}"
+            break
+        fi
+    done
+
+    if [ -z "$CONNECTOR" ]; then
+        gum style --foreground 196 "Error: No active display connector detected!"
+    else
+        gum style --foreground 212 "Detected active display connector: $CONNECTOR"
+        RES=$(gum input --placeholder "Enter resolution (e.g., 1280x720, 800x480)" --value "1280x720" --header "Kiosk Resolution:")
+        
+        if [[ "$RES" =~ ^[0-9]+x[0-9]+$ ]]; then
+            # Read, clean up existing video configs to avoid duplicates, and prepend the new one
+            CONTENT=$(cat "$CMDLINE")
+            CLEANED_CONTENT=$(echo "$CONTENT" | sed -E 's/\bvideo=[^ ]+ //g' | sed -E 's/\bvideo=[^ ]+$//g' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+            NEW_LINE="video=${CONNECTOR}:${RES}@60D ${CLEANED_CONTENT}"
+
+            # Write back to file safely
+            echo -n "$NEW_LINE" | sudo tee "$CMDLINE" > /dev/null
+            gum style --foreground 72 "    ✓ Resolution configured to ${RES} on ${CONNECTOR} in ${CMDLINE}."
+            REBOOT_REQUIRED=true
+        else
+            gum style --foreground 196 "Invalid resolution format. Skipping configuration."
+        fi
+    fi
+fi
+
+echo ""
 gum style \
     --foreground 72 --border double --border-foreground 72 \
     --align center --margin "1 2" --padding "1 2" \
@@ -85,3 +131,10 @@ gum style --foreground 15 "1. On your MAIN COMPUTER, run: ./scripts/build_for_pi
 gum style --foreground 15 "2. Paste the provided command into this Raspberry Pi Connect terminal."
 gum style --foreground 15 "3. The kiosk will automatically launch!"
 echo ""
+
+if [ "$REBOOT_REQUIRED" = true ]; then
+    if gum confirm "A reboot is required to apply the resolution changes. Reboot now?"; then
+        echo "Rebooting..."
+        sudo reboot
+    fi
+fi
