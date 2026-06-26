@@ -61,7 +61,6 @@ echo "Initializing Cage + Cog Kiosk Display..."
 
 # Configure Wayland/EGL environment variables using the current user ID
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
-export WAYLAND_DISPLAY=wayland-0
 export COG_PLATFORM_WL_VIEW_FULLSCREEN=1
 
 exec cage -- cog --kiosk http://localhost:$PORT
