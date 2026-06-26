@@ -37,7 +37,7 @@ gum style \
     --align center --width 60 --margin "1 2" --padding "1 2" \
     "InfoHotel Kiosk Setup" "Raspberry Pi Environment"
 
-gum style --foreground 212 "--> Creating kiosk launch script (~/launch_kiosk.sh)..."
+gum style --foreground 212 -- "--> Creating kiosk launch script (~/launch_kiosk.sh)..."
 cd ~
 cat << 'EOF' > launch_kiosk.sh
 #!/bin/bash
@@ -71,7 +71,7 @@ chmod +x launch_kiosk.sh
 gum style --foreground 72 "    ✓ Launch script created."
 
 echo ""
-gum style --foreground 212 "--> Configuring systemd service to start at boot..."
+gum style --foreground 212 -- "--> Configuring systemd service to start at boot..."
 sudo tee /etc/systemd/system/infohotel.service > /dev/null << EOF
 [Unit]
 Description=InfoHotel Kiosk Service
