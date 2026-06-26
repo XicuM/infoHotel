@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import '../utils/path_resolver.dart';
 
 /// A unified widget for displaying asset or memory images with consistent error handling
@@ -40,15 +41,35 @@ class AppImage extends StatelessWidget {
         errorBuilder: errorBuilder ?? (context, error, stackTrace) => _buildError(context),
       );
     } else if (path != null) {
-      // Force all path-based images to load from local file system
-      final resolvedPath = PathResolver.resolve(path!);
-      image = Image.file(
-        File(resolvedPath),
-        width: width,
-        height: height,
-        fit: fit,
-        errorBuilder: errorBuilder ?? (context, error, stackTrace) => _buildError(context),
-      );
+      if (kIsWeb) {
+        if (path!.startsWith('http')) {
+          image = Image.network(
+            path!,
+            width: width,
+            height: height,
+            fit: fit,
+            errorBuilder: errorBuilder ?? (context, error, stackTrace) => _buildError(context),
+          );
+        } else {
+          image = Image.asset(
+            path!,
+            width: width,
+            height: height,
+            fit: fit,
+            errorBuilder: errorBuilder ?? (context, error, stackTrace) => _buildError(context),
+          );
+        }
+      } else {
+        // Force all path-based images to load from local file system
+        final resolvedPath = PathResolver.resolve(path!);
+        image = Image.file(
+          File(resolvedPath),
+          width: width,
+          height: height,
+          fit: fit,
+          errorBuilder: errorBuilder ?? (context, error, stackTrace) => _buildError(context),
+        );
+      }
     } else {
       image = _buildError(context);
     }
