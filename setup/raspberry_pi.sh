@@ -50,7 +50,8 @@ read -p "Press [Enter] ONLY after you have added the key to GitHub..."
 ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts 2>/dev/null
 
 # 4. Clone the infoHotel repository
-echo "--> Downloading infoHotel..."
+echo "--> Downloading infoHotel to home directory..."
+cd ~
 if [ ! -d "infoHotel" ]; then
     git clone --recurse-submodules git@github.com:XicuM/infoHotel.git
 else
