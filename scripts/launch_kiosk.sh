@@ -10,7 +10,17 @@ if [ ! -d "$WEB_DIR" ]; then
 fi
 
 echo "Starting micro-webserver on port $PORT..."
-python3 -m http.server $PORT --directory "$WEB_DIR" > /dev/null 2>&1 &
+cat << 'PYEOF' > "$HOME/infoHotel/scripts/serve.py"
+import http.server, socketserver, mimetypes, sys
+mimetypes.add_type('application/wasm', '.wasm')
+mimetypes.add_type('application/javascript', '.js')
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, directory=sys.argv[1], **kwargs)
+socketserver.TCPServer(("", int(sys.argv[2])), Handler).serve_forever()
+PYEOF
+
+python3 "$HOME/infoHotel/scripts/serve.py" "$WEB_DIR" $PORT > /dev/null 2>&1 &
 SERVER_PID=$!
 
 trap "kill $SERVER_PID" EXIT
