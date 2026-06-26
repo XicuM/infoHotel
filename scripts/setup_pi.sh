@@ -40,45 +40,6 @@ gum style \
     --align center --width 60 --margin "1 2" --padding "1 2" \
     "InfoHotel Kiosk Setup" "Raspberry Pi Environment"
 
-gum style --foreground 212 -- "--> Creating kiosk launch script (~/launch_kiosk.sh)..."
-cd ~
-cat << 'EOF' > launch_kiosk.sh
-#!/bin/bash
-
-WEB_DIR="$HOME/infoHotel/build/web"
-PORT=8080
-
-if [ ! -d "$WEB_DIR" ]; then
-    echo "Error: Flutter Web directory not found at $WEB_DIR"
-    echo "Please transfer the build using the build_for_pi.sh script on your PC."
-    exit 1
-fi
-
-echo "Starting micro-webserver on port $PORT..."
-python3 -m http.server $PORT --directory "$WEB_DIR" > /dev/null 2>&1 &
-SERVER_PID=$!
-
-trap "kill $SERVER_PID" EXIT
-
-echo "Initializing Cage + Cog Kiosk Display..."
-
-# Configure Wayland/EGL environment variables using the current user ID
-export XDG_RUNTIME_DIR=/run/user/$(id -u)
-export COG_PLATFORM_WL_VIEW_FULLSCREEN=1
-
-# Enable remote Web Inspector for debugging (access at http://<pi-ip>:8081)
-export WEBKIT_INSPECTOR_SERVER=0.0.0.0:8081
-
-# Prevent wlroots/cage from crashing if no mouse or keyboard is plugged in
-export WLR_LIBINPUT_NO_DEVICES=1
-
-exec cage -d -- cog --kiosk http://localhost:$PORT > /tmp/cage.log 2>&1
-EOF
-
-chmod +x launch_kiosk.sh
-gum style --foreground 72 "    ✓ Launch script created."
-
-echo ""
 gum style --foreground 212 -- "--> Configuring systemd service to start at boot..."
 sudo tee /etc/systemd/system/infohotel.service > /dev/null << EOF
 [Unit]
@@ -94,8 +55,8 @@ TTYPath=/dev/tty1
 StandardInput=tty
 StandardOutput=journal
 Environment=HOME=$HOME
-WorkingDirectory=$HOME
-ExecStart=$HOME/launch_kiosk.sh
+WorkingDirectory=$HOME/infoHotel
+ExecStart=$HOME/infoHotel/scripts/launch_kiosk.sh
 Restart=always
 RestartSec=3
 
