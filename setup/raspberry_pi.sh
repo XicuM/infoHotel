@@ -119,6 +119,9 @@ else
     echo "--> No FLIGHT API key provided (flight board will be disabled)."
 fi
 
+echo "--> Configuring project for web..."
+flutter create . --platforms web
+
 echo "--> Running flutter build..."
 eval flutter build web $BUILD_ARGS
 
