@@ -58,6 +58,10 @@ if [ -n "$KIO_RES" ]; then
         # Wait for outputs to populate in wlroots
         sleep 2
         
+        echo "=== Display diagnostic logs ==="
+        wlr-randr || echo "wlr-randr failed to run!"
+        echo "==============================="
+        
         # Find the active display connector name (e.g. HDMI-A-1 or DSI-1)
         CONNECTOR=$(wlr-randr | grep -m1 '^[A-Za-z0-9-]' | awk '{print $1}')
         
@@ -71,4 +75,4 @@ if [ -n "$KIO_RES" ]; then
     ) &
 fi
 
-exec cage -d -- cog --scale="${COG_SCALE:-1.0}" http://localhost:$PORT
+exec cage -d -- cog --platform=fdo --scale="${COG_SCALE:-1.0}" http://localhost:$PORT
