@@ -26,10 +26,6 @@ class _WelcomeViewState extends State<WelcomeView> {
       });
     });
     
-    // Ensure weather is fetched
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WeatherService>().fetchWeather();
-    });
   }
 
   @override

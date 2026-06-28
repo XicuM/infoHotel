@@ -22,10 +22,6 @@ class _WeatherViewState extends State<WeatherView> {
   @override
   void initState() {
     super.initState();
-    // Refresh weather on view open
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WeatherService>().fetchWeather();
-    });
   }
 
   @override

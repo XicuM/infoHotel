@@ -41,9 +41,6 @@ class _HomeViewState extends State<HomeView> {
       });
     });
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WeatherService>().fetchWeather();
-    });
   }
 
   @override

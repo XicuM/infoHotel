@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -20,6 +21,28 @@ class WeatherService extends ChangeNotifier {
   String? _error;
   DateTime? _lastUpdate;
   DateTime? _lastAttempt;
+  Timer? _fetchTimer;
+
+  WeatherService() {
+    _init();
+  }
+
+  Future<void> _init() async {
+    // Load disk cache first so the UI immediately has data
+    await _loadDiskCache();
+    // Trigger initial fetch
+    await fetchWeather();
+    // Set up background periodic timer to fetch every 30 minutes
+    _fetchTimer = Timer.periodic(const Duration(minutes: 30), (_) {
+      fetchWeather();
+    });
+  }
+
+  @override
+  void dispose() {
+    _fetchTimer?.cancel();
+    super.dispose();
+  }
 
   WeatherData? get weatherData => _weatherData;
   bool get isLoading => _isLoading;
