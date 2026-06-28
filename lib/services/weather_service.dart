@@ -91,8 +91,9 @@ class WeatherService extends ChangeNotifier {
 
   Future<List<dynamic>?> _fetchData(String url) async {
     try {
+      final requestUrl = kIsWeb ? '/api/proxy?url=${Uri.encodeComponent(url)}' : url;
       final response = await http.get(
-        Uri.parse(url),
+        Uri.parse(requestUrl),
         headers: {'api_key': Env.aemetApiKey},
       ).timeout(const Duration(seconds: 10));
 
@@ -107,7 +108,8 @@ class WeatherService extends ChangeNotifier {
         final dataUrl = json['datos'] as String?;
 
         if (dataUrl != null) {
-          final dataResponse = await http.get(Uri.parse(dataUrl));
+          final dataRequestUrl = kIsWeb ? '/api/proxy?url=${Uri.encodeComponent(dataUrl)}' : dataUrl;
+          final dataResponse = await http.get(Uri.parse(dataRequestUrl));
           if (dataResponse.statusCode == 200) {
             final dataStr = latin1.decode(dataResponse.bodyBytes);
             final data = jsonDecode(dataStr);

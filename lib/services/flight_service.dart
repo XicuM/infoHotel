@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import '../models/flight_model.dart';
 import '../config/env.dart';
@@ -22,7 +23,8 @@ class IbizaFlightService {
     final localTo = now.add(const Duration(hours: 12)).toIso8601String().substring(0, 16);
 
     final urlString = '$_baseUrl/$localFrom/$localTo?withLeg=true&direction=Departure';
-    final url = Uri.parse(urlString);
+    final requestUrl = kIsWeb ? '/api/proxy?url=${Uri.encodeComponent(urlString)}' : urlString;
+    final url = Uri.parse(requestUrl);
 
     final response = await _client.get(url, headers: {
       'X-RapidAPI-Key': _apiKey,
