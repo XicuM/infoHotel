@@ -63,20 +63,17 @@ class _InfoCardState extends State<InfoCard> {
                       _buildBackground(),
 
                       // Gradient overlay
-                      Opacity(
-                        opacity: 0.85,
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.transparent,
-                                Colors.transparent,
-                                Color(0xCC000000),
-                              ],
-                              stops: [0.0, 0.45, 1.0],
-                            ),
+                      Container(
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.transparent,
+                              Color(0xAD000000),
+                            ],
+                            stops: [0.0, 0.45, 1.0],
                           ),
                         ),
                       ),

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../config/theme.dart';
 import '../../widgets/app_bar_widget.dart';
+import '../../widgets/web_safe_backdrop_filter.dart';
 import 'package:provider/provider.dart';
 import '../../services/language_service.dart';
 import '../../services/flight_service.dart';
@@ -78,14 +80,9 @@ class _FlightBoardViewState extends State<FlightBoardView> {
             _buildHeaderWidget(),
           ],
         ),
-        body: ClipRRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: Colors.black.withOpacity(0.6),
-            child: Column(
+        body: WebSafeBackdropFilter(
+          overlayColor: Colors.black.withOpacity(kIsWeb ? 0.85 : 0.6),
+          child: Column(
               children: [
                 // Flights List Content
                 Expanded(
@@ -318,8 +315,6 @@ class _FlightBoardViewState extends State<FlightBoardView> {
                 ),
               ],
             ),
-          ),
-        ),
         ),
       ),
     );
