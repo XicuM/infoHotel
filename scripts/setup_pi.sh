@@ -134,6 +134,9 @@ gum style --foreground 15 "1. On your MAIN COMPUTER, run: ./scripts/build_for_pi
 gum style --foreground 15 "2. Paste the provided command into this Raspberry Pi Connect terminal."
 gum style --foreground 15 "3. The kiosk will automatically launch!"
 echo ""
+gum style --foreground 72 "Tip: You can manually test changing the resolution by running:"
+gum style --foreground 15 "export XDG_RUNTIME_DIR=/run/user/1000 && export WAYLAND_DISPLAY=wayland-0 && wlr-randr --output HDMI-A-1 --mode 1280x720"
+echo ""
 
 if [ "$REBOOT_REQUIRED" = true ]; then
     if gum confirm "A reboot is required to apply the resolution changes. Reboot now?"; then
