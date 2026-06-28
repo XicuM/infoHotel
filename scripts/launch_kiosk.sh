@@ -90,6 +90,8 @@ export WPE_DISABLE_SANDBOX=1
 export WEBKIT_IGNORE_GPU_BLACKLIST=1
 export WEBKIT_FORCE_COMPOSITING_MODE=1
 export COG_USE_WEBGL=1
+export WPE_DRM_DEVICE=/dev/dri/card0
+export WPE_DRM_RENDER_NODE=/dev/dri/renderD128
 
 # Execute cage as the main process, allowing logs to flow directly to systemd journal
 # You can set the COG_SCALE environment variable (e.g. export COG_SCALE=1.25) to scale the UI.
