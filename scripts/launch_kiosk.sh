@@ -75,4 +75,4 @@ if [ -n "$KIO_RES" ]; then
     ) &
 fi
 
-exec cage -d -- cog --platform=fdo --scale="${COG_SCALE:-1.0}" http://localhost:$PORT
+cage -d -- cog --platform=fdo --scale="${COG_SCALE:-1.0}" http://localhost:$PORT
