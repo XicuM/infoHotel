@@ -60,7 +60,7 @@ else
     fi
 fi
 
-BUILD_ARGS="--release --web-renderer canvaskit"
+BUILD_ARGS="--release"
 if [ -n "$API_KEY" ]; then
     BUILD_ARGS="$BUILD_ARGS --dart-define=AEMET_API_KEY=\"$API_KEY\""
 fi
