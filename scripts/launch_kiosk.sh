@@ -36,11 +36,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                     headers[name] = value
             
             try:
+                print(f"[Proxy] Fetching target: {target_url}", flush=True)
+                print(f"[Proxy] Client headers: {list(self.headers.keys())}", flush=True)
+                print(f"[Proxy] Forwarding headers: {headers}", flush=True)
                 req = urllib.request.Request(target_url, headers=headers)
                 with urllib.request.urlopen(req, timeout=10) as response:
                     res_body = response.read()
                     content_type = response.headers.get('Content-Type', 'application/json')
                 
+                print(f"[Proxy] Successfully fetched: {response.status}", flush=True)
                 self.send_response(200)
                 self.send_header('Content-Type', content_type)
                 self.send_header('Access-Control-Allow-Origin', '*')
@@ -48,16 +52,20 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(res_body)
                 return
             except urllib.error.HTTPError as e:
+                res_body = b""
+                try:
+                    res_body = e.read()
+                except:
+                    pass
+                print(f"[Proxy] HTTPError {e.code}: {res_body.decode('utf-8', errors='ignore')}", flush=True)
                 self.send_response(e.code)
                 self.send_header('Content-Type', 'text/plain')
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
-                try:
-                    self.wfile.write(e.read())
-                except:
-                    pass
+                self.wfile.write(res_body)
                 return
             except Exception as e:
+                print(f"[Proxy] General Error: {str(e)}", flush=True)
                 self.send_error(500, f"Proxy error: {str(e)}")
                 return
         
@@ -66,7 +74,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 socketserver.TCPServer(("", int(sys.argv[2])), Handler).serve_forever()
 PYEOF
 
-python3 "$HOME/infoHotel/scripts/serve.py" "$WEB_DIR" $PORT > /dev/null 2>&1 &
+python3 "$HOME/infoHotel/scripts/serve.py" "$WEB_DIR" $PORT &
 
 echo "Initializing Cage + Cog Kiosk Display..."
 
