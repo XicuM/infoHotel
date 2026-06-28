@@ -72,7 +72,7 @@ if [ -n "$KIO_RES" ]; then
             wlr-randr --output "$CONNECTOR" --mode "${KIO_RES}" || \
             echo "Failed to set resolution with wlr-randr"
         fi
-    ) &
+    ) 2>&1 &
 fi
 
 cage -d -- cog --platform=fdo --scale="${COG_SCALE:-1.0}" http://localhost:$PORT

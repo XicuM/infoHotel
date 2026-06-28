@@ -107,6 +107,7 @@ PAMName=login
 TTYPath=/dev/tty1
 StandardInput=tty-fail
 StandardOutput=journal
+StandardError=journal
 Environment=HOME=$HOME
 Environment=KIO_RES=$KIO_RES
 WorkingDirectory=$HOME/infoHotel
