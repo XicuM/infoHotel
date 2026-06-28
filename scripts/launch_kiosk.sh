@@ -12,12 +12,57 @@ fi
 
 echo "Starting micro-webserver on port $PORT..."
 cat << 'PYEOF' > "$HOME/infoHotel/scripts/serve.py"
-import http.server, socketserver, mimetypes, sys
+import http.server, socketserver, mimetypes, sys, urllib.request, urllib.parse, urllib.error, json
+
 mimetypes.add_type('application/wasm', '.wasm')
 mimetypes.add_type('application/javascript', '.js')
+
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=sys.argv[1], **kwargs)
+
+    def do_GET(self):
+        if self.path.startswith('/api/proxy'):
+            query = urllib.parse.urlparse(self.path).query
+            params = urllib.parse.parse_qs(query)
+            target_url = params.get('url', [None])[0]
+            if not target_url:
+                self.send_error(400, "Missing 'url' parameter")
+                return
+            
+            headers = {}
+            for name, value in self.headers.items():
+                if name.lower() in ['api_key', 'x-rapidapi-key', 'x-rapidapi-host']:
+                    headers[name] = value
+            
+            try:
+                req = urllib.request.Request(target_url, headers=headers)
+                with urllib.request.urlopen(req, timeout=10) as response:
+                    res_body = response.read()
+                    content_type = response.headers.get('Content-Type', 'application/json')
+                
+                self.send_response(200)
+                self.send_header('Content-Type', content_type)
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(res_body)
+                return
+            except urllib.error.HTTPError as e:
+                self.send_response(e.code)
+                self.send_header('Content-Type', 'text/plain')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                try:
+                    self.wfile.write(e.read())
+                except:
+                    pass
+                return
+            except Exception as e:
+                self.send_error(500, f"Proxy error: {str(e)}")
+                return
+        
+        super().do_GET()
+
 socketserver.TCPServer(("", int(sys.argv[2])), Handler).serve_forever()
 PYEOF
 
@@ -27,6 +72,8 @@ echo "Initializing Cage + Cog Kiosk Display..."
 
 # Configure Wayland/EGL environment variables using the current user ID
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
+# Clean up any stale Wayland socket from a previous run to ensure the wait loop triggers correctly
+rm -f "$XDG_RUNTIME_DIR/wayland-0" "$XDG_RUNTIME_DIR/wayland-0.lock"
 export COG_PLATFORM_WL_VIEW_FULLSCREEN=1
 
 # Enable remote Web Inspector for debugging (access at http://<pi-ip>:8081)
