@@ -32,8 +32,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             
             headers = {}
             for name, value in self.headers.items():
-                if name.lower() in ['api_key', 'x-rapidapi-key', 'x-rapidapi-host']:
+                if name.lower() in ['api_key', 'x-rapidapi-key', 'x-rapidapi-host', 'user-agent']:
                     headers[name] = value
+            
+            if 'User-Agent' not in headers and 'user-agent' not in headers:
+                headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux armv7l) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Cog/0.18.4'
             
             try:
                 print(f"[Proxy] Fetching target: {target_url}", flush=True)
