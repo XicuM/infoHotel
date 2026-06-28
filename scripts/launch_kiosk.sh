@@ -1,4 +1,5 @@
 #!/bin/bash
+exec >&2
 
 WEB_DIR="$HOME/infoHotel/build/web"
 PORT=8080
