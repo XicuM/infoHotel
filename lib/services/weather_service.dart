@@ -19,6 +19,7 @@ class WeatherService extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   DateTime? _lastUpdate;
+  DateTime? _lastAttempt;
 
   WeatherData? get weatherData => _weatherData;
   bool get isLoading => _isLoading;
@@ -58,15 +59,26 @@ class WeatherService extends ChangeNotifier {
       await _loadDiskCache();
     }
 
-    // Return early if we have recent data (less than 1 hour old)
+    final now = DateTime.now();
+
+    // Prevent spamming the API on every page transition if it failed recently
+    if (!force && _lastAttempt != null) {
+      if (now.difference(_lastAttempt!).inMinutes < 15) {
+        debugPrint('Skipping weather API fetch: last attempt was less than 15 minutes ago.');
+        return;
+      }
+    }
+
+    // Return early if we have recent successful data (less than 1 hour old)
     if (!force && _lastUpdate != null && _weatherData != null) {
-      if (DateTime.now().difference(_lastUpdate!).inMinutes < 60) {
+      if (now.difference(_lastUpdate!).inMinutes < 60) {
         return;
       }
     }
 
     _isLoading = _weatherData == null;
     _error = null;
+    _lastAttempt = now;
     notifyListeners();
 
     try {
@@ -116,8 +128,12 @@ class WeatherService extends ChangeNotifier {
             if (data is List && data.isNotEmpty) {
               return data[0]['prediccion']['dia'] as List<dynamic>;
             }
+          } else {
+            debugPrint('AEMET final data fetch failed with status: ${dataResponse.statusCode}');
           }
         }
+      } else {
+        debugPrint('AEMET metadata fetch failed with status: ${response.statusCode}');
       }
     } catch (e) {
       debugPrint('Error fetching AEMET data: $e');
