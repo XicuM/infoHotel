@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/language_service.dart';
+import '../config/app_config.dart';
 
 /// Navigation button for the home screen — premium version with icon and hover effect
 class NavigationButton extends StatefulWidget {
@@ -40,14 +41,16 @@ class _NavigationButtonState extends State<NavigationButton> {
               decoration: BoxDecoration(
                 color: widget.color,
                 borderRadius: BorderRadius.circular(14),
-                boxShadow: [
-                  BoxShadow(
-                    color: widget.color.withOpacity(0.35),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                    spreadRadius: 0,
-                  ),
-                ],
+                boxShadow: AppConfig.lowPowerMode
+                    ? null
+                    : [
+                        BoxShadow(
+                          color: widget.color.withOpacity(0.35),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                          spreadRadius: 0,
+                        ),
+                      ],
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

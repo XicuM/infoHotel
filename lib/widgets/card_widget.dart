@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/language_service.dart';
+import '../config/app_config.dart';
 import 'app_image.dart';
 
 /// Card widget — premium version with hover animations and glassmorphism label
@@ -45,14 +46,19 @@ class _InfoCardState extends State<InfoCard> {
             height: widget.height,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
-                  spreadRadius: 1,
-                ),
-              ],
+              boxShadow: AppConfig.lowPowerMode
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                        spreadRadius: 1,
+                      ),
+                    ],
+              border: AppConfig.lowPowerMode
+                  ? Border.all(color: Colors.white.withOpacity(0.15), width: 1)
+                  : null,
             ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(14),

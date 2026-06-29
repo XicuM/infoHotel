@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../config/theme.dart';
+import '../config/app_config.dart';
 import '../services/language_service.dart';
 import '../services/weather_service.dart';
 import '../widgets/navigation_button.dart';
@@ -29,30 +30,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  late Timer _clockTimer;
-  DateTime _currentTime = DateTime.now();
-
-  @override
-  void initState() {
-    super.initState();
-    _clockTimer = Timer.periodic(const Duration(seconds: 10), (_) {
-      setState(() {
-        _currentTime = DateTime.now();
-      });
-    });
-
-  }
-
-  @override
-  void dispose() {
-    _clockTimer.cancel();
-    super.dispose();
-  }
-
-  String _formatTime(DateTime time) {
-    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-  }
-
   void _handleKeyEvent(KeyEvent event) {
     if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
       windowManager.close();
@@ -147,29 +124,7 @@ class _HomeViewState extends State<HomeView> {
           ),
 
           // Premium Clock
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.25),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  blurRadius: 20,
-                ),
-              ],
-            ),
-            child: Text(
-              _formatTime(_currentTime),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 64,
-                fontWeight: FontWeight.w200,
-                letterSpacing: 2.0,
-              ),
-            ),
-          ),
+          const _HomeClockWidget(),
         ],
       ),
     );
@@ -343,6 +298,68 @@ class _HomeViewState extends State<HomeView> {
   void _navigateTo(Widget page) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => page),
+    );
+  }
+}
+
+class _HomeClockWidget extends StatefulWidget {
+  const _HomeClockWidget();
+
+  @override
+  State<_HomeClockWidget> createState() => _HomeClockWidgetState();
+}
+
+class _HomeClockWidgetState extends State<_HomeClockWidget> {
+  late Timer _timer;
+  DateTime _currentTime = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    final interval = AppConfig.lowPowerMode ? const Duration(seconds: 30) : const Duration(seconds: 10);
+    _timer = Timer.periodic(interval, (_) {
+      if (mounted) {
+        setState(() {
+          _currentTime = DateTime.now();
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String _formatTime(DateTime time) {
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.25),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 20,
+          ),
+        ],
+      ),
+      child: Text(
+        _formatTime(_currentTime),
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 64,
+          fontWeight: FontWeight.w200,
+          letterSpacing: 2.0,
+        ),
+      ),
     );
   }
 }

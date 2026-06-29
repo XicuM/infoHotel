@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../config/theme.dart';
 import '../../widgets/app_bar_widget.dart';
 import '../../widgets/web_safe_backdrop_filter.dart';
 import 'package:provider/provider.dart';
@@ -25,8 +24,6 @@ class _FlightBoardViewState extends State<FlightBoardView> {
   final IbizaFlightRepository _repository = IbizaFlightRepository();
   final FocusNode _focusNode = FocusNode();
   Timer? _refreshTimer;
-  Timer? _slideTimer;
-  int _slideIndex = 0;
 
   @override
   void initState() {
@@ -35,13 +32,6 @@ class _FlightBoardViewState extends State<FlightBoardView> {
     // Auto-reload data periodically. (The repository handles caching to avoid hitting the API too often).
     _refreshTimer = Timer.periodic(const Duration(minutes: 5), (_) {
       _loadFlights();
-    });
-    _slideTimer = Timer.periodic(const Duration(seconds: 4), (_) {
-      if (mounted) {
-        setState(() {
-          _slideIndex++;
-        });
-      }
     });
   }
 
@@ -55,7 +45,6 @@ class _FlightBoardViewState extends State<FlightBoardView> {
   void dispose() {
     _focusNode.dispose();
     _refreshTimer?.cancel();
-    _slideTimer?.cancel();
     super.dispose();
   }
 
@@ -236,29 +225,7 @@ class _FlightBoardViewState extends State<FlightBoardView> {
                                           ),
                                           Expanded(
                                             flex: 2,
-                                            child: AnimatedSwitcher(
-                                              duration: const Duration(milliseconds: 500),
-                                              transitionBuilder: (Widget child, Animation<double> animation) {
-                                                return SlideTransition(
-                                                  position: Tween<Offset>(
-                                                    begin: const Offset(-0.5, 0.0),
-                                                    end: Offset.zero,
-                                                  ).animate(animation),
-                                                  child: FadeTransition(
-                                                    opacity: animation,
-                                                    child: child,
-                                                  ),
-                                                );
-                                              },
-                                              child: Container(
-                                                key: ValueKey<String>(flight.flightNumbers[_slideIndex % flight.flightNumbers.length]),
-                                                alignment: Alignment.centerLeft,
-                                                child: Text(
-                                                  flight.flightNumbers[_slideIndex % flight.flightNumbers.length],
-                                                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white70),
-                                                ),
-                                              ),
-                                            ),
+                                            child: _FlightNumberTicker(flightNumbers: flight.flightNumbers),
                                           ),
                                           Expanded(
                                             flex: 2,
@@ -375,6 +342,73 @@ class _FlightBoardViewState extends State<FlightBoardView> {
           ),
         );
       },
+    );
+  }
+}
+
+class _FlightNumberTicker extends StatefulWidget {
+  final List<String> flightNumbers;
+
+  const _FlightNumberTicker({required this.flightNumbers});
+
+  @override
+  State<_FlightNumberTicker> createState() => _FlightNumberTickerState();
+}
+
+class _FlightNumberTickerState extends State<_FlightNumberTicker> {
+  Timer? _timer;
+  int _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.flightNumbers.length > 1) {
+      _timer = Timer.periodic(const Duration(seconds: 4), (_) {
+        if (mounted) {
+          setState(() {
+            _index = (_index + 1) % widget.flightNumbers.length;
+          });
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.flightNumbers.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    
+    final flightNumber = widget.flightNumbers[_index % widget.flightNumbers.length];
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 500),
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(-0.5, 0.0),
+            end: Offset.zero,
+          ).animate(animation),
+          child: FadeTransition(
+            opacity: animation,
+            child: child,
+          ),
+        );
+      },
+      child: Container(
+        key: ValueKey<String>(flightNumber),
+        alignment: Alignment.centerLeft,
+        child: Text(
+          flightNumber,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white70),
+        ),
+      ),
     );
   }
 }

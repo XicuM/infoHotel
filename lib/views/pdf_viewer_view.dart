@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart';
 import '../widgets/app_bar_widget.dart';
-import '../config/theme.dart';
+import '../config/app_config.dart';
 import '../widgets/zoomable_viewer.dart';
 import '../widgets/app_image.dart';
 import '../utils/path_resolver.dart';
@@ -306,15 +305,17 @@ class _PdfPageRendererState extends State<_PdfPageRenderer> {
 
   Future<void> _renderPage() async {
     if (!mounted) return;
-    setState(() => _loading = true);
+    setState(() {
+      _image = null; // Release previous page image bytes to save memory immediately
+      _loading = true;
+    });
     
     try {
       final page = await widget.document.getPage(widget.pageNumber);
-      // Render at 1.5x instead of 2x to significantly improve rendering speed
-      // while still keeping reasonable quality for zooming
+      final scaleMultiplier = AppConfig.lowPowerMode ? 1.0 : 1.5;
       final pageImage = await page.render(
-        width: page.width * 1.5,
-        height: page.height * 1.5,
+        width: page.width * scaleMultiplier,
+        height: page.height * scaleMultiplier,
         format: PdfPageImageFormat.jpeg,
       );
       await page.close();

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../config/theme.dart';
 import '../services/language_service.dart';
 import '../services/weather_service.dart';
 
@@ -14,39 +13,6 @@ class WelcomeView extends StatefulWidget {
 }
 
 class _WelcomeViewState extends State<WelcomeView> {
-  late Timer _clockTimer;
-  DateTime _currentTime = DateTime.now();
-
-  @override
-  void initState() {
-    super.initState();
-    _clockTimer = Timer.periodic(const Duration(minutes: 1), (_) {
-      setState(() {
-        _currentTime = DateTime.now();
-      });
-    });
-    
-  }
-
-  @override
-  void dispose() {
-    _clockTimer.cancel();
-    super.dispose();
-  }
-
-  String _formatTime(DateTime time) {
-    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-  }
-
-  String _formatDate(DateTime time, LanguageService langService) {
-    try {
-      String locale = langService.currentLanguage;
-      return DateFormat.yMMMMEEEEd(locale).format(time);
-    } catch (e) {
-      // Fallback to English if locale data fails to load
-      return DateFormat.yMMMMEEEEd('en').format(time);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,31 +43,8 @@ class _WelcomeViewState extends State<WelcomeView> {
                     },
                   ),
 
-                  // Clock
-                  Text(
-                    _formatTime(_currentTime),
-                    style: const TextStyle(
-                      fontSize: 160, // Larger clock for impact
-                      fontWeight: FontWeight.w200,
-                      color: Colors.white,
-                      letterSpacing: -5,
-                      height: 1.0, 
-                    ),
-                  ),
-                  
-                  // Date
-                  Consumer<LanguageService>(
-                    builder: (context, langService, _) {
-                      return Text(
-                        _formatDate(_currentTime, langService),
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.white70,
-                        ),
-                      );
-                    },
-                  ),
+                  // Clock & Date
+                  const _WelcomeClockWidget(),
 
                   const SizedBox(height: 80), // More breathing room
 
@@ -163,6 +106,79 @@ class _WelcomeViewState extends State<WelcomeView> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _WelcomeClockWidget extends StatefulWidget {
+  const _WelcomeClockWidget();
+
+  @override
+  State<_WelcomeClockWidget> createState() => _WelcomeClockWidgetState();
+}
+
+class _WelcomeClockWidgetState extends State<_WelcomeClockWidget> {
+  late Timer _timer;
+  DateTime _currentTime = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (mounted) {
+        setState(() {
+          _currentTime = DateTime.now();
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String _formatTime(DateTime time) {
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  }
+
+  String _formatDate(DateTime time, LanguageService langService) {
+    try {
+      String locale = langService.currentLanguage;
+      return DateFormat.yMMMMEEEEd(locale).format(time);
+    } catch (e) {
+      return DateFormat.yMMMMEEEEd('en').format(time);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final langService = Provider.of<LanguageService>(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          _formatTime(_currentTime),
+          style: const TextStyle(
+            fontSize: 160,
+            fontWeight: FontWeight.w200,
+            color: Colors.white,
+            letterSpacing: -5,
+            height: 1.0, 
+          ),
+        ),
+        Text(
+          _formatDate(_currentTime, langService),
+          style: const TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w300,
+            color: Colors.white70,
+          ),
+        ),
+      ],
     );
   }
 }

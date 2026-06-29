@@ -6,7 +6,6 @@ import '../../services/language_service.dart';
 import '../../services/weather_service.dart';
 import '../../models/weather_data.dart';
 import '../../widgets/app_bar_widget.dart';
-import '../../widgets/language_bar.dart';
 import '../../widgets/app_image.dart';
 
 /// Weather view showing forecast data from AEMET
@@ -354,6 +353,9 @@ class _WeatherViewState extends State<WeatherView> {
   }
 
   Widget _buildSunArc(WeatherData weather) {
+    final now = DateTime.now();
+    final nowMinutes = now.hour * 60 + now.minute;
+
     return Consumer<LanguageService>(
       builder: (context, langService, child) {
         return SizedBox(
@@ -372,6 +374,7 @@ class _WeatherViewState extends State<WeatherView> {
                     painter: SunArcPainter(
                       sunrise: weather.sunrise,
                       sunset: weather.sunset,
+                      currentMinutes: nowMinutes,
                     ),
                   ),
                 ),
@@ -634,8 +637,13 @@ class _WeatherStat extends StatelessWidget {
 class SunArcPainter extends CustomPainter {
   final String sunrise;
   final String sunset;
+  final int currentMinutes;
 
-  SunArcPainter({required this.sunrise, required this.sunset});
+  SunArcPainter({
+    required this.sunrise,
+    required this.sunset,
+    required this.currentMinutes,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -684,11 +692,9 @@ class SunArcPainter extends CustomPainter {
     );
 
     // Calculate sun/moon position
-    final now = DateTime.now();
-    final nowMinutes = now.hour * 60 + now.minute;
-    final nowAngle = getAngle(nowMinutes);
+    final nowAngle = getAngle(currentMinutes);
 
-    final isDay = nowMinutes >= sunriseMinutes && nowMinutes <= sunsetMinutes;
+    final isDay = currentMinutes >= sunriseMinutes && currentMinutes <= sunsetMinutes;
     
     final iconRadius = radius;
     final iconX = center.dx + iconRadius * cos(nowAngle);
@@ -728,7 +734,11 @@ class SunArcPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant SunArcPainter oldDelegate) {
+    return oldDelegate.sunrise != sunrise ||
+        oldDelegate.sunset != sunset ||
+        oldDelegate.currentMinutes != currentMinutes;
+  }
 }
 
 /// Custom painter for temperature graph
@@ -860,5 +870,17 @@ class TempGraphPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant TempGraphPainter oldDelegate) {
+    if (oldDelegate.tempValues.length != tempValues.length ||
+        oldDelegate.tempTimes.length != tempTimes.length) {
+      return true;
+    }
+    for (int i = 0; i < tempValues.length; i++) {
+      if (oldDelegate.tempValues[i] != tempValues[i]) return true;
+    }
+    for (int i = 0; i < tempTimes.length; i++) {
+      if (oldDelegate.tempTimes[i] != tempTimes[i]) return true;
+    }
+    return false;
+  }
 }

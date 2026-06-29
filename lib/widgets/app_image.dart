@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import '../utils/path_resolver.dart';
+import '../config/app_config.dart';
 
 /// A unified widget for displaying asset or memory images with consistent error handling
 /// and optional color filtering.
@@ -15,6 +15,8 @@ class AppImage extends StatelessWidget {
   final double? width;
   final double? height;
   final bool isLocal;
+  final int? cacheWidth;
+  final int? cacheHeight;
 
   const AppImage({
     super.key,
@@ -26,11 +28,41 @@ class AppImage extends StatelessWidget {
     this.width,
     this.height,
     this.isLocal = false,
+    this.cacheWidth,
+    this.cacheHeight,
   }) : assert(path != null || bytes != null, 'Either path or bytes must be provided');
 
   @override
   Widget build(BuildContext context) {
     Widget image;
+
+    int? finalCacheWidth = cacheWidth;
+    int? finalCacheHeight = cacheHeight;
+
+    if (AppConfig.lowPowerMode) {
+      final mediaQuery = MediaQuery.maybeOf(context);
+      final dpr = mediaQuery?.devicePixelRatio ?? 1.0;
+      final screenWidth = mediaQuery?.size.width ?? 1280.0;
+
+      if (finalCacheWidth == null && width != null && width! > 0 && width! != double.infinity) {
+        finalCacheWidth = (width! * dpr).round();
+      }
+      if (finalCacheHeight == null && height != null && height! > 0 && height! != double.infinity) {
+        finalCacheHeight = (height! * dpr).round();
+      }
+
+      // If we don't have explicit size constraints but we're in lowPowerMode, cap large images (like maps/backgrounds) to screen width
+      if (finalCacheWidth == null && finalCacheHeight == null) {
+        final pathLower = path?.toLowerCase() ?? '';
+        if (pathLower.contains('map') || 
+            pathLower.contains('background') || 
+            pathLower.contains('excursions') || 
+            pathLower.contains('facilities') ||
+            (bytes != null && bytes!.length > 100 * 1024)) {
+          finalCacheWidth = (screenWidth * dpr).round().clamp(800, 1600);
+        }
+      }
+    }
 
     if (bytes != null) {
       image = Image.memory(
@@ -38,6 +70,8 @@ class AppImage extends StatelessWidget {
         width: width,
         height: height,
         fit: fit,
+        cacheWidth: finalCacheWidth,
+        cacheHeight: finalCacheWidth == null ? finalCacheHeight : null,
         errorBuilder: errorBuilder ?? (context, error, stackTrace) => _buildError(context),
       );
     } else if (path != null) {
@@ -48,6 +82,8 @@ class AppImage extends StatelessWidget {
             width: width,
             height: height,
             fit: fit,
+            cacheWidth: finalCacheWidth,
+            cacheHeight: finalCacheWidth == null ? finalCacheHeight : null,
             errorBuilder: errorBuilder ?? (context, error, stackTrace) => _buildError(context),
           );
         } else {
@@ -56,6 +92,8 @@ class AppImage extends StatelessWidget {
             width: width,
             height: height,
             fit: fit,
+            cacheWidth: finalCacheWidth,
+            cacheHeight: finalCacheWidth == null ? finalCacheHeight : null,
             errorBuilder: errorBuilder ?? (context, error, stackTrace) => _buildError(context),
           );
         }
@@ -67,6 +105,8 @@ class AppImage extends StatelessWidget {
           width: width,
           height: height,
           fit: fit,
+          cacheWidth: finalCacheWidth,
+          cacheHeight: finalCacheWidth == null ? finalCacheHeight : null,
           errorBuilder: errorBuilder ?? (context, error, stackTrace) => _buildError(context),
         );
       }

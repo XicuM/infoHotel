@@ -6,11 +6,13 @@ import '../config/env.dart';
 import '../utils/cache_helper.dart';
 
 class IbizaFlightService {
-  final String _apiKey = Env.flightApiKey;
+  final String _apiKey;
   final String _baseUrl = "https://aerodatabox.p.rapidapi.com/flights/airports/iata/IBZ";
   final http.Client _client;
 
-  IbizaFlightService({http.Client? client}) : _client = client ?? http.Client();
+  IbizaFlightService({http.Client? client, String? apiKey})
+      : _client = client ?? http.Client(),
+        _apiKey = apiKey ?? Env.flightApiKey;
 
   Future<List<IbizaDeparture>> fetchNextDepartures() async {
     if (_apiKey.isEmpty) {
