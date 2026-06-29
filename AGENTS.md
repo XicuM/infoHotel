@@ -44,3 +44,7 @@ Press F2 to toggle. Allows adding/removing/editing excursions and markets via UI
 
 - Tests under `test/`: `widget_test.dart` and `language_service_test.dart`.
 - Weather service tests require live AEMET API and are not yet present.
+
+## Temporary Scripts & Scratch Files
+
+Do NOT create temporary scratch scripts or other files (such as `.py` scripts) in the root directory or anywhere in the workspace. Any temporary/scratch files must be placed in the designated conversation artifacts directory (under `<appDataDir>/brain/<conversation-id>/scratch/`).

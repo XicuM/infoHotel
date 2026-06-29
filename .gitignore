@@ -66,3 +66,6 @@ app.*.map.json
 # Kiosk build artifacts
 infoHotel_web_kiosk.tar.gz
 *.tar.gz
+
+# Ignore root-level temporary python scripts
+/*.py
