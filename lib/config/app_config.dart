@@ -4,6 +4,6 @@ class AppConfig {
   /// Can be set during build: flutter run --dart-define=LOW_POWER=true
   static const bool lowPowerMode = bool.fromEnvironment(
     'LOW_POWER',
-    defaultValue: false,
+    defaultValue: true,
   );
 }

@@ -1,50 +1,36 @@
 # InfoHotel — Agent Guide
 
-## Commands
+## Development & Build
+- **No codegen**: (No `build_runner`, no `gen-l10n`).
+- **Target**: Raspberry Pi 3B+ kiosk (Wayland, `cage`/`cog` browser).
+- **Commands**:
+  - Dev: `flutter run --dart-define=AEMET_API_KEY=<k1> --dart-define=FLIGHT_API_KEY=<k2>`
+  - Prod (Web): `flutter build web --dart-define=AEMET_API_KEY=<k1> --dart-define=FLIGHT_API_KEY=<k2>`
+- **Testing**: `flutter test`. Live API tests correctly skip if keys are missing.
 
-| Purpose | Command |
-|---|---|
-| Dependencies | `flutter pub get` |
-| Analyze | `flutter analyze` |
-| Test | `flutter test` (2 test files) |
-| Run (dev) | `flutter run --dart-define=AEMET_API_KEY=<key>` |
-| Build Linux | `flutter build linux --dart-define=AEMET_API_KEY=<key>` |
+## Architecture & Data
+- **State**: `Provider` (`HotelService`, `LanguageService`, `WeatherService`, `ContentService`).
+- **L10n**: Custom dictionary map in `lib/l10n/translations.dart` (en, es, ca, fr, de, it, nl).
+- **Data (ContentService)**: Loads `markets.json`, `shows.json`, `excursions.json` from `infohotel_data/` dir (next to executable or app documents) or falls back to baked-in defaults.
+- **Hotels**: Savines (default) & Arenal layouts.
+- **Theme**: Forced `ThemeMode.dark`. Map images get inverted via `AppColors.darkMapFilter`. Landscape orientation locked.
 
-No codegen / build_runner. No Flutter gen-l10n.
-
-## Key Architecture
-
-- **State**: Provider (`ChangeNotifierProvider` in `main.dart`). Four services: `HotelService`, `LanguageService`, `WeatherService`, `ContentService`.
-- **L10n**: Custom `Translations` class in `lib/l10n/translations.dart` (7 langs: en, es, ca, fr, de, it, nl). Not ARB-based. Add entries to the `_translations` map.
-- **pdfx**: Local override at `packages/pdfx` (see `dependency_overrides` in `pubspec.yaml`). Edits to the PDF viewer go there.
-- **Data loading** (`ContentService`): Looks for `infohotel_data/` next to the executable, falls back to app documents directory. JSON files: `markets.json`, `shows.json`, `excursions.json`. Defaults baked into code if files missing.
-- **Hotels**: Two layouts toggled via `HotelService` — `Savines` (default) and `Arenal`.
-- **Theme**: Dark mode forced (`ThemeMode.dark`). Maps have an invert color filter in dark mode (`AppColors.darkMapFilter`).
-- **Orientation**: Landscape locked, immersive sticky UI (kiosk).
+## APIs
+- **Weather (AEMET)**: Municipality `07046` (Sant Antoni de Portmany). Requires `AEMET_API_KEY`.
+- **Flights (RapidAPI Aerodatabox)**: Requires `FLIGHT_API_KEY`.
 
 ## Keyboard Shortcuts
+- **F11**: Fullscreen kiosk toggle.
+- **F1**: Help overlay toggle.
+- **F2**: Edit Mode toggle (UI to manage excursions/markets, saves to JSON).
+- **Alt+S / Alt+A**: Switch layout (Savines / Arenal).
 
-| Key | Action |
-|---|---|
-| F11 | Toggle fullscreen kiosk |
-| F2 | Toggle edit mode (manage excursions/markets) |
-| F1 | Toggle help overlay |
-| Alt+A | Switch to Arenal layout |
-| Alt+S | Switch to Savines layout |
+## Performance (Low Power Mode)
+`AppConfig.lowPowerMode` defaults to `true` to ensure Raspberry Pi performance by:
+- Replacing `BackdropFilter` GPU blurs with solid colors (`WebSafeBackdropFilter`).
+- Disabling heavy `BoxShadow` blurs on cards, buttons, and app bars.
+- Constraining `AppImage` decoding footprints via `cacheWidth`/`cacheHeight`.
 
-## AEMET API
-
-Key supplied at compile time via `--dart-define=AEMET_API_KEY=...`. Read in `lib/config/env.dart` via `String.fromEnvironment`. Municipality code `07046` (Sant Antoni de Portmany).
-
-## Content Edit Mode
-
-Press F2 to toggle. Allows adding/removing/editing excursions and markets via UI. Data persisted to `infohotel_data/` JSON files.
-
-## Testing
-
-- Tests under `test/`: `widget_test.dart` and `language_service_test.dart`.
-- Weather service tests require live AEMET API and are not yet present.
-
-## Temporary Scripts & Scratch Files
-
-Do NOT create temporary scratch scripts or other files (such as `.py` scripts) in the root directory or anywhere in the workspace. Any temporary/scratch files must be placed in the designated conversation artifacts directory (under `<appDataDir>/brain/<conversation-id>/scratch/`).
+## Agent Rules
+- **pdfx overrides**: Edits to the PDF viewer go directly to `packages/pdfx` (local override).
+- **Scratch Files**: Place temporary files ONLY in `<appDataDir>/brain/<conversation-id>/scratch/`. Never pollute the workspace root.

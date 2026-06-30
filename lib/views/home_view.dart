@@ -149,7 +149,7 @@ class _HomeViewState extends State<HomeView> {
                     color: Colors.black.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(32),
                     border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-                    boxShadow: [
+                    boxShadow: AppConfig.lowPowerMode ? null : [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.2),
                         blurRadius: 30,
@@ -344,7 +344,7 @@ class _HomeClockWidgetState extends State<_HomeClockWidget> {
         color: Colors.black.withValues(alpha: 0.25),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
-        boxShadow: [
+        boxShadow: AppConfig.lowPowerMode ? null : [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 20,

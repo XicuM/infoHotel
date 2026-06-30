@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/language_service.dart';
 import '../widgets/app_image.dart';
+import '../config/app_config.dart';
 
 /// Custom app bar — premium version with subtle gradient and polished styling
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -53,12 +54,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               end: Alignment.centerRight,
               colors: [backgroundColor, darkerBg],
             ),
-            boxShadow: backgroundColor.a > 0
+            boxShadow: (backgroundColor.a > 0 && !AppConfig.lowPowerMode)
                 ? [
                     BoxShadow(
                       color: backgroundColor.withValues(alpha: 0.45),
                       blurRadius: 12,
-                      offset: const Offset(0, 3),
+                      offset: const Offset(0, 4),
                     ),
                   ]
                 : null,
