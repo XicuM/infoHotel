@@ -2,13 +2,16 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
 import '../../l10n/translations.dart';
 import '../../models/market.dart';
 import '../../services/content_service.dart';
+import '../../services/market_service.dart';
 import '../../services/language_service.dart';
 import '../../widgets/app_bar_widget.dart';
 import '../../widgets/grid_widget.dart';
+import '../../widgets/generic_menu_view.dart';
 import '../../widgets/localized_text_field.dart';
 import '../../widgets/app_image.dart';
 
@@ -18,16 +21,16 @@ class MarketsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<ContentService, LanguageService>(
-      builder: (context, contentService, langService, child) {
-        final markets = contentService.markets;
+    return Consumer3<ContentService, MarketService, LanguageService>(
+      builder: (context, contentService, marketService, langService, child) {
+        final markets = marketService.markets;
         final isEditMode = contentService.isEditMode;
 
         List<CardData> cards = markets.map((market) {
           return CardData(
-            imagePath: market.isLocalImage || market.imagePath.startsWith('assets/')
+            imagePath: market.isLocalImage || market.imagePath.startsWith('hotel_assets/')
                 ? market.imagePath
-                : 'assets/images/${market.imagePath}',
+                : 'hotel_assets/images/${market.imagePath}',
             title: market.name,
             onTap: () => _navigateToMarket(context, market),
             isLocalImage: market.isLocalImage,
@@ -42,63 +45,48 @@ class MarketsView extends StatelessWidget {
            ));
         }
 
-        return Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: CustomAppBar(
-            titleKey: 'hippy_markets',
-            backgroundColor: const Color(0xFFEC407A), // Pink 400
-            parentRoute: '/information',
-            onBack: () => Navigator.of(context).pop(),
-          ),
-          body: Column(
-            children: [
-              // Premium Info Banner
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 28),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFFEC407A).withValues(alpha: 0.18),
-                      Colors.transparent,
-                    ],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                  border: const Border(
-                    left: BorderSide(color: Color(0xFFEC407A), width: 3),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.storefront_outlined, color: Color(0xFFEC407A), size: 24),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        langService.translate('hippy_markets'),
-                        style: const TextStyle(
-                          fontSize: 17,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w400,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
+        return GenericMenuView(
+          titleKey: 'hippy_markets',
+          appBarColor: const Color(0xFFEC407A), // Pink 400
+          parentRoute: '/information',
+          onBack: () => Navigator.of(context).pop(),
+          isLoading: marketService.isLoading,
+          cards: cards,
+          crossAxisCount: 4, // More premium spacious look
+          childAspectRatio: 0.8,
+          banner: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 28),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  const Color(0xFFEC407A).withValues(alpha: 0.18),
+                  Colors.transparent,
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              border: const Border(
+                left: BorderSide(color: Color(0xFFEC407A), width: 3),
+              ),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.storefront_outlined, color: Color(0xFFEC407A), size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    langService.translate('hippy_markets'),
+                    style: const TextStyle(
+                      fontSize: 17,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 0.2,
                     ),
-                  ],
+                  ),
                 ),
-              ),
-
-              // Main grid content
-              Expanded(
-                child: contentService.isLoading
-                    ? Center(child: CircularProgressIndicator(color: const Color(0xFFEC407A)))
-                    : CardGrid(
-                        cards: cards,
-                        crossAxisCount: 4, // More premium spacious look
-                        childAspectRatio: 0.8,
-                      ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
@@ -121,12 +109,12 @@ class MarketsView extends StatelessWidget {
       localizedNames: {'en': 'New Market'},
       description: 'Description',
       localizedDescriptions: {'en': 'Description'},
-      imagePath: 'assets/images/ui/placeholder.png', // Needs a valid placeholder or logic to handle missing
+      imagePath: 'hotel_assets/images/ui/placeholder.png', // Needs a valid placeholder or logic to handle missing
       galleryImages: [],
       isCustom: true,
     );
     
-    await contentService.addMarket(newMarket);
+    await context.read<MarketService>().addMarket(newMarket);
     if (context.mounted) {
        _navigateToMarket(context, newMarket);
     }
@@ -167,18 +155,19 @@ class _MarketDetailViewState extends State<MarketDetailView> {
     }
   }
 
-  void _saveChanges(ContentService contentService) {
-     final updatedMarket = MarketModel(
-        id: widget.market.id,
-        name: widget.market.name, 
-        description: widget.market.description,
-        imagePath: widget.market.imagePath,
-        galleryImages: widget.market.galleryImages,
-        isCustom: true,
-        localizedNames: _localizedNames,
-        localizedDescriptions: _localizedDescriptions,
-      );
-      contentService.updateMarket(updatedMarket);
+  void _saveChanges(MarketService marketService) {
+    final updatedMarket = MarketModel(
+      id: widget.market.id,
+      name: widget.market.name, 
+      description: widget.market.description,
+      imagePath: widget.market.imagePath,
+      galleryImages: widget.market.galleryImages,
+      isCustom: true,
+      localizedNames: _localizedNames,
+      localizedDescriptions: _localizedDescriptions,
+    );
+    
+    marketService.updateMarket(updatedMarket);
   }
 
   @override
@@ -200,7 +189,7 @@ class _MarketDetailViewState extends State<MarketDetailView> {
             backgroundColor: const Color(0xFFEC407A),
             parentRoute: '/markets',
             onBack: () {
-              if (isEditMode) _saveChanges(contentService);
+              if (isEditMode) _saveChanges(context.read<MarketService>());
               Navigator.of(context).pop();
             },
             actions: isEditMode ? [
@@ -221,7 +210,7 @@ class _MarketDetailViewState extends State<MarketDetailView> {
                            onPressed: () async {
                              Navigator.of(context).pop(); // Close dialog
                              Navigator.of(context).pop(); // Close detail view
-                             await contentService.deleteMarket(widget.market.id);
+                             await context.read<MarketService>().deleteMarket(widget.market.id);
                            },
                            style: TextButton.styleFrom(foregroundColor: Colors.red),
                            child: const Text('Delete'),
@@ -263,7 +252,7 @@ class _MarketDetailViewState extends State<MarketDetailView> {
                             ),
                             onValuesChanged: (values) {
                               _localizedNames = values;
-                              _saveChanges(contentService);
+                              _saveChanges(context.read<MarketService>());
                             },
                           ),
                           
@@ -282,7 +271,7 @@ class _MarketDetailViewState extends State<MarketDetailView> {
                             ),
                             onValuesChanged: (values) {
                               _localizedDescriptions = values;
-                              _saveChanges(contentService);
+                              _saveChanges(context.read<MarketService>());
                             },
                           ),
                         ],
@@ -314,9 +303,13 @@ class _MarketDetailViewState extends State<MarketDetailView> {
               icon: const Icon(Icons.image),
               label: const Text('Change Main Logo/Image'),
               onPressed: () async {
-                 FilePickerResult? result = await FilePicker.pickFiles(type: FileType.image);
-                 if (result != null && result.files.single.path != null) {
-                   final newPath = await contentService.saveImage(result.files.single.path!);
+                 FilePickerResult? result = await FilePicker.pickFiles(type: FileType.image, withData: true);
+                 if (result != null && (result.files.single.path != null || kIsWeb)) {
+                   final newPath = await contentService.saveImage(
+                     result.files.single.path ?? '',
+                     bytes: result.files.single.bytes,
+                     originalName: result.files.single.name,
+                   );
                    final updatedMarket = MarketModel(
                         id: market.id,
                         name: market.name,
@@ -327,7 +320,7 @@ class _MarketDetailViewState extends State<MarketDetailView> {
                         localizedNames: _localizedNames,
                         localizedDescriptions: _localizedDescriptions,
                       );
-                      contentService.updateMarket(updatedMarket);
+                      context.read<MarketService>().updateMarket(updatedMarket);
                  }
               },
             ),
@@ -351,7 +344,7 @@ class _MarketDetailViewState extends State<MarketDetailView> {
                    bool isLocal = !path.startsWith('markets/'); 
                    return ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: _buildImage(isLocal ? path : 'assets/images/$path', isLocal),
+                    child: _buildImage(isLocal ? path : 'hotel_assets/images/$path', isLocal),
                   );
                 }).toList(),
               );

@@ -1,12 +1,15 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
 import '../../services/language_service.dart';
 import '../../services/content_service.dart';
+import '../../services/hotel_config_service.dart';
+import '../../services/show_service.dart';
+import '../../models/hotel_config.dart';
 import '../../widgets/app_bar_widget.dart';
 import '../../widgets/app_image.dart';
 
-/// Modernized Shows view displaying weekly entertainment schedule
 class ShowsView extends StatelessWidget {
   const ShowsView({super.key});
 
@@ -16,8 +19,12 @@ class ShowsView extends StatelessWidget {
     final weekNumber = _getWeekNumber(now);
     final isOddWeek = weekNumber % 2 == 1;
 
-    return Consumer<ContentService>(
-      builder: (context, contentService, child) {
+    return Consumer3<ContentService, HotelConfigService, ShowService>(
+      builder: (context, contentService, hotelConfigService, showService, child) {
+        final isEditMode = contentService.isEditMode;
+        final hotelConfigs = hotelConfigService.sortedHotelConfigs;
+        if (hotelConfigs.length < 2) return const SizedBox.shrink();
+
         return Scaffold(
           backgroundColor: Colors.black,
           extendBodyBehindAppBar: true,
@@ -30,16 +37,13 @@ class ShowsView extends StatelessWidget {
           body: Stack(
             fit: StackFit.expand,
             children: [
-              // Background shows image
               AppImage(
-                path: contentService.getShowImage('background'),
+                path: showService.getShowImage('background'),
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(color: Colors.grey[900]);
                 },
               ),
-              
-              // Dark Glass Gradient Overlay
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -53,9 +57,7 @@ class ShowsView extends StatelessWidget {
                   ),
                 ),
               ),
-              
-              // Edit Background Button
-              if (contentService.isEditMode)
+              if (isEditMode)
                 Positioned(
                   top: 100,
                   right: 20,
@@ -67,13 +69,11 @@ class ShowsView extends StatelessWidget {
                     backgroundColor: Colors.redAccent,
                   ),
                 ),
-
-              // Content Layout
               SafeArea(
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 32),
-                    child: _buildShowsGrid(context, isOddWeek, contentService),
+                    child: _buildShowsGrid(context, isOddWeek, contentService, showService, hotelConfigs),
                   ),
                 ),
               ),
@@ -84,7 +84,7 @@ class ShowsView extends StatelessWidget {
     );
   }
 
-  Widget _buildShowsGrid(BuildContext context, bool isOddWeek, ContentService contentService) {
+  Widget _buildShowsGrid(BuildContext context, bool isOddWeek, ContentService contentService, ShowService showService, List<HotelConfig> hotelConfigs) {
     final days = [
       'monday',
       'tuesday',
@@ -99,55 +99,58 @@ class ShowsView extends StatelessWidget {
       builder: (context, langService, child) {
         return LayoutBuilder(
           builder: (context, constraints) {
-            final maxItemHeight = (constraints.maxHeight - 40) / 2;
-            final widthFromHeight = (maxItemHeight - 150) / 1.4142;
-            final widthFromWidth = constraints.maxWidth / 4 - 32;
+            final maxItemHeight = constraints.maxHeight;
+            final widthFromHeight = (maxItemHeight - 110) / 1.4142;
+            final widthFromWidth = (constraints.maxWidth - 40) / 7 - 8;
             final cardWidth = widthFromHeight < widthFromWidth ? widthFromHeight : widthFromWidth;
-            
+
             Widget buildItem(int index) {
               final day = days[index];
-              final isSavines = (index + (isOddWeek ? 1 : 0)) % 2 == 1;
+              final hotelIndex = (index + (isOddWeek ? 1 : 0)) % 2;
+              final currentHotel = hotelConfigs[hotelIndex % hotelConfigs.length];
               final isToday = DateTime.now().weekday == index + 1;
 
               return SizedBox(
                 width: cardWidth,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min, 
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Day Name Badge
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                       decoration: BoxDecoration(
                         color: isToday ? Colors.amber.withValues(alpha: 0.9) : Colors.black54,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color: isToday ? Colors.amberAccent : Colors.white.withValues(alpha: 0.2),
                         ),
                       ),
-                      child: Text(
-                        langService.getWeekday(index).toUpperCase(),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: isToday ? FontWeight.w800 : FontWeight.w600,
-                          letterSpacing: 1.0,
-                          color: isToday ? Colors.black : Colors.white,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          langService.getWeekday(index).toUpperCase(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: isToday ? FontWeight.w800 : FontWeight.w600,
+                            letterSpacing: 0.5,
+                            color: isToday ? Colors.black : Colors.white,
+                          ),
                         ),
                       ),
                     ),
                     
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
                     // Show image poster
                     Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.6),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
                           ),
                         ],
                       ),
@@ -156,14 +159,14 @@ class ShowsView extends StatelessWidget {
                           AspectRatio(
                             aspectRatio: 1 / 1.4142, // A4 ratio
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(12),
                               child: AppImage(
-                                path: contentService.getShowImage(day),
+                                path: showService.getShowImage(days[index].toLowerCase()),
                                 fit: BoxFit.fill,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Container(
                                     color: Colors.black45,
-                                    child: const Icon(Icons.theater_comedy, size: 64, color: Colors.white30),
+                                    child: const Icon(Icons.theater_comedy, size: 48, color: Colors.white30),
                                   );
                                 },
                               ),
@@ -176,10 +179,10 @@ class ShowsView extends StatelessWidget {
                               child: Container(
                                 decoration: BoxDecoration(
                                   color: Colors.black54,
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: IconButton(
-                                  icon: const Icon(Icons.edit, color: Colors.white, size: 40),
+                                  icon: const Icon(Icons.edit, color: Colors.white, size: 32),
                                   onPressed: () => _pickImage(context, day, contentService),
                                 ),
                               ),
@@ -188,39 +191,43 @@ class ShowsView extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
                     // Venue indicator tag
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.black87,
-                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.white24),
                         boxShadow: const [
                           BoxShadow(
                             color: Colors.black54,
-                            blurRadius: 8,
-                            offset: Offset(0, 4),
+                            blurRadius: 6,
+                            offset: Offset(0, 3),
                           ),
                         ],
                       ),
-                      child: AppImage(
-                        path: isSavines
-                            ? 'assets/images/shows/savines.png'
-                            : 'assets/images/shows/arenal.png',
-                        height: 24,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Text(
-                            isSavines ? 'Savines' : 'Arenal',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          );
-                        },
+                      child: Center(
+                        child: AppImage(
+                          path: currentHotel.showsLogo,
+                          height: 32,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                currentHotel.name,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -228,21 +235,13 @@ class ShowsView extends StatelessWidget {
               );
             }
 
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: List.generate(4, (index) => buildItem(index)),
-                ),
-                const SizedBox(height: 40),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: List.generate(3, (index) => buildItem(index + 4)),
-                ),
-              ],
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: List.generate(7, (index) => buildItem(index)),
+              ),
             );
           },
         );
@@ -250,11 +249,16 @@ class ShowsView extends StatelessWidget {
     );
   }
 
-  Future<void> _pickImage(BuildContext context, String key, ContentService contentService) async {
-    FilePickerResult? result = await FilePicker.pickFiles(type: FileType.image);
-    if (result != null && result.files.single.path != null) {
-      final newPath = await contentService.saveImage(result.files.single.path!, subFolder: 'shows');
-      await contentService.updateShowImage(key, newPath);
+  Future<void> _pickImage(BuildContext context, String dayKey, ContentService contentService) async {
+    FilePickerResult? result = await FilePicker.pickFiles(type: FileType.image, withData: true);
+    if (result != null && (result.files.single.path != null || kIsWeb)) {
+      final newPath = await contentService.saveImage(
+        result.files.single.path ?? '',
+        subFolder: 'shows',
+        bytes: result.files.single.bytes,
+        originalName: result.files.single.name,
+      );
+      context.read<ShowService>().updateShowImage(dayKey, newPath);
     }
   }
 

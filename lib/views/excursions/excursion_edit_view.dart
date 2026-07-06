@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
 import '../../models/excursion.dart';
 import '../../services/content_service.dart';
+import '../../services/excursion_service.dart';
 import '../../widgets/app_bar_widget.dart';
 import '../../widgets/localized_text_field.dart';
 import '../../widgets/app_image.dart';
@@ -57,9 +59,9 @@ class _ExcursionEditViewState extends State<ExcursionEditView> {
     );
 
     if (widget.isNew) {
-      await contentService.addExcursion(updatedExcursion);
+      await context.read<ExcursionService>().addExcursion(updatedExcursion);
     } else {
-      await contentService.updateExcursion(updatedExcursion);
+      await context.read<ExcursionService>().updateExcursion(updatedExcursion);
     }
 
     if (mounted) {
@@ -82,7 +84,7 @@ class _ExcursionEditViewState extends State<ExcursionEditView> {
             onPressed: () async {
               Navigator.of(context).pop(); // Close dialog
               Navigator.of(context).pop(); // Close view
-              await contentService.deleteExcursion(widget.excursion.id);
+              await context.read<ExcursionService>().deleteExcursion(widget.excursion.id);
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Delete'),
@@ -155,9 +157,14 @@ class _ExcursionEditViewState extends State<ExcursionEditView> {
                     const SizedBox(width: 16),
                     ElevatedButton(
                       onPressed: () async {
-                        final result = await FilePicker.pickFiles(type: FileType.image);
-                        if (result != null && result.files.single.path != null) {
-                           final newPath = await contentService.saveImage(result.files.single.path!, subFolder: 'excursions/logos');
+                        FilePickerResult? result = await FilePicker.pickFiles(type: FileType.image, withData: true);
+                        if (result != null && (result.files.single.path != null || kIsWeb)) {
+                           final newPath = await contentService.saveImage(
+                             result.files.single.path ?? '', 
+                             subFolder: 'excursions/logos',
+                             bytes: result.files.single.bytes,
+                             originalName: result.files.single.name,
+                           );
                            setState(() {
                              _imagePath = newPath;
                              _isLocalImage = true;
@@ -222,9 +229,15 @@ class _ExcursionEditViewState extends State<ExcursionEditView> {
             final result = await FilePicker.pickFiles(
               type: FileType.custom,
               allowedExtensions: ['pdf'],
+              withData: true,
             );
-            if (result != null && result.files.single.path != null) {
-              final newPath = await contentService.saveImage(result.files.single.path!, subFolder: 'excursions/pdf');
+            if (result != null && (result.files.single.path != null || kIsWeb)) {
+              final newPath = await contentService.saveImage(
+                result.files.single.path ?? '', 
+                subFolder: 'excursions/pdf',
+                bytes: result.files.single.bytes,
+                originalName: result.files.single.name,
+              );
               setState(() {
                 _content = newPath;
               });
@@ -246,7 +259,7 @@ class _ExcursionEditViewState extends State<ExcursionEditView> {
           runSpacing: 8,
           children: images.map((path) {
             final strPath = path.toString();
-            final isLocal = !strPath.startsWith('assets/');
+            final isLocal = !strPath.startsWith('hotel_assets/');
             return SizedBox(
               width: 100,
               height: 100,
@@ -277,11 +290,16 @@ class _ExcursionEditViewState extends State<ExcursionEditView> {
         const SizedBox(height: 8),
         ElevatedButton(
           onPressed: () async {
-             final result = await FilePicker.pickFiles(type: FileType.image, allowMultiple: true);
+             final result = await FilePicker.pickFiles(type: FileType.image, allowMultiple: true, withData: true);
              if (result != null) {
                 for (var file in result.files) {
-                  if (file.path != null) {
-                     final newPath = await contentService.saveImage(file.path!, subFolder: 'excursions/images');
+                  if (file.path != null || kIsWeb) {
+                     final newPath = await contentService.saveImage(
+                       file.path ?? '', 
+                       subFolder: 'excursions/images',
+                       bytes: file.bytes,
+                       originalName: file.name,
+                     );
                      setState(() {
                        images.add(newPath);
                        _content = images;
