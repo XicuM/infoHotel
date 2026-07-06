@@ -80,7 +80,7 @@ gum style --foreground 72 "Build successful!"
 OUTPUT_ARCHIVE="infoHotel_web_kiosk.tar.gz"
 rm -f "$OUTPUT_ARCHIVE"
 
-gum spin --spinner dot --title "Packaging web folder..." -- bash -c "cd build && tar -czf ../$OUTPUT_ARCHIVE web/"
+gum spin --spinner dot --title "Packaging web and backend folders..." -- bash -c "tar -czf $OUTPUT_ARCHIVE build/web/ backend/"
 
 # 4. Upload to a temporary hosting service
 echo "Uploading to catbox.moe for easy transfer..."
@@ -97,8 +97,8 @@ if curl -s -F "reqtype=fileupload" -F "fileToUpload=@$OUTPUT_ARCHIVE" "https://c
     echo "Copy and paste this exact snippet into your Raspberry Pi Connect terminal:"
     echo ""
     gum style --foreground 15 --background 0 --padding "1 2" "wget $DOWNLOAD_URL -O $OUTPUT_ARCHIVE
-mkdir -p ~/infoHotel/build
-tar -xzf $OUTPUT_ARCHIVE -C ~/infoHotel/build
+mkdir -p ~/infoHotel
+tar -xzf $OUTPUT_ARCHIVE -C ~/infoHotel
 sudo systemctl restart infohotel.service"
 
 else
@@ -115,8 +115,8 @@ else
     echo "3. Copy and paste this exact snippet into your Raspberry Pi Connect terminal:"
     echo ""
     gum style --foreground 15 --background 0 --padding "1 2" "wget http://YOUR_PC_IP:8080/$OUTPUT_ARCHIVE -O $OUTPUT_ARCHIVE
-mkdir -p ~/infoHotel/build
-tar -xzf $OUTPUT_ARCHIVE -C ~/infoHotel/build
+mkdir -p ~/infoHotel
+tar -xzf $OUTPUT_ARCHIVE -C ~/infoHotel
 sudo systemctl restart infohotel.service"
 fi
 

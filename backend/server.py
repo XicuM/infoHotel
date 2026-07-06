@@ -87,4 +87,7 @@ class MainHandler(http.server.SimpleHTTPRequestHandler):
 if __name__ == '__main__':
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
     print(f"Starting modular backend server on port {port}...", flush=True)
-    socketserver.TCPServer(("", port), MainHandler).serve_forever()
+    class ThreadingServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+        allow_reuse_address = True
+        daemon_threads = True
+    ThreadingServer(("", port), MainHandler).serve_forever()
