@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../widgets/app_bar_widget.dart';
+import '../../config/app_config.dart';
 import '../../widgets/web_safe_backdrop_filter.dart';
 import 'package:provider/provider.dart';
 import '../../services/language_service.dart';
@@ -79,7 +80,9 @@ class _FlightBoardViewState extends State<FlightBoardView> {
                     future: _flightFuture,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator(color: Colors.white));
+                        return Center(child: AppConfig.lowPowerMode 
+                            ? const Icon(Icons.hourglass_empty, color: Colors.white, size: 36) 
+                            : const CircularProgressIndicator(color: Colors.white));
                       }
                       if (snapshot.hasError) {
                         return Center(
@@ -333,7 +336,7 @@ class _FlightBoardViewState extends State<FlightBoardView> {
               ),
               const SizedBox(width: 12),
               AppImage(
-                path: 'assets/images/aena_logo.png',
+                path: 'hotel_assets/images/aena_logo.png',
                 height: 28,
                 errorBuilder: (context, error, stackTrace) =>
                     const Text('AENA', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: 1.5)),

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import '../config/app_config.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../config/theme.dart';
+import '../services/hotel_config_service.dart';
 import '../services/language_service.dart';
 import '../services/hotel_service.dart';
+import '../services/content_service.dart';
 import '../widgets/language_selector.dart';
 import 'package:window_manager/window_manager.dart';
-import '../services/content_service.dart';
 import 'services/services_view.dart';
 import 'information/information_view.dart';
 import 'excursions/excursions_view.dart';
@@ -15,8 +17,9 @@ import 'weather/weather_view.dart';
 import 'webpages_view.dart';
 import 'welcome_view.dart';
 import 'information/flight_board_view.dart';
-import '../widgets/help_popup.dart';
 import '../widgets/app_image.dart';
+import '../widgets/kiosk_manager.dart';
+import '../widgets/main_sidebar.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -29,14 +32,18 @@ class _MainLayoutState extends State<MainLayout> {
   int _selectedIndex = 0;
 
   late final List<Widget> _views;
-  late final List<_NavigationItem> _navItems;
-  final FocusNode _focusNode = FocusNode();
-  bool _isKioskMode = false;
-  bool _showHelp = false;
+  late final List<NavigationItem> _navItems;
 
   @override
   void initState() {
     super.initState();
+    // Init hotel service after content service is loaded
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final hotelService = Provider.of<HotelService>(context, listen: false);
+      final contentService = Provider.of<ContentService>(context, listen: false);
+      final hotelConfigService = context.read<HotelConfigService>();
+      hotelService.init(hotelConfigService);
+    });
     _views = [
       const WelcomeView(),
       const WeatherView(),
@@ -49,37 +56,37 @@ class _MainLayoutState extends State<MainLayout> {
 
 
     _navItems = [
-      _NavigationItem(
+      NavigationItem(
         titleKey: 'home',
         icon: Icons.home,
         color: AppColors.yellowSecondary,
       ),
-      _NavigationItem(
+      NavigationItem(
         titleKey: 'weather',
         icon: Icons.wb_sunny,
         color: AppColors.weather,
       ),
-      _NavigationItem(
-        titleKey: 'hotel_services',
+      NavigationItem(
+        titleKey: 'facilities',
         icon: Icons.room_service,
         color: AppColors.services,
       ),
-      _NavigationItem(
+      NavigationItem(
         titleKey: 'tourist_info',
         icon: Icons.map,
         color: AppColors.information,
       ),
-      _NavigationItem(
+      NavigationItem(
         titleKey: 'excursions',
         icon: Icons.directions_bus,
         color: AppColors.excursions,
       ),
-      _NavigationItem(
+      NavigationItem(
         titleKey: 'flight_board',
         icon: Icons.flight_takeoff,
         color: Colors.amber,
       ),
-      _NavigationItem(
+      NavigationItem(
         titleKey: 'webpages',
         icon: Icons.public,
         color: Colors.grey,
@@ -88,9 +95,7 @@ class _MainLayoutState extends State<MainLayout> {
 
   }
 
-  @override
   void dispose() {
-    _focusNode.dispose();
     super.dispose();
   }
 
@@ -104,11 +109,6 @@ class _MainLayoutState extends State<MainLayout> {
     if (kIsWeb) return;
     try {
       final isFullScreen = await windowManager.isFullScreen();
-      if (mounted) {
-        this.setState(() {
-          _isKioskMode = isFullScreen;
-        });
-      }
     } catch (e) {
       // Ignore
     }
@@ -117,58 +117,16 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
     final hotelService = Provider.of<HotelService>(context);
+    final contentService = Provider.of<ContentService>(context, listen: false);
 
-    // Ensure focus for keyboard events
-    if (!_focusNode.hasFocus) {
-      FocusScope.of(context).requestFocus(_focusNode);
-    }
-
-    return MouseRegion(
-      cursor: SystemMouseCursors.none,
-      child: KeyboardListener(
-      focusNode: _focusNode,
-      autofocus: true,
-      onKeyEvent: (event) {
-        if (event is KeyDownEvent) {
-          final isAltPressed = HardwareKeyboard.instance.isAltPressed;
-          
-          if (isAltPressed && event.logicalKey == LogicalKeyboardKey.keyA) {
-            hotelService.setHotel('Arenal');
-          } else if (isAltPressed && event.logicalKey == LogicalKeyboardKey.keyS) {
-            hotelService.setHotel('Savines');
-          } else if (event.logicalKey == LogicalKeyboardKey.f11) {
-            windowManager.isFullScreen().then((isFullScreen) async {
-              bool willBeFullScreen = !isFullScreen;
-              await windowManager.setFullScreen(willBeFullScreen);
-              // Hide title bar in fullscreen, show it in windowed mode
-              await windowManager.setTitleBarStyle(
-                willBeFullScreen ? TitleBarStyle.hidden : TitleBarStyle.normal,
-              );
-              if (mounted) {
-                setState(() {
-                  _isKioskMode = willBeFullScreen;
-                });
-              }
-            });
-          } else if (event.logicalKey == LogicalKeyboardKey.f2) {
-            final contentService = Provider.of<ContentService>(context, listen: false);
-            contentService.toggleEditMode();
-          } else if (event.logicalKey == LogicalKeyboardKey.f1) {
-             setState(() {
-               _showHelp = !_showHelp;
-             });
-          } else if (event.logicalKey == LogicalKeyboardKey.escape) {
-             windowManager.close();
-          }
-        }
-      },
+    return KioskManager(
       child: Scaffold(
         body: Stack(
           children: [
             // Background Image
             Positioned.fill(
               child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
+                duration: AppConfig.lowPowerMode ? Duration.zero : const Duration(milliseconds: 500),
                 layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
                   return Stack(
                     fit: StackFit.expand,
@@ -179,10 +137,8 @@ class _MainLayoutState extends State<MainLayout> {
                   );
                 },
                 child: AppImage(path: 
-                  hotelService.isSavines
-                      ? 'assets/images/background/savines.jpg'
-                      : 'assets/images/background/arenal.jpg',
-                  key: ValueKey<String>(hotelService.currentHotel),
+                  hotelService.currentHotelConfig?.background ?? '',
+                  key: ValueKey<String>(hotelService.currentHotelId),
                   fit: BoxFit.cover,
                   width: double.infinity,
                   height: double.infinity,
@@ -193,20 +149,26 @@ class _MainLayoutState extends State<MainLayout> {
               ),
             ),
 
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.centerRight,
-                    end: Alignment.centerLeft,
-                    colors: [
-                      Colors.black.withOpacity(0.8),
-                      Colors.transparent,
-                    ],
+            if (AppConfig.lowPowerMode)
+              Positioned(
+                top: 0, bottom: 0, left: 0, width: 280, // Approximate width of sidebar
+                child: Container(color: Colors.black.withOpacity(0.5)),
+              )
+            else
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.centerRight,
+                      end: Alignment.centerLeft,
+                      colors: [
+                        Colors.black.withOpacity(0.8),
+                        Colors.transparent,
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
 
             // Edit Mode Dark Overlay
             Consumer<ContentService>(
@@ -223,74 +185,10 @@ class _MainLayoutState extends State<MainLayout> {
             Row(
               children: [
                 // Sidebar (Left)
-                Container(
-                  width: 280, // Slightly wider for premium look
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.6), // Darker background for readability
-                    border: const Border(right: BorderSide(color: Colors.white12, width: 1)),
-                  ),
-                  child: Column(
-                    children: [
-                      // Header / Logo
-                      DragToMoveArea(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
-                          width: double.infinity,
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 300),
-                            child: AppImage(path: 
-                              hotelService.isSavines
-                                  ? 'assets/images/logo/savines.png'
-                                  : 'assets/images/logo/arenal.png',
-                              key: ValueKey<String>(hotelService.currentHotel),
-                              height: 80,
-                              fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Text(
-                                  hotelService.currentHotel,
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                      const Divider(height: 1, color: Colors.white12),
-                      
-                      // Navigation List
-                      Expanded(
-                        child: Consumer<LanguageService>(
-                          builder: (context, langService, _) {
-                            return ListView.builder(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              itemCount: _navItems.length,
-                              itemBuilder: (context, index) {
-                                final item = _navItems[index];
-                                final isSelected = _selectedIndex == index;
-                                return _NavItem(
-                                  item: item,
-                                  isSelected: isSelected,
-                                  label: langService.translate(item.titleKey),
-                                  onTap: () => setState(() => _selectedIndex = index),
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                      
-                      // Language Selector
-                      const Divider(height: 1, color: Colors.white12),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 32, horizontal: 16),
-                        child: LanguageSelector(),
-                      ),
-                    ],
-                  ),
+                MainSidebar(
+                  selectedIndex: _selectedIndex,
+                  navItems: _navItems,
+                  onItemSelected: (index) => setState(() => _selectedIndex = index),
                 ),
 
                 // Main Content (Right)
@@ -363,154 +261,10 @@ class _MainLayoutState extends State<MainLayout> {
               },
             ),
 
-            // Help Button (Bottom Right)
-            if (!_isKioskMode)
-              Positioned(
-                bottom: 24,
-                right: 24,
-                child: Stack(
-                  alignment: Alignment.bottomRight,
-                  clipBehavior: Clip.none,
-                  children: [
-                      FloatingActionButton(
-                        onPressed: () {
-                           setState(() {
-                             _showHelp = !_showHelp;
-                           });
-                        },
-                        backgroundColor: AppColors.get('blue', 700),
-                        child: const Icon(Icons.help_outline, color: Colors.white),
-                      ),
-                      if (_showHelp)
-                        const Positioned(
-                          bottom: 70,
-                          right: 0,
-                          child: HelpPopup(),
-                        ),
-                    ],
-                  ),
-              ),
-
-             // Global F1 Popup Center (kiosk or no kiosk)
-             if (_showHelp && _isKioskMode)
-                const Center(child: HelpPopup()),
           ],
         ),
       ),
-    ),
-   );
-  }
-}
-
-class _NavigationItem {
-  final String titleKey;
-  final IconData icon;
-  final Color color;
-
-  _NavigationItem({
-    required this.titleKey,
-    required this.icon,
-    required this.color,
-  });
-}
-
-/// Premium sidebar navigation item with hover animation and selection highlight
-class _NavItem extends StatefulWidget {
-  final _NavigationItem item;
-  final bool isSelected;
-  final String label;
-  final VoidCallback onTap;
-
-  const _NavItem({
-    required this.item,
-    required this.isSelected,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  State<_NavItem> createState() => _NavItemState();
-}
-
-class _NavItemState extends State<_NavItem> {
-  @override
-  Widget build(BuildContext context) {
-    final color = widget.item.color;
-
-    return GestureDetector(
-      onTap: widget.onTap,
-      child: AnimatedContainer(
-          duration: const Duration(milliseconds: 160),
-          curve: Curves.easeOut,
-          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-          decoration: BoxDecoration(
-            gradient: widget.isSelected
-                ? LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      color.withOpacity(0.22),
-                      Colors.transparent,
-                    ],
-                  )
-                : const LinearGradient(
-                    colors: [
-                      Colors.transparent,
-                      Colors.transparent,
-                    ],
-                  ),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: widget.isSelected ? color.withOpacity(0.25) : Colors.transparent,
-              width: 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              // Colored left accent bar
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                width: 3,
-                height: widget.isSelected ? 42 : 0,
-                margin: const EdgeInsets.only(left: 2),
-                decoration: BoxDecoration(
-                  color: widget.isSelected ? color : Colors.transparent,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const SizedBox(width: 16),
-              // Icon
-              AnimatedScale(
-                scale: widget.isSelected ? 1.15 : 1.0,
-                duration: const Duration(milliseconds: 200),
-                child: Icon(
-                  widget.item.icon,
-                  size: 24,
-                  color: widget.isSelected ? color : Colors.white38,
-                ),
-              ),
-              const SizedBox(width: 16),
-              // Label
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  child: Text(
-                    widget.label,
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: widget.isSelected
-                          ? FontWeight.w600
-                          : FontWeight.w400,
-                      color: widget.isSelected ? Colors.white : Colors.white54,
-                      letterSpacing: widget.isSelected ? 0.4 : 0.1,
-                    ),
-                  ),
-                ),
-              ),
-
-            ],
-          ),
-        ),
     );
   }
 }
+

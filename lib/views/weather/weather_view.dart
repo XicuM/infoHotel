@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/theme.dart';
+import '../../config/app_config.dart';
 import '../../services/language_service.dart';
 import '../../services/weather_service.dart';
 import '../../models/weather_data.dart';
@@ -44,7 +45,9 @@ class _WeatherViewState extends State<WeatherView> {
                 
                 if (weatherService.isLoading && weather == null) {
                   return const Center(
-                    child: CircularProgressIndicator(color: Colors.white),
+                    child: AppConfig.lowPowerMode 
+                        ? Icon(Icons.hourglass_empty, color: Colors.white, size: 36) 
+                        : CircularProgressIndicator(color: Colors.white),
                   );
                 }
 
@@ -239,7 +242,7 @@ class _WeatherViewState extends State<WeatherView> {
                     '${weather.currentTemp}°C',
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 36,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
                       height: 1.0,
                     ),
@@ -369,12 +372,14 @@ class _WeatherViewState extends State<WeatherView> {
                 child: SizedBox(
                   height: 120,
                   width: 120,
-                  child: CustomPaint(
-                    size: const Size(120, 120),
-                    painter: SunArcPainter(
-                      sunrise: weather.sunrise,
-                      sunset: weather.sunset,
-                      currentMinutes: nowMinutes,
+                  child: RepaintBoundary(
+                    child: CustomPaint(
+                      size: const Size(120, 120),
+                      painter: SunArcPainter(
+                        sunrise: weather.sunrise,
+                        sunset: weather.sunset,
+                        currentMinutes: nowMinutes,
+                      ),
                     ),
                   ),
                 ),
@@ -425,11 +430,13 @@ class _WeatherViewState extends State<WeatherView> {
       return const SizedBox.shrink();
     }
 
-    return CustomPaint(
-      size: Size.infinite,
-      painter: TempGraphPainter(
-        tempValues: weather.tempValues,
-        tempTimes: weather.tempTimes,
+    return RepaintBoundary(
+      child: CustomPaint(
+        size: Size.infinite,
+        painter: TempGraphPainter(
+          tempValues: weather.tempValues,
+          tempTimes: weather.tempTimes,
+        ),
       ),
     );
   }

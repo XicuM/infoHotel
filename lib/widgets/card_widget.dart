@@ -62,6 +62,7 @@ class _InfoCardState extends State<InfoCard> {
             ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(14),
+                  clipBehavior: AppConfig.lowPowerMode ? Clip.hardEdge : Clip.antiAlias,
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
@@ -69,20 +70,31 @@ class _InfoCardState extends State<InfoCard> {
                       _buildBackground(),
 
                       // Gradient overlay
-                      Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              Colors.transparent,
-                              Color(0xAD000000),
-                            ],
-                            stops: [0.0, 0.45, 1.0],
+                      if (!AppConfig.lowPowerMode)
+                        Container(
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.transparent,
+                                Color(0xAD000000),
+                              ],
+                              stops: [0.0, 0.45, 1.0],
+                            ),
+                          ),
+                        )
+                      else
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          height: 60,
+                          child: Container(
+                            color: Colors.black.withOpacity(0.6),
                           ),
                         ),
-                      ),
 
                       // Title at the bottom
                       Positioned(

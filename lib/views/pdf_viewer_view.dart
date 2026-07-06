@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart';
@@ -7,6 +8,7 @@ import '../config/app_config.dart';
 import '../widgets/zoomable_viewer.dart';
 import '../widgets/app_image.dart';
 import '../utils/path_resolver.dart';
+import '../utils/pdf_disk_cache.dart';
 
 /// PDF Viewer widget for displaying PDF brochures
 /// Supports "book mode" (2 pages side-by-side) in landscape.
@@ -52,9 +54,17 @@ class _PdfViewerViewState extends State<PdfViewerView> {
 
   Future<void> _loadPdf() async {
     try {
-      final document = kIsWeb
-          ? await PdfDocument.openAsset(widget.pdfPath)
-          : await PdfDocument.openFile(widget.isLocal ? widget.pdfPath : PathResolver.resolve(widget.pdfPath));
+      PdfDocument document;
+      if (kIsWeb) {
+        document = await PdfDocument.openAsset(widget.pdfPath);
+      } else if (!widget.isLocal && widget.pdfPath.startsWith('hotel_assets/')) {
+        document = await PdfDocument.openAsset(widget.pdfPath);
+      } else {
+        document = await PdfDocument.openFile(
+          widget.isLocal ? widget.pdfPath : PathResolver.resolve(widget.pdfPath)
+        );
+      }
+
       if (mounted) {
         setState(() {
           _document = document;
@@ -96,7 +106,9 @@ class _PdfViewerViewState extends State<PdfViewerView> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Colors.white));
+      return Center(child: AppConfig.lowPowerMode 
+          ? const Icon(Icons.hourglass_empty, color: Colors.white, size: 36) 
+          : const CircularProgressIndicator(color: Colors.white));
     }
 
     if (_error != null) {
@@ -160,6 +172,7 @@ class _PdfViewerViewState extends State<PdfViewerView> {
                                 alignment: Alignment.centerRight,
                                 child: _PdfPageRenderer(
                                   document: _document!, 
+                                  pdfPath: widget.pdfPath,
                                   pageNumber: firstPage,
                                   isLeft: true,
                                 ),
@@ -172,6 +185,7 @@ class _PdfViewerViewState extends State<PdfViewerView> {
                                   alignment: Alignment.centerLeft,
                                   child: _PdfPageRenderer(
                                     document: _document!, 
+                                    pdfPath: widget.pdfPath,
                                     pageNumber: secondPage,
                                     isRight: true,
                                   ),
@@ -191,6 +205,7 @@ class _PdfViewerViewState extends State<PdfViewerView> {
                     key: ValueKey('single_${index + 1}'),
                     child: _PdfPageRenderer(
                       document: _document!, 
+                      pdfPath: widget.pdfPath,
                       pageNumber: index + 1,
                     ),
                   );
@@ -267,12 +282,14 @@ class _PdfViewerViewState extends State<PdfViewerView> {
 
 class _PdfPageRenderer extends StatefulWidget {
   final PdfDocument document;
+  final String pdfPath;
   final int pageNumber;
   final bool isLeft;
   final bool isRight;
 
   const _PdfPageRenderer({
     required this.document, 
+    required this.pdfPath,
     required this.pageNumber,
     this.isLeft = false,
     this.isRight = false,
@@ -283,16 +300,13 @@ class _PdfPageRenderer extends StatefulWidget {
 }
 
 class _PdfPageRendererState extends State<_PdfPageRenderer> {
-  PdfPageImage? _image;
+  Uint8List? _imageBytes;
   bool _loading = true;
 
   @override
   void initState() {
     super.initState();
-    // Delay rendering slightly to allow page transition to complete smoothly
-    Future.delayed(const Duration(milliseconds: 350), () {
-      if (mounted) _renderPage();
-    });
+    _renderPage();
   }
 
   @override
@@ -306,11 +320,22 @@ class _PdfPageRendererState extends State<_PdfPageRenderer> {
   Future<void> _renderPage() async {
     if (!mounted) return;
     setState(() {
-      _image = null; // Release previous page image bytes to save memory immediately
+      _imageBytes = null; // Release previous page image bytes to save memory immediately
       _loading = true;
     });
     
     try {
+      final cachedBytes = await PdfDiskCache.get(widget.pdfPath, widget.pageNumber);
+      if (cachedBytes != null) {
+        if (mounted) {
+          setState(() {
+            _imageBytes = cachedBytes;
+            _loading = false;
+          });
+        }
+        return;
+      }
+
       final page = await widget.document.getPage(widget.pageNumber);
       final scaleMultiplier = AppConfig.lowPowerMode ? 1.0 : 1.5;
       final pageImage = await page.render(
@@ -320,11 +345,19 @@ class _PdfPageRendererState extends State<_PdfPageRenderer> {
       );
       await page.close();
       
-      if (mounted) {
-        setState(() {
-          _image = pageImage;
-          _loading = false;
-        });
+      if (pageImage != null) {
+        final bytesToCache = pageImage.bytes;
+        // Run cache put asynchronously without awaiting so UI renders immediately
+        PdfDiskCache.put(widget.pdfPath, widget.pageNumber, bytesToCache);
+        
+        if (mounted) {
+          setState(() {
+            _imageBytes = bytesToCache;
+            _loading = false;
+          });
+        }
+      } else {
+        if (mounted) setState(() => _loading = false);
       }
     } catch (e) {
       debugPrint('Error rendering page ${widget.pageNumber}: $e');
@@ -335,17 +368,19 @@ class _PdfPageRendererState extends State<_PdfPageRenderer> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator(color: Colors.white));
+      return Center(child: AppConfig.lowPowerMode 
+          ? const Icon(Icons.hourglass_empty, color: Colors.white, size: 36) 
+          : const CircularProgressIndicator(color: Colors.white));
     }
     
-    if (_image == null) {
+    if (_imageBytes == null) {
       return const Center(child: Icon(Icons.broken_image, color: Colors.white));
     }
 
     return Stack(
       children: [
         AppImage(
-          bytes: _image!.bytes,
+          bytes: _imageBytes!,
           fit: BoxFit.contain,
         ),
         // Spine shadow for book effect (only on left page for realism)
