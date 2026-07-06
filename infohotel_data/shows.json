@@ -1,0 +1,11 @@
+{
+  "card_image": "hotel_assets/images/facilities/shows.jpg",
+  "background": "hotel_assets/images/shows/shows.png",
+  "monday": "hotel_assets/images/shows/monday.jpg",
+  "tuesday": "hotel_assets/images/shows/tuesday.jpg",
+  "wednesday": "hotel_assets/images/shows/wednesday.jpg",
+  "thursday": "hotel_assets/images/shows/thursday.jpg",
+  "friday": "hotel_assets/images/shows/friday.jpg",
+  "saturday": "hotel_assets/images/shows/saturday.jpg",
+  "sunday": "hotel_assets/images/shows/sunday.jpg"
+}

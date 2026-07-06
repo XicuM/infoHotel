@@ -40,7 +40,11 @@ gum style \
 
 # 3. Update system and install kiosk dependencies using Gum spinner
 gum spin --spinner dot --title "Updating package lists..." -- sudo apt-get update -y
-gum spin --spinner dot --title "Installing dependencies (curl, unzip, xz-utils, zip, python3, cage, cog, wlr-randr)..." -- sudo apt-get install -y curl unzip xz-utils zip python3 cage cog wlr-randr
+gum spin --spinner dot --title "Installing dependencies (curl, unzip, xz-utils, zip, python3, python3-pip, cage, cog, wlr-randr)..." -- sudo apt-get install -y curl unzip xz-utils zip python3 python3-pip cage cog wlr-randr
+
+echo -e "${BLUE}--> Installing Python backend dependencies...${NC}"
+gum spin --spinner dot --title "Running pip install..." -- pip install -r $HOME/infoHotel/backend/requirements.txt --break-system-packages
+
 
 echo -e "${BLUE}--> Configuring hardware permissions for $USER...${NC}"
 sudo usermod -a -G video,render,tty,input $USER

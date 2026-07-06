@@ -9,8 +9,8 @@ void main() {
         id: 'test_market',
         name: 'Test Market',
         description: 'Test Description',
-        imagePath: 'assets/test.png',
-        galleryImages: ['assets/1.png', 'assets/2.png'],
+        imagePath: 'hotel_assets/test.png',
+        galleryImages: ['hotel_assets/1.png', 'hotel_assets/2.png'],
         isCustom: true,
         localizedNames: {'en': 'Test Market EN'},
         localizedDescriptions: {'en': 'Desc EN'},
@@ -22,8 +22,8 @@ void main() {
       expect(decodedMarket.id, 'test_market');
       expect(decodedMarket.name, 'Test Market');
       expect(decodedMarket.description, 'Test Description');
-      expect(decodedMarket.imagePath, 'assets/test.png');
-      expect(decodedMarket.galleryImages, ['assets/1.png', 'assets/2.png']);
+      expect(decodedMarket.imagePath, 'hotel_assets/test.png');
+      expect(decodedMarket.galleryImages, ['hotel_assets/1.png', 'hotel_assets/2.png']);
       expect(decodedMarket.isCustom, isTrue);
       expect(decodedMarket.localizedNames['en'], 'Test Market EN');
       expect(decodedMarket.localizedDescriptions['en'], 'Desc EN');
@@ -34,7 +34,7 @@ void main() {
         id: 'test_market',
         name: 'Fallback Name',
         description: 'Fallback Desc',
-        imagePath: 'assets/test.png',
+        imagePath: 'hotel_assets/test.png',
         localizedNames: {'es': 'Nombre ES'},
         localizedDescriptions: {'es': 'Desc ES'},
       );
@@ -50,9 +50,9 @@ void main() {
         id: 'test_excursion',
         name: 'Test Excursion',
         localizedNames: {'en': 'Test Excursion EN'},
-        imagePath: 'assets/test_ex.png',
+        imagePath: 'hotel_assets/test_ex.png',
         type: ExcursionType.pdf,
-        content: 'assets/test.pdf',
+        content: 'hotel_assets/test.pdf',
         isLocalImage: true,
       );
 
@@ -62,9 +62,9 @@ void main() {
       expect(decodedExcursion.id, 'test_excursion');
       expect(decodedExcursion.name, 'Test Excursion');
       expect(decodedExcursion.localizedNames['en'], 'Test Excursion EN');
-      expect(decodedExcursion.imagePath, 'assets/test_ex.png');
+      expect(decodedExcursion.imagePath, 'hotel_assets/test_ex.png');
       expect(decodedExcursion.type, ExcursionType.pdf);
-      expect(decodedExcursion.content, 'assets/test.pdf');
+      expect(decodedExcursion.content, 'hotel_assets/test.pdf');
       expect(decodedExcursion.isLocalImage, isTrue);
     });
   });

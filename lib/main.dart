@@ -6,6 +6,12 @@ import 'services/language_service.dart';
 import 'services/weather_service.dart';
 import 'services/hotel_service.dart';
 import 'services/content_service.dart';
+import 'services/market_service.dart';
+import 'services/excursion_service.dart';
+import 'services/show_service.dart';
+import 'services/hotel_config_service.dart';
+import 'repositories/storage_repository.dart';
+import 'services/bus_service.dart';
 import 'views/main_layout.dart';
 
 import 'package:flutter/foundation.dart';
@@ -14,6 +20,10 @@ import 'package:window_manager/window_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  final storage = StorageRepository();
+  await storage.init();
+
   // Initialize multiple locales for the intl package
   await Future.wait([
     initializeDateFormatting('en', null),
@@ -46,14 +56,13 @@ void main() async {
     DeviceOrientation.landscapeRight,
   ]);
 
-  // Hide system UI for kiosk mode
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-
-  runApp(const InfoHotelApp());
+  runApp(InfoHotelApp(storage: storage));
 }
 
 class InfoHotelApp extends StatelessWidget {
-  const InfoHotelApp({super.key});
+  final StorageRepository storage;
+  
+  const InfoHotelApp({super.key, required this.storage});
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +71,12 @@ class InfoHotelApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => HotelService()),
         ChangeNotifierProvider(create: (_) => LanguageService()),
         ChangeNotifierProvider(create: (_) => WeatherService()),
-        ChangeNotifierProvider(create: (_) => ContentService()..init()),
+        ChangeNotifierProvider(create: (_) => ContentService(storage: storage)),
+        ChangeNotifierProvider(create: (_) => MarketService(storage: storage)..init()),
+        ChangeNotifierProvider(create: (_) => ExcursionService(storage: storage)..init()),
+        ChangeNotifierProvider(create: (_) => ShowService(storage: storage)..init()),
+        ChangeNotifierProvider(create: (_) => HotelConfigService(storage: storage)..init()),
+        ChangeNotifierProvider(create: (_) => BusService()),
       ],
       child: MaterialApp(
         title: 'Info Hotel',

@@ -10,74 +10,9 @@ if [ ! -d "$WEB_DIR" ]; then
     exit 1
 fi
 
-echo "Starting micro-webserver on port $PORT..."
-cat << 'PYEOF' > "$HOME/infoHotel/scripts/serve.py"
-import http.server, socketserver, mimetypes, sys, urllib.request, urllib.parse, urllib.error, json
-
-mimetypes.add_type('application/wasm', '.wasm')
-mimetypes.add_type('application/javascript', '.js')
-
-class Handler(http.server.SimpleHTTPRequestHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=sys.argv[1], **kwargs)
-
-    def do_GET(self):
-        if self.path.startswith('/api/proxy'):
-            query = urllib.parse.urlparse(self.path).query
-            params = urllib.parse.parse_qs(query)
-            target_url = params.get('url', [None])[0]
-            if not target_url:
-                self.send_error(400, "Missing 'url' parameter")
-                return
-            
-            headers = {}
-            for name, value in self.headers.items():
-                if name.lower() in ['api_key', 'x-rapidapi-key', 'x-rapidapi-host', 'user-agent']:
-                    headers[name] = value
-            
-            if 'User-Agent' not in headers and 'user-agent' not in headers:
-                headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux armv7l) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Cog/0.18.4'
-            
-            try:
-                print(f"[Proxy] Fetching target: {target_url}", flush=True)
-                print(f"[Proxy] Client headers: {list(self.headers.keys())}", flush=True)
-                print(f"[Proxy] Forwarding headers: {headers}", flush=True)
-                req = urllib.request.Request(target_url, headers=headers)
-                with urllib.request.urlopen(req, timeout=10) as response:
-                    res_body = response.read()
-                    content_type = response.headers.get('Content-Type', 'application/json')
-                
-                print(f"[Proxy] Successfully fetched: {response.status}", flush=True)
-                self.send_response(200)
-                self.send_header('Content-Type', content_type)
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                self.wfile.write(res_body)
-                return
-            except urllib.error.HTTPError as e:
-                res_body = b""
-                try:
-                    res_body = e.read()
-                except:
-                    pass
-                print(f"[Proxy] HTTPError {e.code}: {res_body.decode('utf-8', errors='ignore')}", flush=True)
-                self.send_response(e.code)
-                self.send_header('Content-Type', 'text/plain')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                self.wfile.write(res_body)
-                return
-            except Exception as e:
-                print(f"[Proxy] General Error: {str(e)}", flush=True)
-                self.send_error(500, f"Proxy error: {str(e)}")
-                return
-        
-        super().do_GET()
-
-socketserver.TCPServer(("", int(sys.argv[2])), Handler).serve_forever()
-PYEOF
-
-python3 "$HOME/infoHotel/scripts/serve.py" "$WEB_DIR" $PORT &
+echo "Starting modular backend server on port $PORT..."
+export PYTHONPATH="$HOME/infoHotel"
+python3 -m backend.server $PORT "$WEB_DIR" &
 
 echo "Initializing Cage + Cog Kiosk Display..."
 

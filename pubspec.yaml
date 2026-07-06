@@ -28,6 +28,9 @@ dependencies:
   window_manager: ^0.5.1
   path_provider: ^2.1.5
   file_picker: ^11.0.2
+  
+  # ZIP extraction for GTFS bus data
+  archive: ^4.0.2
 
 dev_dependencies:
   flutter_test:
@@ -37,27 +40,27 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/data/
-    - assets/images/
-    - assets/images/background/
-    - assets/images/excursions/
-    - assets/images/excursions/ex_ibiza/
-    - assets/images/facilities/
-    - assets/images/facilities/arenal/
-    - assets/images/facilities/savines/
+    - hotel_assets/data/
+    - hotel_assets/images/
+    - hotel_assets/images/background/
+    - hotel_assets/images/excursions/
+    - hotel_assets/images/excursions/ex_ibiza/
+    - hotel_assets/images/facilities/
+    - hotel_assets/images/facilities/arenal/
+    - hotel_assets/images/facilities/savines/
     - assets/images/flags/
     - assets/images/icons/
-    - assets/images/information/
-    - assets/images/logo/
-    - assets/images/maps/
-    - assets/images/markets/
-    - assets/images/shows/
-    - assets/images/shows/old/
+    - hotel_assets/images/information/
+    - hotel_assets/images/logo/
+    - hotel_assets/images/maps/
+    - hotel_assets/images/markets/
+    - hotel_assets/images/shows/
+    - hotel_assets/images/shows/old/
     - assets/images/weather/
     - assets/images/weather/sky_states/
     - assets/images/weather/wind/
-    - assets/pdf/
-    - assets/pdf/excursions/
+    - hotel_assets/pdf/
+    - hotel_assets/pdf/excursions/
 
 dependency_overrides:
   pdfx:

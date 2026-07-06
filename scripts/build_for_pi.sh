@@ -5,8 +5,6 @@ set -e
 if ! command -v gum &> /dev/null; then
     echo "Please install gum to use this script nicely! (https://github.com/charmbracelet/gum)"
     echo "Fallback to basic script..."
-    # Fallback could be here, but since they use gum, let's assume it's installed on the dev machine too, 
-    # or they can install it.
     exit 1
 fi
 
@@ -15,49 +13,48 @@ gum style \
 	--align center --width 60 --margin "1 2" --padding "1 2" \
 	"InfoHotel Web Build" "for Raspberry Pi Kiosk"
 
+# Helper function to read from .env
+get_env() {
+    if [[ -f ".env" ]]; then
+        grep -m 1 "$1" .env | cut -d '=' -f 2- | tr -d '"' | tr -d "'"
+    fi
+}
+
 # 1. Gather API Keys
 API_KEY=""
-if [ -f "aemet.api" ]; then
-    gum style --foreground 72 "Found aemet.api file. Using it for AEMET API key..."
-    API_KEY=$(grep -E '^AEMET_API_KEY=' aemet.api | cut -d= -f2- || true)
-    if [ -z "$API_KEY" ]; then
-        API_KEY=$(cat aemet.api)
+FLIGHT_KEY=""
+BUS_KEY=""
+
+if [ -f ".env" ]; then
+    gum style --foreground 72 "Found .env file. Loading API keys..."
+    API_KEY=$(get_env "AEMET_API_KEY")
+    FLIGHT_KEY=$(get_env "FLIGHT_API_KEY")
+    if [ -z "$FLIGHT_KEY" ]; then
+        FLIGHT_KEY=$(get_env "FIGHT_API_KEY") # Typo fallback
     fi
-elif [ -f ".api" ]; then
-    gum style --foreground 72 "Found .api file. Using it for AEMET API key..."
-    API_KEY=$(grep -E '^AEMET_API_KEY=' .api | cut -d= -f2- || true)
-    if [ -z "$API_KEY" ]; then
-        API_KEY=$(cat .api)
-    fi
-else
-    while [ -z "$API_KEY" ]; do
-        API_KEY=$(gum input --placeholder "Enter your AEMET API Key (or type 'skip' to skip)" --header "AEMET Weather API Key:")
-    done
-    if [ "$API_KEY" = "skip" ]; then
-        API_KEY=""
-    fi
+    BUS_KEY=$(get_env "BUS_API_KEY")
 fi
 
-FLIGHT_KEY=""
-if [ -f "flight.api" ]; then
-    gum style --foreground 72 "Found flight.api file. Using it for Flight API key..."
-    FLIGHT_KEY=$(grep -E '^(FLIGHT|FIGHT)_API_KEY=' flight.api | cut -d= -f2- || true)
-    if [ -z "$FLIGHT_KEY" ]; then
-        FLIGHT_KEY=$(cat flight.api)
-    fi
-elif [ -f ".flight_api" ]; then
-    gum style --foreground 72 "Found .flight_api file. Using it for Flight API key..."
-    FLIGHT_KEY=$(grep -E '^(FLIGHT|FIGHT)_API_KEY=' .flight_api | cut -d= -f2- || true)
-    if [ -z "$FLIGHT_KEY" ]; then
-        FLIGHT_KEY=$(cat .flight_api)
-    fi
-else
-    while [ -z "$FLIGHT_KEY" ]; do
-        FLIGHT_KEY=$(gum input --placeholder "Enter your RapidAPI Key (or type 'skip' to skip)" --header "RapidAPI Flight Key:")
-    done
-    if [ "$FLIGHT_KEY" = "skip" ]; then
-        FLIGHT_KEY=""
-    fi
+# Fallbacks to user input if keys are missing
+while [ -z "$API_KEY" ]; do
+    API_KEY=$(gum input --placeholder "Enter your AEMET API Key (or type 'skip' to skip)" --header "AEMET Weather API Key:")
+done
+if [ "$API_KEY" = "skip" ]; then
+    API_KEY=""
+fi
+
+while [ -z "$FLIGHT_KEY" ]; do
+    FLIGHT_KEY=$(gum input --placeholder "Enter your RapidAPI Key (or type 'skip' to skip)" --header "RapidAPI Flight Key:")
+done
+if [ "$FLIGHT_KEY" = "skip" ]; then
+    FLIGHT_KEY=""
+fi
+
+while [ -z "$BUS_KEY" ]; do
+    BUS_KEY=$(gum input --placeholder "Enter your Bus API Key (or type 'skip' to skip)" --header "Bus API Key:")
+done
+if [ "$BUS_KEY" = "skip" ] || [ "$BUS_KEY" = "your_bus_api_key_here" ]; then
+    BUS_KEY=""
 fi
 
 BUILD_ARGS="--release"
@@ -66,6 +63,9 @@ if [ -n "$API_KEY" ]; then
 fi
 if [ -n "$FLIGHT_KEY" ]; then
     BUILD_ARGS="$BUILD_ARGS --dart-define=FLIGHT_API_KEY=\"$FLIGHT_KEY\""
+fi
+if [ -n "$BUS_KEY" ]; then
+    BUILD_ARGS="$BUILD_ARGS --dart-define=BUS_API_KEY=\"$BUS_KEY\""
 fi
 
 # 2. Build the Web App

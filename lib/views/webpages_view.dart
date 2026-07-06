@@ -70,7 +70,7 @@ class WebpagesView extends StatelessWidget {
                       ],
                     ),
                     child: AppImage(
-                      path: 'assets/images/webpages.png',
+                      path: 'hotel_assets/images/webpages.png',
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) {
                         return Column(

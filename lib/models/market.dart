@@ -2,23 +2,29 @@ class MarketModel {
   final String id;
   String name;
   String description;
-  String imagePath;
+  String openingHours; // newly added
+  String imagePath; // used as card logo
   List<String> galleryImages;
   final bool isCustom;
+  String? pdfPath;
   
   // New fields for multi-language support
   Map<String, String> localizedNames;
   Map<String, String> localizedDescriptions;
+  Map<String, String> localizedOpeningHours; // newly added
 
   MarketModel({
     required this.id,
     required this.name,
     this.description = '',
+    this.openingHours = '',
     required this.imagePath,
     this.galleryImages = const [],
     this.isCustom = false,
+    this.pdfPath,
     this.localizedNames = const {},
     this.localizedDescriptions = const {},
+    this.localizedOpeningHours = const {},
   });
 
   Map<String, dynamic> toJson() {
@@ -26,11 +32,14 @@ class MarketModel {
       'id': id,
       'name': name,
       'description': description,
+      'openingHours': openingHours,
       'imagePath': imagePath,
       'galleryImages': galleryImages,
       'isCustom': isCustom,
+      if (pdfPath != null) 'pdfPath': pdfPath,
       'localizedNames': localizedNames,
       'localizedDescriptions': localizedDescriptions,
+      'localizedOpeningHours': localizedOpeningHours,
     };
   }
 
@@ -39,11 +48,14 @@ class MarketModel {
       id: json['id'] as String,
       name: json['name'] as String,
       description: json['description'] as String? ?? '',
+      openingHours: json['openingHours'] as String? ?? '',
       imagePath: json['imagePath'] as String,
       galleryImages: (json['galleryImages'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
       isCustom: json['isCustom'] as bool? ?? false,
+      pdfPath: json['pdfPath'] as String?,
       localizedNames: (json['localizedNames'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as String)) ?? {},
       localizedDescriptions: (json['localizedDescriptions'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as String)) ?? {},
+      localizedOpeningHours: (json['localizedOpeningHours'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as String)) ?? {},
     );
   }
 
@@ -65,5 +77,12 @@ class MarketModel {
       return localizedDescriptions[langCode]!;
     }
     return description;
+  }
+  
+  String getOpeningHours(String langCode) {
+    if (localizedOpeningHours.containsKey(langCode) && localizedOpeningHours[langCode]!.isNotEmpty) {
+      return localizedOpeningHours[langCode]!;
+    }
+    return openingHours;
   }
 }

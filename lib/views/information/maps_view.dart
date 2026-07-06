@@ -69,7 +69,7 @@ class MapsView extends StatelessWidget {
                   children: [
                     // Island map background
                     AppImage(
-                      path: 'assets/images/maps/island.png',
+                      path: 'hotel_assets/images/maps/island.png',
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
@@ -162,7 +162,7 @@ class CityMapView extends StatelessWidget {
       ),
       body: ZoomableViewer(
         child: AppImage(
-          path: 'assets/images/maps/${city.mapFile}',
+          path: 'hotel_assets/images/maps/${city.mapFile}',
           fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
             return Container(

@@ -1,42 +1,41 @@
 import 'package:flutter/material.dart';
 import '../../config/theme.dart';
+import '../../services/hotel_config_service.dart';
 import '../../widgets/app_bar_widget.dart';
 import '../../widgets/app_image.dart';
 import '../../services/language_service.dart';
+import '../../services/content_service.dart';
 import 'package:provider/provider.dart';
 
-/// View to display safety rules for pools with a premium dark-glassmorphism aesthetic
 class SafetyRulesView extends StatelessWidget {
-  final String hotel; // 'Savines' or 'Arenal'
+  final String hotelId;
 
-  const SafetyRulesView({super.key, required this.hotel});
+  const SafetyRulesView({super.key, required this.hotelId});
 
   @override
   Widget build(BuildContext context) {
-    final isArenal = hotel == 'Arenal';
+    return Consumer2<ContentService, LanguageService>(
+      builder: (context, contentService, langService, _) {
+        final hotelService = context.watch<HotelConfigService>();
+        final hotelConfig = hotelService.getHotelConfig(hotelId);
+        final bgPath = hotelConfig?.background ?? '';
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: CustomAppBar(
-        titleKey: 'safety_rules',
-        backgroundColor: AppColors.services,
-        parentRoute: isArenal ? '/services/arenal' : '/services/savines',
-        onBack: () => Navigator.of(context).pop(),
-      ),
-      body: Consumer<LanguageService>(
-        builder: (context, langService, _) {
-          return Stack(
+        return Scaffold(
+          backgroundColor: Colors.black,
+          appBar: CustomAppBar(
+            titleKey: 'safety_rules',
+            backgroundColor: AppColors.services,
+            parentRoute: '/services',
+            onBack: () => Navigator.of(context).pop(),
+          ),
+          body: Stack(
             fit: StackFit.expand,
             children: [
-              // Background Image
               AppImage(
-                path: isArenal
-                    ? 'assets/images/facilities/arenal/pools-2.jpg'
-                    : 'assets/images/facilities/savines/pools-2.jpg',
+                path: bgPath,
                 fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(color: Colors.black),
               ),
-
-              // Dark Overlay Gradient
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -49,7 +48,6 @@ class SafetyRulesView extends StatelessWidget {
                   ),
                 ),
               ),
-
               Center(
                 child: Container(
                   constraints: const BoxConstraints(maxWidth: 1000),
@@ -57,36 +55,24 @@ class SafetyRulesView extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Left Column: Rules List
-                      Expanded(
-                        flex: 5,
-                        child: _buildRulesPanel(langService),
-                      ),
-
+                      Expanded(flex: 5, child: _buildRulesPanel(langService)),
                       const SizedBox(width: 32),
-
-                      // Right Column: Info & Pool Names
                       Expanded(
                         flex: 3,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            // Pool Names Box
-                            _buildPoolsPanel(langService, isArenal),
+                            _buildPoolsPanel(langService, hotelId),
                             const SizedBox(height: 24),
-
-                            // Opening Hours Box
                             _buildWarningCard(
-                              color: const Color(0xFFF9A825), // Dark amber
+                              color: const Color(0xFFF9A825),
                               icon: Icons.access_time_filled,
                               title: 'Opening Hours',
                               text: langService.translate('opening_hours_9_20'),
                             ),
                             const SizedBox(height: 20),
-
-                            // Lifeguard Warning Box
                             _buildWarningCard(
-                              color: const Color(0xFFE53935), // Red
+                              color: const Color(0xFFE53935),
                               icon: Icons.warning_rounded,
                               title: 'Important',
                               text: langService.translate('no_lifeguard'),
@@ -99,9 +85,9 @@ class SafetyRulesView extends StatelessWidget {
                 ),
               ),
             ],
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -159,10 +145,8 @@ class SafetyRulesView extends StatelessWidget {
               itemCount: rules.length,
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
-                // Strip the leading "1. " or "2. " from the string
                 var text = rules[index];
                 text = text.replaceFirst(RegExp(r'^\d+\.\s*'), '');
-
                 return Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -208,7 +192,8 @@ class SafetyRulesView extends StatelessWidget {
     );
   }
 
-  Widget _buildPoolsPanel(LanguageService langService, bool isArenal) {
+  Widget _buildPoolsPanel(LanguageService langService, String hotelId) {
+    final isArenal = hotelId == 'Arenal';
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
@@ -249,17 +234,14 @@ class SafetyRulesView extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 14,
-                  color: Color(0xFFB3E5FC), // Light blue
+                  color: Color(0xFFB3E5FC),
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ),
           ],
           const SizedBox(height: 20),
-          Container(
-            height: 1,
-            color: const Color(0xFF29B6F6).withValues(alpha: 0.3),
-          ),
+          Container(height: 1, color: const Color(0xFF29B6F6).withValues(alpha: 0.3)),
           const SizedBox(height: 20),
           Text(
             langService.translate(isArenal ? 'pool_rules_title_indoor' : 'pool_rules_title_apts'),
@@ -301,9 +283,7 @@ class SafetyRulesView extends StatelessWidget {
                 bottomLeft: Radius.circular(22),
               ),
             ),
-            child: Center(
-              child: Icon(icon, color: color, size: 40),
-            ),
+            child: Center(child: Icon(icon, color: color, size: 40)),
           ),
           Expanded(
             child: Padding(

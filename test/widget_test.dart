@@ -1,8 +1,10 @@
 // Basic widget test for Info Hotel app
 
 import 'dart:ui';
+import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:info_hotel/main.dart';
+import 'package:info_hotel/repositories/storage_repository.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 void main() {
@@ -17,7 +19,10 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const InfoHotelApp());
+    final storage = StorageRepository();
+    storage.initForTest(Directory.systemTemp);
+    
+    await tester.pumpWidget(InfoHotelApp(storage: storage));
 
     // Verify the app renders without error
     expect(find.byType(InfoHotelApp), findsOneWidget);

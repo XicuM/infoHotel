@@ -1,0 +1,75 @@
+[
+  {
+    "id": "alsabini_trans",
+    "name": "Alsabini Transfers",
+    "localizedNames": {},
+    "imagePath": "hotel_assets/images/excursions/alsabini_logo.jpg",
+    "type": "images",
+    "content": [
+      "hotel_assets/images/excursions/transfers.png"
+    ],
+    "isLocalImage": false
+  },
+  {
+    "id": "aquabus",
+    "name": "Aquabus",
+    "localizedNames": {},
+    "imagePath": "hotel_assets/images/excursions/aquabus_logo.png",
+    "type": "pdf",
+    "content": "hotel_assets/pdf/excursions/aquabus.pdf",
+    "isLocalImage": false
+  },
+  {
+    "id": "balearia",
+    "name": "Bale\u00e0ria",
+    "localizedNames": {},
+    "imagePath": "hotel_assets/images/excursions/balearia_logo.png",
+    "type": "images",
+    "content": [
+      "hotel_assets/images/excursions/balearia.jpg"
+    ],
+    "isLocalImage": false
+  },
+  {
+    "id": "mediter_pitiusa",
+    "name": "Mediterr\u00e1nea Pitiusa",
+    "localizedNames": {},
+    "imagePath": "hotel_assets/images/excursions/med_pitiusa_logo.jpg",
+    "type": "images",
+    "content": [
+      "hotel_assets/images/excursions/mediterranea_pitiusa.jpg"
+    ],
+    "isLocalImage": false
+  },
+  {
+    "id": "alsabini_excur",
+    "name": "Alsabini Excursions",
+    "localizedNames": {},
+    "imagePath": "hotel_assets/images/excursions/alsabini_logo.jpg",
+    "type": "images",
+    "content": [
+      "hotel_assets/images/excursions/alsabini.jpg"
+    ],
+    "isLocalImage": false
+  },
+  {
+    "id": "capitan_nemo",
+    "name": "Capit\u00e1n Nemo",
+    "localizedNames": {},
+    "imagePath": "hotel_assets/images/excursions/nemo_logo.png",
+    "type": "images",
+    "content": [
+      "hotel_assets/images/excursions/capitan_nemo.jpg"
+    ],
+    "isLocalImage": false
+  },
+  {
+    "id": "excursions_ibiza",
+    "name": "Excursions Ibiza",
+    "localizedNames": {},
+    "imagePath": "hotel_assets/images/excursions/ex_ibiza_logo.png",
+    "type": "pdf",
+    "content": "hotel_assets/pdf/excursions/excursiones_ibiza_esvedraformentera.pdf",
+    "isLocalImage": false
+  }
+]

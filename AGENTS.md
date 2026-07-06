@@ -4,20 +4,21 @@
 - **No codegen**: (No `build_runner`, no `gen-l10n`).
 - **Target**: Raspberry Pi 3B+ kiosk (Wayland, `cage`/`cog` browser).
 - **Commands**:
-  - Dev: `flutter run --dart-define=AEMET_API_KEY=<k1> --dart-define=FLIGHT_API_KEY=<k2>`
-  - Prod (Web): `flutter build web --dart-define=AEMET_API_KEY=<k1> --dart-define=FLIGHT_API_KEY=<k2>`
+  - Dev: `flutter run --dart-define=AEMET_API_KEY=<k1> --dart-define=FLIGHT_API_KEY=<k2> --dart-define=BUS_API_KEY=<k3>`
+  - Prod (Web): `flutter build web --dart-define=AEMET_API_KEY=<k1> --dart-define=FLIGHT_API_KEY=<k2> --dart-define=BUS_API_KEY=<k3>`
 - **Testing**: `flutter test`. Live API tests correctly skip if keys are missing.
 
 ## Architecture & Data
-- **State**: `Provider` (`HotelService`, `LanguageService`, `WeatherService`, `ContentService`).
+- **State**: `Provider` (Services for Hotels, Language, Weather, Content, Markets, Excursions, Shows, Buses, etc.).
 - **L10n**: Custom dictionary map in `lib/l10n/translations.dart` (en, es, ca, fr, de, it, nl).
-- **Data (ContentService)**: Loads `markets.json`, `shows.json`, `excursions.json` from `infohotel_data/` dir (next to executable or app documents) or falls back to baked-in defaults.
+- **Data (`StorageRepository`)**: Services load `markets.json`, `shows.json`, `excursions.json`, etc. from `infohotel_data/` dir (next to executable or app documents) or fall back to baked-in defaults.
 - **Hotels**: Savines (default) & Arenal layouts.
 - **Theme**: Forced `ThemeMode.dark`. Map images get inverted via `AppColors.darkMapFilter`. Landscape orientation locked.
 
 ## APIs
 - **Weather (AEMET)**: Municipality `07046` (Sant Antoni de Portmany). Requires `AEMET_API_KEY`.
 - **Flights (RapidAPI Aerodatabox)**: Requires `FLIGHT_API_KEY`.
+- **Buses (Transportes NAP)**: GTFS data for hotel bus stops. Requires `BUS_API_KEY`.
 
 ## Keyboard Shortcuts
 - **F11**: Fullscreen kiosk toggle.

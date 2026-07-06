@@ -15,27 +15,15 @@ class IbizaFlightService {
         _apiKey = apiKey ?? Env.flightApiKey;
 
   Future<List<IbizaDeparture>> fetchNextDepartures() async {
-    if (_apiKey.isEmpty) {
-      throw Exception('FLIGHT_API_KEY is empty. Did you forget to compile/run with --dart-define=FLIGHT_API_KEY=your_key?');
-    }
-
-    // Kiosk best practice: Request a fixed 12-hour future window
-    final now = DateTime.now();
-    final localFrom = now.toIso8601String().substring(0, 16);
-    final localTo = now.add(const Duration(hours: 12)).toIso8601String().substring(0, 16);
-
-    final urlString = '$_baseUrl/$localFrom/$localTo?withLeg=true&direction=Departure';
-    final requestUrl = kIsWeb ? '/api/proxy?url=${Uri.encodeComponent(urlString)}' : urlString;
+    final requestUrl = '${Env.proxyBaseUrl}/api/flights';
     final url = Uri.parse(requestUrl);
 
-    final response = await _client.get(url, headers: {
-      'X-RapidAPI-Key': _apiKey,
-      'X-RapidAPI-Host': 'aerodatabox.p.rapidapi.com',
-    });
+    final response = await _client.get(url);
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body)['departures'] ?? [];
-      final rawFlights = data.map((item) => IbizaDeparture.fromJson(item)).toList();
+      // The new Python scraper returns the data in the same format as our cache
+      final rawFlights = data.map((item) => IbizaDeparture.fromCache(item)).toList();
       
       return rawFlights;
     } else {
@@ -81,6 +69,8 @@ class IbizaFlightRepository {
     await CacheHelper.writeCache('flight_cache.json', jsonEncode(data));
   }
 
+  Future<List<IbizaDeparture>>? _inFlightRequest;
+
   Future<List<IbizaDeparture>> getDepartures({bool forceRefresh = false}) async {
     final now = DateTime.now();
 
@@ -90,26 +80,37 @@ class IbizaFlightRepository {
     }
 
     // Cache-hit: If data is fresh (less than 15 minutes old) and not forced, bypass API
-    if (!forceRefresh && 
-        _cachedFlights.isNotEmpty && 
-        _lastFetchedTime != null && 
-        now.difference(_lastFetchedTime!) < const Duration(minutes: 15)) {
+    if (!forceRefresh && _lastFetchedTime != null && now.difference(_lastFetchedTime!) < const Duration(minutes: 15)) {
+      if (_cachedFlights.isEmpty) {
+        throw Exception('API is temporarily deactivated due to recent failure (e.g. 429 Quota Exhausted). Please wait.');
+      }
+      return _filterAndGroupFlights(_cachedFlights);
+    }
+
+    // Deduplicate concurrent requests
+    if (_inFlightRequest != null) {
+      await _inFlightRequest;
       return _filterAndGroupFlights(_cachedFlights);
     }
 
     // Cache-miss: Call the API safely in the background
+    _inFlightRequest = _apiService.fetchNextDepartures();
     try {
-      final newFlights = await _apiService.fetchNextDepartures();
+      final newFlights = await _inFlightRequest!;
       newFlights.sort((a, b) => a.scheduledTime.compareTo(b.scheduledTime));
       _cachedFlights = newFlights;
       _lastFetchedTime = now;
       await _saveDiskCache();
     } catch (e) {
+      // Prevent rapid retries by updating fetch time even on failure
+      _lastFetchedTime = now;
       // Offline/Error Fail-safe: Fall back silently to old data if API fails
       if (_cachedFlights.isNotEmpty) {
         return _filterAndGroupFlights(_cachedFlights);
       }
       rethrow; // If app just launched and has no data, bubble up the error to UI
+    } finally {
+      _inFlightRequest = null;
     }
 
     return _filterAndGroupFlights(_cachedFlights);

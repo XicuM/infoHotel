@@ -19,4 +19,19 @@ class Env {
     'FLIGHT_API_KEY',
     defaultValue: '',
   );
+
+  /// NAP (National Access Point) API Key for Ibiza Bus GTFS data
+  /// Load from build config: flutter run --dart-define=BUS_API_KEY=your_key
+  static const String busApiKey = String.fromEnvironment(
+    'BUS_API_KEY',
+    defaultValue: '',
+  );
+
+  /// Proxy base URL for local web debugging (e.g. http://localhost:8080).
+  /// When empty, uses the relative path /api/proxy (production Pi setup).
+  /// Load from build config: flutter run --dart-define=PROXY_URL=http://localhost:8080
+  static const String proxyBaseUrl = String.fromEnvironment(
+    'PROXY_URL',
+    defaultValue: '',
+  );
 }

@@ -1,0 +1,89 @@
+[
+  {
+    "id": "las_dalias",
+    "name": "Las Dalias",
+    "description": "las_dalias_desc",
+    "imagePath": "hotel_assets/images/markets/las_dalias_logo.png",
+    "galleryImages": [
+      "markets/las_dalias.jpg",
+      "markets/las_dalias_logo.png",
+      "markets/las_dalias.jpg",
+      "markets/las_dalias_logo.png"
+    ],
+    "isCustom": true,
+    "localizedNames": {},
+    "localizedDescriptions": {}
+  },
+  {
+    "id": "punta_arabi",
+    "name": "Punta Arab\u00ed",
+    "description": "punta_arabi_desc",
+    "imagePath": "hotel_assets/images/markets/punta_arabi_logo.jpg",
+    "galleryImages": [
+      "markets/punta_arabi.jpg"
+    ],
+    "isCustom": true,
+    "localizedNames": {},
+    "localizedDescriptions": {}
+  },
+  {
+    "id": "platja_den_bossa",
+    "name": "Platja d'en Bossa",
+    "description": "platja_desc",
+    "imagePath": "hotel_assets/images/markets/platja_market_logo.png",
+    "galleryImages": [
+      "markets/platja_den_bossa.jpg"
+    ],
+    "isCustom": false,
+    "localizedNames": {},
+    "localizedDescriptions": {}
+  },
+  {
+    "id": "sant_joan",
+    "name": "Sant Joan",
+    "description": "sant_joan_desc",
+    "imagePath": "hotel_assets/images/markets/sant_joan_logo.jpg",
+    "galleryImages": [
+      "markets/sant_joan.jpg"
+    ],
+    "isCustom": false,
+    "localizedNames": {},
+    "localizedDescriptions": {}
+  },
+  {
+    "id": "sant_miquel",
+    "name": "Sant Miquel",
+    "description": "sant_miquel_desc",
+    "imagePath": "hotel_assets/images/markets/sant_miquel_logo.jpg",
+    "galleryImages": [
+      "markets/sant_miquel.jpg"
+    ],
+    "isCustom": true,
+    "localizedNames": {},
+    "localizedDescriptions": {}
+  },
+  {
+    "id": "sant_rafel",
+    "name": "Sant Rafel",
+    "description": "sant_rafel_desc",
+    "imagePath": "hotel_assets/images/markets/sant_rafel_logo.jpg",
+    "galleryImages": [
+      "markets/sant_rafel.jpg"
+    ],
+    "isCustom": true,
+    "localizedNames": {},
+    "localizedDescriptions": {}
+  },
+  {
+    "id": "forada",
+    "name": "Forada",
+    "description": "forada_desc",
+    "imagePath": "hotel_assets/images/markets/forada_logo.jpeg",
+    "galleryImages": [
+      "markets/forada.jpg"
+    ],
+    "isCustom": true,
+    "localizedNames": {},
+    "localizedDescriptions": {}
+  }
+]

@@ -43,23 +43,26 @@ class AppImage extends StatelessWidget {
       final mediaQuery = MediaQuery.maybeOf(context);
       final dpr = mediaQuery?.devicePixelRatio ?? 1.0;
       final screenWidth = mediaQuery?.size.width ?? 1280.0;
+      final pathLower = path?.toLowerCase() ?? '';
 
-      if (finalCacheWidth == null && width != null && width! > 0 && width! != double.infinity) {
-        finalCacheWidth = (width! * dpr).round();
-      }
-      if (finalCacheHeight == null && height != null && height! > 0 && height! != double.infinity) {
-        finalCacheHeight = (height! * dpr).round();
-      }
+      // Skip cache resizing for logos to preserve high quality
+      if (!pathLower.contains('logo')) {
+        if (finalCacheWidth == null && width != null && width! > 0 && width! != double.infinity) {
+          finalCacheWidth = (width! * dpr).round();
+        }
+        if (finalCacheHeight == null && height != null && height! > 0 && height! != double.infinity) {
+          finalCacheHeight = (height! * dpr).round();
+        }
 
-      // If we don't have explicit size constraints but we're in lowPowerMode, cap large images (like maps/backgrounds) to screen width
-      if (finalCacheWidth == null && finalCacheHeight == null) {
-        final pathLower = path?.toLowerCase() ?? '';
-        if (pathLower.contains('map') || 
-            pathLower.contains('background') || 
-            pathLower.contains('excursions') || 
-            pathLower.contains('facilities') ||
-            (bytes != null && bytes!.length > 100 * 1024)) {
-          finalCacheWidth = (screenWidth * dpr).round().clamp(800, 1600);
+        // If we don't have explicit size constraints but we're in lowPowerMode, cap large images (like maps/backgrounds) to screen width
+        if (finalCacheWidth == null && finalCacheHeight == null) {
+          if (pathLower.contains('map') || 
+              pathLower.contains('background') || 
+              pathLower.contains('excursions') || 
+              pathLower.contains('facilities') ||
+              (bytes != null && bytes!.length > 100 * 1024)) {
+            finalCacheWidth = (screenWidth * dpr).round().clamp(800, 1600);
+          }
         }
       }
     }
@@ -79,6 +82,21 @@ class AppImage extends StatelessWidget {
         if (path!.startsWith('http')) {
           image = Image.network(
             path!,
+            width: width,
+            height: height,
+            fit: fit,
+            cacheWidth: finalCacheWidth,
+            cacheHeight: finalCacheWidth == null ? finalCacheHeight : null,
+            errorBuilder: errorBuilder ?? (context, error, stackTrace) => _buildError(context),
+          );
+        } else if (path!.startsWith('hotel_assets/')) {
+          // Dynamic assets must be loaded via network in Web because they aren't in the compiled AssetManifest
+          final proxyUrl = const String.fromEnvironment('PROXY_URL', defaultValue: 'http://localhost:8080');
+          // Add a timestamp to bypass browser caching for newly uploaded images
+          final cacheBuster = DateTime.now().millisecondsSinceEpoch;
+          final networkUrl = '$proxyUrl/${path!}?cb=$cacheBuster';
+          image = Image.network(
+            networkUrl,
             width: width,
             height: height,
             fit: fit,

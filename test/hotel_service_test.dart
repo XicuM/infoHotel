@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:info_hotel/services/hotel_service.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('HotelService Tests', () {
     late HotelService hotelService;
 
@@ -9,36 +11,41 @@ void main() {
       hotelService = HotelService();
     });
 
-    test('Initial hotel should be Savines', () {
-      expect(hotelService.currentHotel, 'Savines');
-      expect(hotelService.isSavines, isTrue);
-      expect(hotelService.isArenal, isFalse);
+    test('Initial hotel id should be Savines', () {
+      expect(hotelService.currentHotelId, 'Savines');
     });
 
-    test('Changing to Arenal updates state', () {
+    test('setHotel updates hotel id', () {
       bool notified = false;
-      hotelService.addListener(() {
-        notified = true;
-      });
+      hotelService.addListener(() => notified = true);
 
       hotelService.setHotel('Arenal');
-      
-      expect(hotelService.currentHotel, 'Arenal');
-      expect(hotelService.isArenal, isTrue);
-      expect(hotelService.isSavines, isFalse);
+
+      expect(hotelService.currentHotelId, 'Arenal');
       expect(notified, isTrue);
     });
 
-    test('Changing to invalid hotel does nothing', () {
+    test('setHotel does nothing for same hotel', () {
       bool notified = false;
-      hotelService.addListener(() {
-        notified = true;
-      });
+      hotelService.addListener(() => notified = true);
 
-      hotelService.setHotel('InvalidHotel');
-      
-      expect(hotelService.currentHotel, 'Savines');
+      hotelService.setHotel('Savines');
+
+      expect(hotelService.currentHotelId, 'Savines');
       expect(notified, isFalse);
+    });
+
+    test('currentHotelConfig is null without ContentService', () {
+      expect(hotelService.currentHotelConfig, isNull);
+    });
+
+    test('hotelConfigs is empty without ContentService', () {
+      expect(hotelService.hotelConfigs, isEmpty);
+    });
+
+    test('cycleNextHotel does nothing when no configs', () {
+      hotelService.cycleNextHotel();
+      expect(hotelService.currentHotelId, 'Savines');
     });
   });
 }

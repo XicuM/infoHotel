@@ -6,6 +6,7 @@ import '../config/theme.dart';
 import '../config/app_config.dart';
 import '../services/language_service.dart';
 import '../services/weather_service.dart';
+import '../services/hotel_service.dart';
 import '../widgets/navigation_button.dart';
 import 'services/services_view.dart';
 import 'information/information_view.dart';
@@ -15,15 +16,11 @@ import 'webpages_view.dart';
 import 'information/flight_board_view.dart';
 import '../widgets/app_image.dart';
 import 'package:window_manager/window_manager.dart';
+import '../config/env.dart';
 
 /// Modernized Home screen for the hotel kiosk
 class HomeView extends StatefulWidget {
-  final String hotel;
-
-  const HomeView({
-    super.key,
-    this.hotel = 'Savines',
-  });
+  const HomeView({super.key});
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -38,81 +35,85 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    return KeyboardListener(
-      focusNode: FocusNode()..requestFocus(),
-      onKeyEvent: _handleKeyEvent,
-      child: Scaffold(
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            // Background Image
-            AppImage(path: 
-              widget.hotel == 'Savines'
-                  ? 'assets/images/background/savines.jpg'
-                  : 'assets/images/background/arenal.jpg',
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(color: Colors.black87),
-            ),
-            
-            // Dark Gradient Overlay for readability
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withValues(alpha: 0.6),
-                    Colors.black.withValues(alpha: 0.3),
-                    Colors.black.withValues(alpha: 0.7),
-                  ],
-                  stops: const [0.0, 0.5, 1.0],
-                ),
-              ),
-            ),
+    return Consumer<HotelService>(
+      builder: (context, hotelService, _) {
+        final config = hotelService.currentHotelConfig;
+        final hotelName = config?.name ?? '';
+        final bgPath = config?.background ?? '';
+        final logoPath = config?.logo ?? '';
 
-            Column(
+        return KeyboardListener(
+          focusNode: FocusNode()..requestFocus(),
+          onKeyEvent: _handleKeyEvent,
+          child: Scaffold(
+            body: Stack(
+              fit: StackFit.expand,
               children: [
-                _buildHeader(),
-                Expanded(
-                  child: Row(
+                AppImage(path: bgPath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(color: Colors.black87),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.6),
+                        Colors.black.withValues(alpha: 0.3),
+                        Colors.black.withValues(alpha: 0.7),
+                      ],
+                      stops: const [0.0, 0.5, 1.0],
+                    ),
+                  ),
+                ),
+                  Column(
                     children: [
-                      // Navigation Menu
+                      _HomeHeader(logoPath: logoPath, hotelName: hotelName),
                       Expanded(
-                        flex: 1,
-                        child: _buildNavigationMenu(),
-                      ),
-                      // Weather & Touch Info
-                      Expanded(
-                        flex: 1,
-                        child: _buildInfoPanel(),
+                        child: Row(
+                          children: [
+                            Expanded(flex: 1, child: _HomeNavigationMenu(onNavigate: _navigateTo)),
+                            Expanded(flex: 1, child: const _HomeInfoPanel()),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                ),
               ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildHeader() {
+  void _navigateTo(Widget page) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => page),
+    );
+  }
+}
+
+class _HomeHeader extends StatelessWidget {
+  final String logoPath;
+  final String hotelName;
+
+  const _HomeHeader({required this.logoPath, required this.hotelName});
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Elegant Hotel Logo
-          AppImage(path: 
-            widget.hotel == 'Savines'
-                ? 'assets/images/logo/savines.png'
-                : 'assets/images/logo/arenal.png',
+          AppImage(path: logoPath,
             height: 90,
             errorBuilder: (context, error, stackTrace) {
               return Text(
-                widget.hotel.toUpperCase(),
+                hotelName.toUpperCase(),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 42,
@@ -122,15 +123,18 @@ class _HomeViewState extends State<HomeView> {
               );
             },
           ),
-
-          // Premium Clock
           const _HomeClockWidget(),
         ],
       ),
     );
   }
+}
 
-  Widget _buildInfoPanel() {
+class _HomeInfoPanel extends StatelessWidget {
+  const _HomeInfoPanel();
+
+  @override
+  Widget build(BuildContext context) {
     return Consumer2<WeatherService, LanguageService>(
       builder: (context, weatherService, langService, child) {
         final weather = weatherService.weatherData;
@@ -142,7 +146,7 @@ class _HomeViewState extends State<HomeView> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               // Weather Card
-              if (weather != null)
+              if (Env.aemetApiKey.isNotEmpty && weather != null)
                 Container(
                   padding: const EdgeInsets.all(32),
                   decoration: BoxDecoration(
@@ -184,7 +188,6 @@ class _HomeViewState extends State<HomeView> {
                         ],
                       ),
                       const SizedBox(width: 24),
-                      // Optional: A dynamic weather icon could go here if we had mapping
                       Icon(
                         Icons.wb_sunny_outlined,
                         size: 80,
@@ -196,7 +199,7 @@ class _HomeViewState extends State<HomeView> {
 
               const SizedBox(height: 60),
 
-              // Touch Screen Hint - Pill shape
+              // Touch Screen Hint
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                 decoration: BoxDecoration(
@@ -225,7 +228,7 @@ class _HomeViewState extends State<HomeView> {
                     ),
                     const SizedBox(width: 16),
                     AppImage(path: 
-                      'assets/images/touch.png',
+                      'hotel_assets/images/touch.png',
                       width: 32,
                       height: 32,
                       colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
@@ -241,8 +244,15 @@ class _HomeViewState extends State<HomeView> {
       },
     );
   }
+}
 
-  Widget _buildNavigationMenu() {
+class _HomeNavigationMenu extends StatelessWidget {
+  final void Function(Widget) onNavigate;
+
+  const _HomeNavigationMenu({required this.onNavigate});
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 40),
       child: Column(
@@ -250,54 +260,52 @@ class _HomeViewState extends State<HomeView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           NavigationButton(
-            titleKey: 'hotel_services',
+            titleKey: 'facilities',
             color: AppColors.services,
             icon: Icons.room_service,
-            onTap: () => _navigateTo(const ServicesView()),
+            onTap: () => onNavigate(const ServicesView()),
           ),
           const SizedBox(height: 12),
           NavigationButton(
             titleKey: 'tourist_info',
             color: AppColors.information,
             icon: Icons.map,
-            onTap: () => _navigateTo(const InformationView()),
+            onTap: () => onNavigate(const InformationView()),
           ),
           const SizedBox(height: 12),
           NavigationButton(
             titleKey: 'excursions',
             color: AppColors.excursions,
             icon: Icons.directions_bus,
-            onTap: () => _navigateTo(const ExcursionsView()),
+            onTap: () => onNavigate(const ExcursionsView()),
           ),
           const SizedBox(height: 12),
-          NavigationButton(
-            titleKey: 'weather',
-            color: AppColors.weather,
-            icon: Icons.wb_sunny,
-            onTap: () => _navigateTo(const WeatherView()),
-          ),
-          const SizedBox(height: 12),
-          NavigationButton(
-            titleKey: 'flight_board',
-            color: Colors.black87,
-            icon: Icons.flight_takeoff,
-            onTap: () => _navigateTo(const FlightBoardView()),
-          ),
-          const SizedBox(height: 12),
+          if (Env.aemetApiKey.isNotEmpty) ...[
+            NavigationButton(
+              titleKey: 'weather',
+              color: AppColors.weather,
+              icon: Icons.wb_sunny,
+              onTap: () => onNavigate(const WeatherView()),
+            ),
+            const SizedBox(height: 12),
+          ],
+          ...[
+            NavigationButton(
+              titleKey: 'flight_board',
+              color: Colors.black87,
+              icon: Icons.flight_takeoff,
+              onTap: () => onNavigate(const FlightBoardView()),
+            ),
+            const SizedBox(height: 12),
+          ],
           NavigationButton(
             titleKey: 'webpages',
             color: Colors.white,
             icon: Icons.public,
-            onTap: () => _navigateTo(const WebpagesView()),
+            onTap: () => onNavigate(const WebpagesView()),
           ),
         ],
       ),
-    );
-  }
-
-  void _navigateTo(Widget page) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => page),
     );
   }
 }

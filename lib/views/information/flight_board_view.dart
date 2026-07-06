@@ -92,7 +92,7 @@ class _FlightBoardViewState extends State<FlightBoardView> {
                               const Icon(Icons.error_outline, size: 64, color: Colors.redAccent),
                               const SizedBox(height: 16),
                               Text(
-                                "Schedule temporarily unavailable\n${snapshot.error}",
+                                "Schedule temporarily unavailable",
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(fontSize: 22, color: Colors.white70),
                               ),
@@ -230,25 +230,9 @@ class _FlightBoardViewState extends State<FlightBoardView> {
                                             flex: 2,
                                             child: _FlightNumberTicker(flightNumbers: flight.flightNumbers),
                                           ),
+
                                           Expanded(
-                                            flex: 2,
-                                            child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              child: Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                                decoration: BoxDecoration(
-                                                  color: flight.gate.isNotEmpty ? Colors.white.withOpacity(0.1) : Colors.transparent,
-                                                  borderRadius: BorderRadius.circular(4),
-                                                ),
-                                                child: Text(
-                                                  flight.gate,
-                                                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.amber),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            flex: 3,
+                                            flex: 5,
                                             child: Text(
                                               statusText,
                                               style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: statusColor),
@@ -298,8 +282,7 @@ class _FlightBoardViewState extends State<FlightBoardView> {
           Expanded(flex: 2, child: Text('TIME', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber, letterSpacing: 1.0))),
           Expanded(flex: 4, child: Text('DESTINATION', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber, letterSpacing: 1.0))),
           Expanded(flex: 2, child: Text('FLIGHT', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber, letterSpacing: 1.0))),
-          Expanded(flex: 2, child: Text('GATE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber, letterSpacing: 1.0))),
-          Expanded(flex: 3, child: Text('REMARKS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber, letterSpacing: 1.0))),
+          Expanded(flex: 5, child: Text('REMARKS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber, letterSpacing: 1.0))),
         ],
       ),
     );

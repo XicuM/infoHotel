@@ -3,9 +3,10 @@ import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../models/excursion.dart';
 import '../../services/content_service.dart';
+import '../../services/excursion_service.dart';
 import '../../services/language_service.dart';
-import '../../widgets/app_bar_widget.dart';
 import '../../widgets/grid_widget.dart';
+import '../../widgets/generic_menu_view.dart';
 import '../pdf_viewer_view.dart';
 import '../image_viewer_view.dart';
 import 'excursion_edit_view.dart';
@@ -16,9 +17,9 @@ class ExcursionsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<ContentService, LanguageService>(
-      builder: (context, contentService, langService, child) {
-        final excursions = contentService.excursions;
+    return Consumer3<ContentService, ExcursionService, LanguageService>(
+      builder: (context, contentService, excursionService, langService, child) {
+        final excursions = excursionService.excursions;
         final isEditMode = contentService.isEditMode;
 
         List<CardData> cards = excursions.map((excursion) {
@@ -41,27 +42,13 @@ class ExcursionsView extends StatelessWidget {
           ));
         }
 
-        return Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: CustomAppBar(
-            titleKey: 'excursions',
-            backgroundColor: AppColors.excursions,
-          ),
-          body: Column(
-            children: [
-
-              // Main grid content
-              Expanded(
-                child: contentService.isLoading
-                    ? Center(child: CircularProgressIndicator(color: AppColors.excursions))
-                    : CardGrid(
-                        cards: cards,
-                        crossAxisCount: 4, // 4 columns looks more premium and less cramped than 5
-                        childAspectRatio: 0.8,
-                      ),
-              ),
-            ],
-          ),
+        return GenericMenuView(
+          titleKey: 'excursions',
+          appBarColor: AppColors.excursions,
+          cards: cards,
+          isLoading: excursionService.isLoading,
+          crossAxisCount: 4,
+          childAspectRatio: 0.8,
         );
       },
     );
@@ -80,7 +67,7 @@ class ExcursionsView extends StatelessWidget {
       id: 'excursion_${DateTime.now().millisecondsSinceEpoch}',
       name: 'New Excursion',
       localizedNames: {'en': 'New Excursion'},
-      imagePath: 'assets/images/ui/placeholder.png',
+      imagePath: 'hotel_assets/images/ui/placeholder.png',
       type: ExcursionType.images,
       content: [],
       isLocalImage: false,
@@ -101,7 +88,7 @@ class ExcursionsView extends StatelessWidget {
             pdfPath: excursion.content as String,
             title: excursion.name,
             backgroundColor: AppColors.excursions,
-            isLocal: !(excursion.content as String).startsWith('assets/'),
+            isLocal: !(excursion.content as String).startsWith('hotel_assets/'),
             logoPath: excursion.imagePath,
             isLogoLocal: excursion.isLocalImage,
           ),

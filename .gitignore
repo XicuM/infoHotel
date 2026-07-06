@@ -61,7 +61,7 @@ app.*.map.json
 /macos/Flutter/GeneratedPluginRegistrant.swift
 /macos/Flutter/generated_plugins.cmake
 
-*.api
+.env
 
 # Kiosk build artifacts
 infoHotel_web_kiosk.tar.gz

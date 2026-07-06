@@ -1,0 +1,1 @@
+void updateWebCursor(bool isVisible) {}

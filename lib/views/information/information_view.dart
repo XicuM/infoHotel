@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import '../../config/env.dart';
 import '../../config/theme.dart';
-import '../../widgets/app_bar_widget.dart';
 import '../../widgets/grid_widget.dart';
+import '../../widgets/generic_menu_view.dart';
 import 'maps_view.dart';
 import 'markets_view.dart';
 import 'taxi_view.dart';
 import 'car_rental_view.dart';
-import '../pdf_viewer_view.dart';
+import 'bus_view.dart';
 
 /// Tourist information view
 /// Ported from layout/information/information.py
@@ -17,7 +18,7 @@ class InformationView extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<CardData> cards = [
       CardData(
-        imagePath: 'assets/images/information/maps.jpg',
+        imagePath: 'hotel_assets/images/information/maps.jpg',
         titleKey: 'maps',
         onTap: () {
           Navigator.of(context).push(
@@ -27,22 +28,18 @@ class InformationView extends StatelessWidget {
           );
         },
       ),
-      CardData(
-        imagePath: 'assets/images/information/bus.jpg',
-        titleKey: 'bus',
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PdfViewerView(
-                pdfPath: 'assets/pdf/bus_map.pdf',
-                title: 'Bus Map',
-                backgroundColor: AppColors.information,
-                enableBookMode: false,
+      if (Env.busApiKey.isNotEmpty)
+        CardData(
+          imagePath: 'hotel_assets/images/information/bus.jpg',
+          titleKey: 'bus',
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const BusView(),
               ),
-            ),
-          );
-        },
-      ),
+            );
+          },
+        ),
       CardData(
         iconData: Icons.local_taxi,
         titleKey: 'taxi',
@@ -66,7 +63,7 @@ class InformationView extends StatelessWidget {
         },
       ),
       CardData(
-        imagePath: 'assets/images/information/markets.jpg',
+        imagePath: 'hotel_assets/images/information/markets.jpg',
         titleKey: 'hippy_markets',
         onTap: () {
           Navigator.of(context).push(
@@ -78,23 +75,12 @@ class InformationView extends StatelessWidget {
       ),
     ];
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: CustomAppBar(
-        titleKey: 'tourist_info',
-        backgroundColor: AppColors.information,
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: CardGrid(
-              cards: cards,
-              crossAxisCount: 4,
-              childAspectRatio: 0.8,
-            ),
-          ),
-        ],
-      ),
+    return GenericMenuView(
+      titleKey: 'tourist_info',
+      appBarColor: AppColors.information,
+      cards: cards,
+      crossAxisCount: 4,
+      childAspectRatio: 0.8,
     );
   }
 }

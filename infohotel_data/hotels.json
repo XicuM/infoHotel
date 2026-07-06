@@ -1,0 +1,933 @@
+{
+  "_meta": {
+    "Savines": {
+      "name": "Hotel Ses Savines",
+      "background": "hotel_assets/images/background/savines.jpg",
+      "logo": "hotel_assets/images/logo/savines.png",
+      "cardImage": "hotel_assets/images/facilities/savines.png",
+      "showsLogo": "hotel_assets/images/shows/savines.png",
+      "showShows": true,
+      "sortOrder": 0
+    },
+    "Arenal": {
+      "name": "Hotel Arenal",
+      "background": "hotel_assets/images/background/arenal.jpg",
+      "logo": "hotel_assets/images/logo/arenal.png",
+      "cardImage": "hotel_assets/images/facilities/arenal.png",
+      "showsLogo": "hotel_assets/images/shows/arenal.png",
+      "showShows": true,
+      "sortOrder": 1
+    }
+  },
+  "Savines": [
+    {
+      "titleKey": "hotel_map",
+      "imagePaths": [
+        "maps/savines.png"
+      ],
+      "descriptionKey": "map_legend_savines",
+      "headerIcon": "map_outlined",
+      "accentColor": "42A5F5"
+    },
+    {
+      "titleKey": "dinning_room",
+      "logoPath": "facilities/savines/comedor_savines_1783334768457.jpg",
+      "imagePaths": [
+        "facilities/savines/comedor_savines_1783334774934.jpg"
+      ],
+      "isLiteral": false,
+      "hasSafetyRules": false,
+      "schedule": [
+        {
+          "label": "Breakfast",
+          "time": "08:00 \u2013 10:00",
+          "localizedLabels": {
+            "en": "Breakfast",
+            "es": "Desayuno",
+            "ca": "Esmorzar",
+            "fr": "Petit-d\u00e9jeuner",
+            "de": "Fr\u00fchst\u00fcck",
+            "it": "Colazione",
+            "nl": "Ontbijt"
+          }
+        },
+        {
+          "label": "Dinner",
+          "time": "19:30 \u2013 21:30",
+          "localizedLabels": {
+            "en": "Dinner",
+            "es": "Cena",
+            "ca": "Sopar",
+            "fr": "D\u00eener",
+            "de": "Abendessen",
+            "it": "Cena",
+            "nl": "Diner"
+          }
+        }
+      ],
+      "features": [
+        {
+          "icon": "restaurant_menu",
+          "text": "Buffet-style breakfast & dinner",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Buffet-style breakfast & dinner",
+            "es": "Desayuno y cena estilo buffet",
+            "ca": "Esmorzar i sopar d'estil bufet",
+            "fr": "Petit-d\u00e9jeuner et d\u00eener sous forme de buffet",
+            "de": "Fr\u00fchst\u00fcck und Abendessen in Buffetform",
+            "it": "Colazione e cena a buffet",
+            "nl": "Ontbijt- en dinerbuffet"
+          }
+        },
+        {
+          "icon": "local_pizza",
+          "text": "International dishes, pizza & pasta",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "International dishes, pizza & pasta",
+            "es": "Platos internacionales, pizza y pasta",
+            "ca": "Plats internacionals, pizza i pasta",
+            "fr": "Plats internationaux, pizza et p\u00e2tes",
+            "de": "Internationale Gerichte, Pizza & Pasta",
+            "it": "Piatti internazionali, pizza e pasta",
+            "nl": "Internationale gerechten, pizza & pasta"
+          }
+        },
+        {
+          "icon": "tapas",
+          "text": "Local specialities & themed nights",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Local specialities & themed nights",
+            "es": "Especialidades locales y noches tem\u00e1ticas",
+            "ca": "Especialitats locals i nits tem\u00e0tiques",
+            "fr": "Sp\u00e9cialit\u00e9s locales et soir\u00e9es \u00e0 th\u00e8me",
+            "de": "Lokale Spezialit\u00e4ten und Themenabende",
+            "it": "Specialit\u00e0 locali e serate a tema",
+            "nl": "Lokale specialiteiten & thema-avonden"
+          }
+        },
+        {
+          "icon": "child_friendly",
+          "text": "Children's menu available",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Children's menu available",
+            "es": "Men\u00fa infantil disponible",
+            "ca": "Men\u00fa infantil disponible",
+            "fr": "Menu enfant disponible",
+            "de": "Kindermen\u00fc verf\u00fcgbar",
+            "it": "Menu per bambini disponibile",
+            "nl": "Kindermenu beschikbaar"
+          }
+        }
+      ],
+      "headerIcon": "restaurant",
+      "accentColor": "FF8F00",
+      "localizedTitles": {
+        "en": "Dining room"
+      },
+      "localizedDescriptions": {}
+    },
+    {
+      "titleKey": "Bar",
+      "imagePaths": [
+        "facilities/savines/bar.jpg",
+        "facilities/savines/bar-2.jpg"
+      ],
+      "isLiteral": true,
+      "schedule": [
+        {
+          "label": "Bar",
+          "time": "10:00 \u2013 00:00",
+          "localizedLabels": {
+            "en": "Bar",
+            "es": "Bar",
+            "ca": "Bar",
+            "fr": "Bar",
+            "de": "Bar",
+            "it": "Bar",
+            "nl": "Bar"
+          }
+        },
+        {
+          "label": "Snacks",
+          "time": "10:00 \u2013 18:00",
+          "localizedLabels": {
+            "en": "Snacks",
+            "es": "Snacks",
+            "ca": "Aperitius",
+            "fr": "Collations",
+            "de": "Snacks",
+            "it": "Spuntini",
+            "nl": "Snacks"
+          }
+        }
+      ],
+      "features": [
+        {
+          "icon": "local_bar",
+          "text": "Cocktails, spirits & soft drinks",
+          "localizedTexts": {
+            "en": "Cocktails, spirits & soft drinks",
+            "es": "C\u00f3cteles, licores y refrescos",
+            "ca": "C\u00f2ctels, licors i refrescos",
+            "fr": "Cocktails, spiritueux et boissons non alcoolis\u00e9es",
+            "de": "Cocktails, Spirituosen und alkoholfreie Getr\u00e4nke",
+            "it": "Cocktail, liquori e bibite",
+            "nl": "Cocktails, sterke dranken & frisdranken"
+          }
+        },
+        {
+          "icon": "lunch_dining",
+          "text": "Poolside snacks & sandwiches",
+          "localizedTexts": {
+            "en": "Poolside snacks & sandwiches",
+            "es": "Snacks y s\u00e1ndwiches junto a la piscina",
+            "ca": "Aperitius i entrepans a la piscina",
+            "fr": "Collations et sandwichs au bord de la piscine",
+            "de": "Snacks und Sandwiches am Pool",
+            "it": "Spuntini e panini a bordo piscina",
+            "nl": "Snacks en broodjes bij het zwembad"
+          }
+        },
+        {
+          "icon": "icecream",
+          "text": "Ice creams & cold drinks",
+          "localizedTexts": {
+            "en": "Ice creams & cold drinks",
+            "es": "Helados y bebidas fr\u00edas",
+            "ca": "Gelats i begudes fredes",
+            "fr": "Glaces et boissons froides",
+            "de": "Eis und kalte Getr\u00e4nke",
+            "it": "Gelati e bevande fredde",
+            "nl": "IJsjes & koude drankjes"
+          }
+        },
+        {
+          "icon": "deck",
+          "text": "Terrace lounge seating",
+          "localizedTexts": {
+            "en": "Terrace lounge seating",
+            "es": "Asientos en la terraza",
+            "ca": "Seients a la terrassa",
+            "fr": "Si\u00e8ges sur la terrasse",
+            "de": "Sitzgelegenheiten auf der Terrasse",
+            "it": "Posti a sedere in terrazza",
+            "nl": "Zitplaatsen op het terras"
+          }
+        }
+      ],
+      "headerIcon": "local_bar",
+      "accentColor": "AB47BC"
+    },
+    {
+      "titleKey": "pools",
+      "logoPath": "facilities/savines/pools_1783340889758.jpg",
+      "imagePaths": [
+        "facilities/savines/pools-2.jpg"
+      ],
+      "isLiteral": false,
+      "hasSafetyRules": true,
+      "schedule": [
+        {
+          "label": "Open",
+          "time": "10:00 \u2013 20:30",
+          "localizedLabels": {
+            "en": "Open",
+            "es": "Abierto",
+            "ca": "Obert",
+            "fr": "Ouvert",
+            "de": "Ge\u00f6ffnet",
+            "it": "Aperto",
+            "nl": "Open"
+          }
+        }
+      ],
+      "features": [
+        {
+          "icon": "pool",
+          "text": "Outdoor hotel pool & apartments pool",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Outdoor hotel pool & apartments pool",
+            "es": "Piscina exterior del hotel y piscina de los apartamentos",
+            "ca": "Piscina exterior de l'hotel i piscina dels apartaments",
+            "fr": "Piscine ext\u00e9rieure de l'h\u00f4tel et piscine des appartements",
+            "de": "Au\u00dfenpool des Hotels und Pool der Apartments",
+            "it": "Piscina all'aperto dell'hotel e piscina degli appartamenti",
+            "nl": "Buitenzwembad hotel & zwembad appartementen"
+          }
+        },
+        {
+          "icon": "child_care",
+          "text": "Dedicated children's pool",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Dedicated children's pool",
+            "es": "Piscina infantil dedicada",
+            "ca": "Piscina infantil dedicada",
+            "fr": "Piscine pour enfants d\u00e9di\u00e9e",
+            "de": "Separater Kinderpool",
+            "it": "Piscina per bambini dedicata",
+            "nl": "Speciaal kinderzwembad"
+          }
+        },
+        {
+          "icon": "wb_sunny",
+          "text": "Sun terrace with free loungers",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Sun terrace with free loungers",
+            "es": "Terraza sol\u00e1rium con tumbonas gratuitas",
+            "ca": "Terrassa sol\u00e0rium amb gandules gratu\u00eftes",
+            "fr": "Terrasse ensoleill\u00e9e avec chaises longues gratuites",
+            "de": "Sonnenterrasse mit kostenlosen Liegest\u00fchlen",
+            "it": "Terrazza solarium con lettini gratuiti",
+            "nl": "Zonneterras met gratis ligstoelen"
+          }
+        },
+        {
+          "icon": "beach_access",
+          "text": "Sea-view sun terrace & parasols",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Sea-view sun terrace & parasols",
+            "es": "Terraza sol\u00e1rium con vistas al mar y sombrillas",
+            "ca": "Terrassa sol\u00e0rium amb vistes al mar i para-sols",
+            "fr": "Terrasse avec vue sur la mer et parasols",
+            "de": "Sonnenterrasse mit Meerblick und Sonnenschirmen",
+            "it": "Terrazza vista mare e ombrelloni",
+            "nl": "Zonneterras met zeezicht & parasols"
+          }
+        },
+        {
+          "icon": "water",
+          "text": "Lifeguard floats & safety equipment",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Lifeguard floats & safety equipment",
+            "es": "Flotadores de salvavidas y equipo de seguridad",
+            "ca": "Flotadors de socorrista i equip de seguretat",
+            "fr": "Bou\u00e9es de sauvetage et \u00e9quipement de s\u00e9curit\u00e9",
+            "de": "Rettungsringe und Sicherheitsausr\u00fcstung",
+            "it": "Salvagenti e attrezzatura di sicurezza",
+            "nl": "Reddingsdrijvers & veiligheidsuitrusting"
+          }
+        }
+      ],
+      "headerIcon": "pool",
+      "accentColor": "29B6F6",
+      "localizedTitles": {
+        "en": "Pools"
+      },
+      "localizedDescriptions": {}
+    },
+    {
+      "titleKey": "Tennis",
+      "logoPath": "facilities/savines/tennis_1783340864100.jpg",
+      "imagePaths": [
+        "facilities/savines/tennis-2.jpg"
+      ],
+      "isLiteral": true,
+      "hasSafetyRules": false,
+      "schedule": [],
+      "features": [
+        {
+          "icon": "sports_tennis",
+          "text": "2 full-size tennis courts",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "2 full-size tennis courts",
+            "es": "2 pistas de tenis de tama\u00f1o reglamentario",
+            "ca": "2 pistes de tennis de mida reglament\u00e0ria",
+            "fr": "2 courts de tennis de taille standard",
+            "de": "2 Tennispl\u00e4tze (Originalgr\u00f6\u00dfe)",
+            "it": "2 campi da tennis regolamentari",
+            "nl": "2 volwaardige tennisbanen"
+          }
+        },
+        {
+          "icon": "sports",
+          "text": "Rackets available at reception",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Rackets available at reception",
+            "es": "Raquetas disponibles en recepci\u00f3n",
+            "ca": "Raquetes disponibles a recepci\u00f3",
+            "fr": "Raquettes disponibles \u00e0 la r\u00e9ception",
+            "de": "Schl\u00e4ger an der Rezeption erh\u00e4ltlich",
+            "it": "Racchette disponibili alla reception",
+            "nl": "Rackets verkrijgbaar bij de receptie"
+          }
+        }
+      ],
+      "headerIcon": "sports_tennis",
+      "accentColor": "66BB6A",
+      "localizedTitles": {
+        "en": "Tennis"
+      },
+      "localizedDescriptions": {}
+    },
+    {
+      "titleKey": "Squash",
+      "logoPath": "facilities/savines/squash_1783340856050.jpg",
+      "imagePaths": [
+        "facilities/savines/squash-2.jpg"
+      ],
+      "isLiteral": true,
+      "hasSafetyRules": false,
+      "schedule": [],
+      "features": [
+        {
+          "icon": "sports_handball",
+          "text": "1 squash court on site",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "1 squash court on site",
+            "es": "1 pista de squash en las instalaciones",
+            "ca": "1 pista d'esquaix a les instal\u00b7lacions",
+            "fr": "1 court de squash sur place",
+            "de": "1 Squash-Court auf dem Gel\u00e4nde",
+            "it": "1 campo da squash in loco",
+            "nl": "1 squashbaan op het terrein"
+          }
+        },
+        {
+          "icon": "sports",
+          "text": "Rackets & balls available",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Rackets & balls available",
+            "es": "Raquetas y pelotas disponibles",
+            "ca": "Raquetes i pilotes disponibles",
+            "fr": "Raquettes et balles disponibles",
+            "de": "Schl\u00e4ger und B\u00e4lle verf\u00fcgbar",
+            "it": "Racchette e palline disponibili",
+            "nl": "Rackets & ballen beschikbaar"
+          }
+        }
+      ],
+      "headerIcon": "sports_handball",
+      "accentColor": "EF5350",
+      "localizedTitles": {
+        "en": "Squash"
+      },
+      "localizedDescriptions": {}
+    },
+    {
+      "titleKey": "Crazy Golf",
+      "logoPath": "facilities/savines/crazy-golf_1783340841739.jpg",
+      "imagePaths": [
+        "facilities/savines/crazy-golf-2.jpg"
+      ],
+      "isLiteral": true,
+      "hasSafetyRules": false,
+      "schedule": [],
+      "features": [
+        {
+          "icon": "golf_course",
+          "text": "9-hole mini-golf course",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "9-hole mini-golf course",
+            "es": "Campo de minigolf de 9 hoyos",
+            "ca": "Camp de minigolf de 9 forats",
+            "fr": "Parcours de mini-golf 9 trous",
+            "de": "9-Loch-Minigolfplatz",
+            "it": "Campo da minigolf a 9 buche",
+            "nl": "9-holes midgetgolfbaan"
+          }
+        },
+        {
+          "icon": "child_friendly",
+          "text": "Great fun for the whole family",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Great fun for the whole family",
+            "es": "Gran diversi\u00f3n para toda la familia",
+            "ca": "Gran diversi\u00f3 per a tota la fam\u00edlia",
+            "fr": "Grand plaisir pour toute la famille",
+            "de": "Gro\u00dfer Spa\u00df f\u00fcr die ganze Familie",
+            "it": "Grande divertimento per tutta la famiglia",
+            "nl": "Leuk voor het hele gezin"
+          }
+        },
+        {
+          "icon": "free_breakfast",
+          "text": "Free for hotel guests",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Free for hotel guests",
+            "es": "Gratis para los hu\u00e9spedes del hotel",
+            "ca": "Gratu\u00eft per als hostes de l'hotel",
+            "fr": "Gratuit pour les clients de l'h\u00f4tel",
+            "de": "Kostenlos f\u00fcr Hotelg\u00e4ste",
+            "it": "Gratuito per gli ospiti dell'hotel",
+            "nl": "Gratis voor hotelgasten"
+          }
+        }
+      ],
+      "headerIcon": "golf_course",
+      "accentColor": "26A69A",
+      "localizedTitles": {
+        "en": "Crazy Golf"
+      },
+      "localizedDescriptions": {}
+    },
+    {
+      "titleKey": "private_beach",
+      "logoPath": "facilities/savines/beach_1783340875098.jpg",
+      "imagePaths": [
+        "facilities/savines/beach-2.jpg"
+      ],
+      "isLiteral": false,
+      "hasSafetyRules": false,
+      "schedule": [],
+      "features": [
+        {
+          "icon": "beach_access",
+          "text": "Direct access to private beach area",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Direct access to private beach area",
+            "es": "Acceso directo a la zona de playa privada",
+            "ca": "Acc\u00e9s directe a la zona de platja privada",
+            "fr": "Acc\u00e8s direct \u00e0 la plage priv\u00e9e",
+            "de": "Direkter Zugang zum privaten Strandbereich",
+            "it": "Accesso diretto all'area della spiaggia privata",
+            "nl": "Directe toegang tot priv\u00e9strand"
+          }
+        },
+        {
+          "icon": "deck",
+          "text": "Sun loungers & parasols on the beach",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Sun loungers & parasols on the beach",
+            "es": "Tumbonas y sombrillas en la playa",
+            "ca": "Gandules i para-sols a la platja",
+            "fr": "Chaises longues et parasols sur la plage",
+            "de": "Liegest\u00fchle und Sonnenschirme am Strand",
+            "it": "Lettini e ombrelloni in spiaggia",
+            "nl": "Ligstoelen & parasols op het strand"
+          }
+        }
+      ],
+      "headerIcon": "beach_access",
+      "accentColor": "42A5F5",
+      "localizedTitles": {
+        "en": "Private beach"
+      },
+      "localizedDescriptions": {}
+    }
+  ],
+  "Arenal": [
+    {
+      "titleKey": "hotel_map",
+      "imagePaths": [
+        "maps/arenal.png"
+      ],
+      "descriptionKey": "map_legend_arenal",
+      "headerIcon": "map_outlined",
+      "accentColor": "42A5F5"
+    },
+    {
+      "titleKey": "dinning_room",
+      "logoPath": "facilities/arenal/dining-room-2_1783341081317.jpg",
+      "imagePaths": [
+        "facilities/arenal/(2015) _MG_1003_1783341034173.JPG"
+      ],
+      "isLiteral": false,
+      "hasSafetyRules": false,
+      "schedule": [
+        {
+          "label": "Breakfast",
+          "time": "08:00 \u2013 10:00",
+          "localizedLabels": {
+            "en": "Breakfast",
+            "es": "Desayuno",
+            "ca": "Esmorzar",
+            "fr": "Petit-d\u00e9jeuner",
+            "de": "Fr\u00fchst\u00fcck",
+            "it": "Colazione",
+            "nl": "Ontbijt"
+          }
+        },
+        {
+          "label": "Dinner",
+          "time": "19:30 \u2013 21:30",
+          "localizedLabels": {
+            "en": "Dinner",
+            "es": "Cena",
+            "ca": "Sopar",
+            "fr": "D\u00eener",
+            "de": "Abendessen",
+            "it": "Cena",
+            "nl": "Diner"
+          }
+        }
+      ],
+      "features": [
+        {
+          "icon": "restaurant_menu",
+          "text": "Buffet breakfast & dinner",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Buffet breakfast & dinner",
+            "es": "Desayuno y cena buffet",
+            "ca": "Esmorzar i sopar bufet",
+            "fr": "Petit-d\u00e9jeuner et d\u00eener buffet",
+            "de": "Fr\u00fchst\u00fccks- und Abendbuffet",
+            "it": "Colazione e cena a buffet",
+            "nl": "Ontbijt- en dinerbuffet"
+          }
+        },
+        {
+          "icon": "tapas",
+          "text": "International & local specialities",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "International & local specialities",
+            "es": "Especialidades internacionales y locales",
+            "ca": "Especialitats internacionals i locals",
+            "fr": "Sp\u00e9cialit\u00e9s internationales et locales",
+            "de": "Internationale und lokale Spezialit\u00e4ten",
+            "it": "Specialit\u00e0 internazionali e locali",
+            "nl": "Internationale en lokale specialiteiten"
+          }
+        }
+      ],
+      "headerIcon": "restaurant",
+      "accentColor": "FF8F00",
+      "localizedTitles": {
+        "en": "Dining room"
+      },
+      "localizedDescriptions": {}
+    },
+    {
+      "titleKey": "Bar",
+      "logoPath": "facilities/arenal/bar_1783341100786.jpg",
+      "imagePaths": [
+        "facilities/arenal/bar-2.jpg"
+      ],
+      "isLiteral": true,
+      "hasSafetyRules": false,
+      "schedule": [
+        {
+          "label": "Bar",
+          "time": "09:00 \u2013 01:00",
+          "localizedLabels": {
+            "en": "Bar",
+            "es": "Bar",
+            "ca": "Bar",
+            "fr": "Bar",
+            "de": "Bar",
+            "it": "Bar",
+            "nl": "Bar"
+          }
+        }
+      ],
+      "features": [
+        {
+          "icon": "local_bar",
+          "text": "Full bar with cocktails & spirits",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Full bar with cocktails & spirits",
+            "es": "Bar completo con c\u00f3cteles y licores",
+            "ca": "Bar complet amb c\u00f2ctels i licors",
+            "fr": "Bar complet avec cocktails et spiritueux",
+            "de": "Vollst\u00e4ndige Bar mit Cocktails und Spirituosen",
+            "it": "Bar completo con cocktail e liquori",
+            "nl": "Volledige bar met cocktails & sterke dranken"
+          }
+        },
+        {
+          "icon": "lunch_dining",
+          "text": "Hot & cold snacks available",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Hot & cold snacks available",
+            "es": "Snacks fr\u00edos y calientes disponibles",
+            "ca": "Aperitius freds i calents disponibles",
+            "fr": "Collations chaudes et froides disponibles",
+            "de": "Hei\u00dfe und kalte Snacks erh\u00e4ltlich",
+            "it": "Spuntini caldi e freddi disponibili",
+            "nl": "Warme & koude snacks verkrijgbaar"
+          }
+        }
+      ],
+      "headerIcon": "local_bar",
+      "accentColor": "AB47BC",
+      "localizedTitles": {
+        "en": "Bar"
+      },
+      "localizedDescriptions": {}
+    },
+    {
+      "titleKey": "pools",
+      "logoPath": "facilities/arenal/pools_1783341113271.jpg",
+      "imagePaths": [
+        "facilities/arenal/pools-2.jpg"
+      ],
+      "isLiteral": false,
+      "hasSafetyRules": true,
+      "schedule": [
+        {
+          "label": "Outdoor pool",
+          "time": "10:00 \u2013 20:30",
+          "localizedLabels": {
+            "en": "Outdoor pool",
+            "es": "Piscina exterior",
+            "ca": "Piscina exterior",
+            "fr": "Piscine ext\u00e9rieure",
+            "de": "Au\u00dfenpool",
+            "it": "Piscina all'aperto",
+            "nl": "Buitenzwembad"
+          }
+        },
+        {
+          "label": "Indoor pool",
+          "time": "09:00 \u2013 20:00",
+          "localizedLabels": {
+            "en": "Indoor pool",
+            "es": "Piscina cubierta",
+            "ca": "Piscina coberta",
+            "fr": "Piscine int\u00e9rieure",
+            "de": "Innenpool",
+            "it": "Piscina coperta",
+            "nl": "Binnenzwembad"
+          }
+        }
+      ],
+      "features": [
+        {
+          "icon": "pool",
+          "text": "Outdoor & indoor heated pool",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Outdoor & indoor heated pool",
+            "es": "Piscina climatizada exterior e interior",
+            "ca": "Piscina climatitzada exterior i interior",
+            "fr": "Piscine ext\u00e9rieure et int\u00e9rieure chauff\u00e9e",
+            "de": "Beheizter Au\u00dfen- und Innenpool",
+            "it": "Piscina riscaldata coperta e all'aperto",
+            "nl": "Binnen- & buitenzwembad (verwarmd)"
+          }
+        },
+        {
+          "icon": "child_care",
+          "text": "Children's pool area",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Children's pool area",
+            "es": "\u00c1rea de piscina para ni\u00f1os",
+            "ca": "\u00c0rea de piscina per a nens",
+            "fr": "Espace piscine pour enfants",
+            "de": "Kinderpoolbereich",
+            "it": "Area piscina per bambini",
+            "nl": "Kinderzwembadgedeelte"
+          }
+        },
+        {
+          "icon": "deck",
+          "text": "Sun terrace with loungers",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Sun terrace with loungers",
+            "es": "Terraza sol\u00e1rium con tumbonas",
+            "ca": "Terrassa sol\u00e0rium amb gandules",
+            "fr": "Terrasse ensoleill\u00e9e avec chaises longues",
+            "de": "Sonnenterrasse mit Liegest\u00fchlen",
+            "it": "Terrazza solarium con lettini",
+            "nl": "Zonneterras met ligstoelen"
+          }
+        },
+        {
+          "icon": "thermostat",
+          "text": "Indoor pool heated in May & October",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Indoor pool heated in May & October",
+            "es": "Piscina cubierta climatizada en mayo y octubre",
+            "ca": "Piscina coberta climatitzada al maig i l'octubre",
+            "fr": "Piscine int\u00e9rieure chauff\u00e9e en mai et octobre",
+            "de": "Innenpool im Mai und Oktober beheizt",
+            "it": "Piscina coperta riscaldata a maggio e ottobre",
+            "nl": "Binnenzwembad verwarmd in mei & oktober"
+          }
+        }
+      ],
+      "headerIcon": "pool",
+      "accentColor": "29B6F6",
+      "localizedTitles": {
+        "en": "Pools"
+      },
+      "localizedDescriptions": {}
+    },
+    {
+      "titleKey": "Gym / Sauna",
+      "logoPath": "facilities/arenal/gym_1783340907116.jpg",
+      "imagePaths": [
+        "facilities/arenal/gym-2.jpg"
+      ],
+      "isLiteral": true,
+      "hasSafetyRules": false,
+      "schedule": [
+        {
+          "label": "Open",
+          "time": "08:00 \u2013 20:00",
+          "localizedLabels": {
+            "en": "Open",
+            "es": "Abierto",
+            "ca": "Obert",
+            "fr": "Ouvert",
+            "de": "Ge\u00f6ffnet",
+            "it": "Aperto",
+            "nl": "Open"
+          }
+        }
+      ],
+      "features": [
+        {
+          "icon": "fitness_center",
+          "text": "Fully equipped fitness centre",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Fully equipped fitness centre",
+            "es": "Gimnasio totalmente equipado",
+            "ca": "Gimn\u00e0s totalment equipat",
+            "fr": "Centre de remise en forme enti\u00e8rement \u00e9quip\u00e9",
+            "de": "Voll ausgestattetes Fitnesscenter",
+            "it": "Centro fitness completamente attrezzato",
+            "nl": "Volledig uitgerust fitnesscentrum"
+          }
+        },
+        {
+          "icon": "spa",
+          "text": "Sauna & solarium",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Sauna & solarium",
+            "es": "Sauna y sol\u00e1rium",
+            "ca": "Sauna i sol\u00e0rium",
+            "fr": "Sauna et solarium",
+            "de": "Sauna und Solarium",
+            "it": "Sauna e solarium",
+            "nl": "Sauna & solarium"
+          }
+        },
+        {
+          "icon": "table_bar",
+          "text": "Table tennis & billiards",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Table tennis & billiards",
+            "es": "Tenis de mesa y billar",
+            "ca": "Tennis de taula i billar",
+            "fr": "Tennis de table et billard",
+            "de": "Tischtennis und Billard",
+            "it": "Ping pong e biliardo",
+            "nl": "Tafeltennis & biljart"
+          }
+        }
+      ],
+      "headerIcon": "fitness_center",
+      "accentColor": "EF5350",
+      "localizedTitles": {
+        "en": "Gym / Sauna"
+      },
+      "localizedDescriptions": {}
+    },
+    {
+      "titleKey": "Arenal Diving",
+      "logoPath": "facilities/arenal/arenal-diving_1783340920039.jpg",
+      "imagePaths": [
+        "facilities/arenal/diving_1783340942750.png"
+      ],
+      "isLiteral": true,
+      "hasSafetyRules": false,
+      "schedule": [
+        {
+          "label": "Open",
+          "time": "09:30 \u2013 18:30",
+          "localizedLabels": {
+            "en": "Open",
+            "es": "Abierto",
+            "ca": "Obert",
+            "fr": "Ouvert",
+            "de": "Ge\u00f6ffnet",
+            "it": "Aperto",
+            "nl": "Open"
+          }
+        }
+      ],
+      "features": [
+        {
+          "icon": "scuba_diving",
+          "text": "On-site PADI diving centre",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "On-site PADI diving centre",
+            "es": "Centro de buceo PADI en las instalaciones",
+            "ca": "Centre de busseig PADI a les instal\u00b7lacions",
+            "fr": "Centre de plong\u00e9e PADI sur place",
+            "de": "PADI-Tauchzentrum vor Ort",
+            "it": "Centro immersioni PADI in loco",
+            "nl": "PADI duikcentrum op het terrein"
+          }
+        },
+        {
+          "icon": "water",
+          "text": "Guided dives in crystal-clear waters",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Guided dives in crystal-clear waters",
+            "es": "Inmersiones guiadas en aguas cristalinas",
+            "ca": "Immersions guiades en aig\u00fces cristal\u00b7lines",
+            "fr": "Plong\u00e9es guid\u00e9es dans des eaux cristallines",
+            "de": "Gef\u00fchrte Tauchg\u00e4nge in kristallklarem Wasser",
+            "it": "Immersioni guidate in acque cristalline",
+            "nl": "Begeleide duiken in kristalhelder water"
+          }
+        },
+        {
+          "icon": "school",
+          "text": "Courses for all levels",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Courses for all levels",
+            "es": "Cursos para todos los niveles",
+            "ca": "Cursos per a tots els nivells",
+            "fr": "Cours pour tous les niveaux",
+            "de": "Kurse f\u00fcr alle Niveaus",
+            "it": "Corsi per tutti i livelli",
+            "nl": "Cursussen voor alle niveaus"
+          }
+        },
+        {
+          "icon": "sailing",
+          "text": "Snorkelling & boat excursions",
+          "isLiteral": true,
+          "localizedTexts": {
+            "en": "Snorkelling & boat excursions",
+            "es": "Excursiones de snorkel y en barco",
+            "ca": "Excursions de snorkel i en vaixell",
+            "fr": "Excursions en bateau et plong\u00e9e en apn\u00e9e",
+            "de": "Schnorchel- und Bootsausfl\u00fcge",
+            "it": "Escursioni in barca e snorkeling",
+            "nl": "Snorkelen & bootexcursies"
+          }
+        }
+      ],
+      "headerIcon": "scuba_diving",
+      "accentColor": "26C6DA",
+      "localizedTitles": {
+        "en": "Arenal Diving"
+      },
+      "localizedDescriptions": {}
+    }
+  ]
+}
