@@ -94,7 +94,9 @@ class AppImage extends StatelessWidget {
           final proxyUrl = const String.fromEnvironment('PROXY_URL', defaultValue: 'http://localhost:8080');
           // Add a timestamp to bypass browser caching for newly uploaded images
           final cacheBuster = DateTime.now().millisecondsSinceEpoch;
-          final networkUrl = '$proxyUrl/${path!}?cb=$cacheBuster';
+          // IMPORTANT: encode the path so that strict webkit browsers do not reject URLs with spaces!
+          final encodedPath = Uri.encodeFull(path!);
+          final networkUrl = '$proxyUrl/$encodedPath?cb=$cacheBuster';
           image = Image.network(
             networkUrl,
             width: width,
