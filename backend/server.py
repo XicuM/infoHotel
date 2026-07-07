@@ -8,6 +8,17 @@ from backend.flightradar_scraper import handle_flightradar_get
 
 mimetypes.add_type('application/wasm', '.wasm')
 mimetypes.add_type('application/javascript', '.js')
+mimetypes.add_type('application/pdf', '.pdf')
+mimetypes.add_type('image/jpeg', '.jpg')
+mimetypes.add_type('image/jpeg', '.jpeg')
+mimetypes.add_type('image/png', '.png')
+mimetypes.add_type('image/webp', '.webp')
+mimetypes.add_type('image/gif', '.gif')
+mimetypes.add_type('application/json', '.json')
+mimetypes.add_type('font/woff', '.woff')
+mimetypes.add_type('font/woff2', '.woff2')
+mimetypes.add_type('font/ttf', '.ttf')
+mimetypes.add_type('image/svg+xml', '.svg')
 
 class MainHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -55,7 +66,9 @@ class MainHandler(http.server.SimpleHTTPRequestHandler):
         from backend.config import BASE_DIR
         
         # Remove query params (like ?cb=1234) for file path resolution
+        import urllib.parse
         path_without_query = self.path.split('?')[0]
+        path_without_query = urllib.parse.unquote(path_without_query)
         
         if path_without_query.startswith('/hotel_assets/'):
             # Strip the leading slash to make it relative to BASE_DIR
@@ -71,6 +84,7 @@ class MainHandler(http.server.SimpleHTTPRequestHandler):
                     ctype, _ = mimetypes.guess_type(file_path)
                     if ctype:
                         self.send_header('Content-Type', ctype)
+                    self.send_header('Content-Length', str(len(content)))
                     self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
                     self.end_headers()
                     self.wfile.write(content)

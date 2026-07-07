@@ -83,8 +83,8 @@ rm -f "$OUTPUT_ARCHIVE"
 gum spin --spinner dot --title "Packaging web and backend folders..." -- bash -c "tar -czf $OUTPUT_ARCHIVE build/web/ backend/"
 
 # 4. Upload to a temporary hosting service
-echo "Uploading to catbox.moe for easy transfer..."
-if curl -s -F "reqtype=fileupload" -F "fileToUpload=@$OUTPUT_ARCHIVE" "https://catbox.moe/user/api.php" > .transfer_url; then
+echo "Uploading to transfer.sh for easy transfer..."
+if curl -s --upload-file "$OUTPUT_ARCHIVE" "https://transfer.sh/$OUTPUT_ARCHIVE" > .transfer_url; then
     DOWNLOAD_URL=$(cat .transfer_url)
     rm -f .transfer_url
 
@@ -107,7 +107,7 @@ else
     gum style \
         --foreground 196 --border-foreground 196 --border normal \
         --margin "1 0" --padding "1 2" \
-        "Upload failed! (catbox.moe might be down)"
+        "Upload failed! (transfer.sh might be down)"
 
     echo "No problem! We'll use your local network instead."
     echo "1. On this computer, start a local server by running:  python3 -m http.server 8080"
