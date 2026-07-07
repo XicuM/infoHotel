@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import '../utils/path_resolver.dart';
 import '../config/app_config.dart';
+import '../config/env.dart';
 
 /// A unified widget for displaying asset or memory images with consistent error handling
 /// and optional color filtering.
@@ -91,12 +92,14 @@ class AppImage extends StatelessWidget {
           );
         } else if (path!.startsWith('hotel_assets/')) {
           // Dynamic assets must be loaded via network in Web because they aren't in the compiled AssetManifest
-          final proxyUrl = const String.fromEnvironment('PROXY_URL', defaultValue: 'http://localhost:8080');
+          final proxyUrl = Env.proxyBaseUrl;
           // Add a timestamp to bypass browser caching for newly uploaded images
           final cacheBuster = DateTime.now().millisecondsSinceEpoch;
           // IMPORTANT: encode the path so that strict webkit browsers do not reject URLs with spaces!
           final encodedPath = Uri.encodeFull(path!);
-          final networkUrl = '$proxyUrl/$encodedPath?cb=$cacheBuster';
+          final networkUrl = proxyUrl.isEmpty 
+              ? '/$encodedPath?cb=$cacheBuster' 
+              : '$proxyUrl/$encodedPath?cb=$cacheBuster';
           image = Image.network(
             networkUrl,
             width: width,
