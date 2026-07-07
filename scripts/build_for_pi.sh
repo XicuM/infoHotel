@@ -82,43 +82,44 @@ rm -f "$OUTPUT_ARCHIVE"
 
 gum spin --spinner dot --title "Packaging web and backend folders..." -- bash -c "tar -czf $OUTPUT_ARCHIVE build/web/ backend/"
 
-# 4. Upload to a temporary hosting service
-echo "Uploading to transfer.sh for easy transfer..."
-if curl -s --upload-file "$OUTPUT_ARCHIVE" "https://transfer.sh/$OUTPUT_ARCHIVE" > .transfer_url; then
-    DOWNLOAD_URL=$(cat .transfer_url)
-    rm -f .transfer_url
+# 4. Host locally via secure tunnel
+echo "Starting local HTTP server on port 8080..."
+python3 -m http.server 8080 > /dev/null 2>&1 &
+SERVER_PID=$!
 
-    echo ""
-    gum style \
-        --foreground 212 --border-foreground 212 --border normal \
-        --margin "1 0" --padding "1 2" \
-        "Done! The release is packaged and uploaded."
+echo "Starting secure tunnel via localhost.run..."
+rm -f .tunnel.log
+ssh -o StrictHostKeyChecking=no -R 80:localhost:8080 nokey@localhost.run > .tunnel.log 2>&1 &
+TUNNEL_PID=$!
 
-    echo "Copy and paste this exact snippet into your Raspberry Pi Connect terminal:"
-    echo ""
-    gum style --foreground 15 --background 0 --padding "1 2" "wget $DOWNLOAD_URL -O $OUTPUT_ARCHIVE
+# Ensure we clean up background processes when the script exits (e.g. user presses Ctrl+C)
+trap "kill $SERVER_PID $TUNNEL_PID 2>/dev/null; rm -f .tunnel.log" EXIT
+
+# Wait for the tunnel URL to appear in the log
+gum spin --spinner dot --title "Waiting for tunnel URL..." -- bash -c 'while ! grep -q "tunneled with tls termination" .tunnel.log; do sleep 1; done'
+
+TUNNEL_URL=$(grep -o 'https://[a-zA-Z0-9.-]*\.lhr\.life' .tunnel.log | head -n 1)
+
+echo ""
+gum style \
+    --foreground 212 --border-foreground 212 --border normal \
+    --margin "1 0" --padding "1 2" \
+    "Done! Secure tunnel established."
+
+echo "Copy and paste this exact snippet into your Raspberry Pi Connect terminal:"
+echo ""
+gum style --foreground 15 --background 0 --padding "1 2" "wget $TUNNEL_URL/$OUTPUT_ARCHIVE -O $OUTPUT_ARCHIVE
 mkdir -p ~/infoHotel
 tar -xzf $OUTPUT_ARCHIVE -C ~/infoHotel
 sudo systemctl restart infohotel.service"
 
-else
-    rm -f .transfer_url
-    echo ""
-    gum style \
-        --foreground 196 --border-foreground 196 --border normal \
-        --margin "1 0" --padding "1 2" \
-        "Upload failed! (transfer.sh might be down)"
+echo ""
+gum style --foreground 196 "The server is running in the background."
+gum style --foreground 72 "Press Ctrl+C to close the server once the download finishes."
+echo ""
 
-    echo "No problem! We'll use your local network instead."
-    echo "1. On this computer, start a local server by running:  python3 -m http.server 8080"
-    echo "2. Find this computer's local IP address (e.g. 192.168.1.X)."
-    echo "3. Copy and paste this exact snippet into your Raspberry Pi Connect terminal:"
-    echo ""
-    gum style --foreground 15 --background 0 --padding "1 2" "wget http://YOUR_PC_IP:8080/$OUTPUT_ARCHIVE -O $OUTPUT_ARCHIVE
-mkdir -p ~/infoHotel
-tar -xzf $OUTPUT_ARCHIVE -C ~/infoHotel
-sudo systemctl restart infohotel.service"
-fi
+# Wait infinitely until the user presses Ctrl+C
+wait $TUNNEL_PID
 
 echo ""
 gum style --foreground 72 "This will replace the web files and automatically restart Cage and Cog!"
