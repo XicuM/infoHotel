@@ -40,10 +40,13 @@ gum style \
 
 # 3. Update system and install kiosk dependencies using Gum spinner
 gum spin --spinner dot --title "Updating package lists..." -- sudo apt-get update -y
+gum style --foreground 72 "    ✓ Package lists updated."
 gum spin --spinner dot --title "Installing dependencies (curl, unzip, xz-utils, zip, python3, python3-pip, cage, cog, wlr-randr)..." -- sudo apt-get install -y curl unzip xz-utils zip python3 python3-pip cage cog wlr-randr
+gum style --foreground 72 "    ✓ Dependencies installed."
 
 echo -e "${BLUE}--> Installing Python backend dependencies...${NC}"
 gum spin --spinner dot --title "Running pip install..." -- pip install -r $HOME/infoHotel/backend/requirements.txt --break-system-packages
+gum style --foreground 72 "    ✓ Python backend dependencies installed."
 
 
 echo -e "${BLUE}--> Configuring hardware permissions for $USER...${NC}"
@@ -64,9 +67,11 @@ if gum confirm "Do you want to configure a custom screen resolution for the kios
 
     # 2. Detect active connector
     CONNECTOR=""
+    CONNECTOR_PATH=""
     for f in /sys/class/drm/*/status; do
         if [ "$(cat "$f")" = "connected" ]; then
-            con=$(basename "$(dirname "$f")")
+            CONNECTOR_PATH=$(dirname "$f")
+            con=$(basename "$CONNECTOR_PATH")
             CONNECTOR="${con#*-}"
             break
         fi
@@ -76,7 +81,18 @@ if gum confirm "Do you want to configure a custom screen resolution for the kios
         gum style --foreground 196 "Error: No active display connector detected!"
     else
         gum style --foreground 212 "Detected active display connector: $CONNECTOR"
-        KIO_RES=$(gum input --placeholder "Enter resolution (e.g., 1280x720, 800x480)" --value "1280x720" --header "Kiosk Resolution:")
+        
+        MODES=""
+        if [ -f "$CONNECTOR_PATH/modes" ]; then
+            # Sort modes nicely (numeric descending is usually best for resolutions)
+            MODES=$(cat "$CONNECTOR_PATH/modes" | sort -ur)
+        fi
+        
+        if [ -n "$MODES" ]; then
+            KIO_RES=$(echo "$MODES" | gum choose --header "Select Kiosk Resolution:")
+        else
+            KIO_RES=$(gum input --placeholder "Enter resolution (e.g., 1280x720, 800x480)" --value "1280x720" --header "Kiosk Resolution:")
+        fi
         
         if [[ "$KIO_RES" =~ ^[0-9]+x[0-9]+$ ]]; then
             # Read, clean up existing video configs to avoid duplicates, and prepend the new one
