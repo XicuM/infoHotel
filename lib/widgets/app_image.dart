@@ -93,13 +93,11 @@ class AppImage extends StatelessWidget {
         } else if (path!.startsWith('hotel_assets/')) {
           // Dynamic assets must be loaded via network in Web because they aren't in the compiled AssetManifest
           final proxyUrl = Env.proxyBaseUrl;
-          // Add a timestamp to bypass browser caching for newly uploaded images
-          final cacheBuster = DateTime.now().millisecondsSinceEpoch;
           // IMPORTANT: encode the path so that strict webkit browsers do not reject URLs with spaces!
           final encodedPath = Uri.encodeFull(path!);
           final networkUrl = proxyUrl.isEmpty 
-              ? '/$encodedPath?cb=$cacheBuster' 
-              : '$proxyUrl/$encodedPath?cb=$cacheBuster';
+              ? '/$encodedPath' 
+              : '$proxyUrl/$encodedPath';
           image = Image.network(
             networkUrl,
             width: width,

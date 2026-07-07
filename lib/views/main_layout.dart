@@ -149,26 +149,20 @@ class _MainLayoutState extends State<MainLayout> {
               ),
             ),
 
-            if (AppConfig.lowPowerMode)
-              Positioned(
-                top: 0, bottom: 0, left: 0, width: 280, // Approximate width of sidebar
-                child: Container(color: Colors.black.withOpacity(0.5)),
-              )
-            else
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
-                      colors: [
-                        Colors.black.withOpacity(0.8),
-                        Colors.transparent,
-                      ],
-                    ),
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerRight,
+                    end: Alignment.centerLeft,
+                    colors: [
+                      Colors.black.withOpacity(0.8),
+                      Colors.transparent,
+                    ],
                   ),
                 ),
               ),
+            ),
 
             // Edit Mode Dark Overlay
             Consumer<ContentService>(
