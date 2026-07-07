@@ -40,6 +40,14 @@ class _FlightBoardViewState extends State<FlightBoardView> {
     setState(() {
       _flightFuture = _repository.getDepartures(forceRefresh: forceRefresh);
     });
+    
+    // Trigger a rebuild when the fetch completes so the UI updates
+    // the header with the new `lastFetchedTime` value.
+    _flightFuture.whenComplete(() {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
