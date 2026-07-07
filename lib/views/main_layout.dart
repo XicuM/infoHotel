@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../config/theme.dart';
 import '../services/hotel_config_service.dart';
+import '../models/hotel_config.dart';
 import '../services/language_service.dart';
 import '../services/hotel_service.dart';
 import '../services/content_service.dart';
