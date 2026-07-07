@@ -80,7 +80,7 @@ gum style --foreground 72 "Build successful!"
 OUTPUT_ARCHIVE="infoHotel_web_kiosk.tar.gz"
 rm -f "$OUTPUT_ARCHIVE"
 
-gum spin --spinner dot --title "Packaging web and backend folders..." -- bash -c "tar -czf $OUTPUT_ARCHIVE build/web/ backend/"
+gum spin --spinner dot --title "Packaging web and backend folders..." -- bash -c "tar -czf $OUTPUT_ARCHIVE build/web/ backend/ hotel_assets/"
 
 # 4. Host locally via secure tunnel
 echo "Starting local HTTP server on port 8080..."
