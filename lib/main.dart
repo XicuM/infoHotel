@@ -13,6 +13,8 @@ import 'services/hotel_config_service.dart';
 import 'repositories/storage_repository.dart';
 import 'services/bus_service.dart';
 import 'views/main_layout.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'config/http_overrides.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -21,6 +23,17 @@ import 'package:window_manager/window_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  setupHttpOverrides();
+
+  try {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    debugPrint('----------------------------------------');
+    debugPrint('INFO_HOTEL_VERSION: ${packageInfo.version}+${packageInfo.buildNumber}');
+    debugPrint('----------------------------------------');
+  } catch (e) {
+    debugPrint('Failed to get package info: $e');
+  }
+
   final storage = StorageRepository();
   await storage.init();
 

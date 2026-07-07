@@ -125,27 +125,32 @@ class _MainLayoutState extends State<MainLayout> {
           children: [
             // Background Image
             Positioned.fill(
-              child: AnimatedSwitcher(
-                duration: AppConfig.lowPowerMode ? Duration.zero : const Duration(milliseconds: 500),
-                layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
-                  return Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      ...previousChildren,
-                      if (currentChild != null) currentChild,
-                    ],
+              child: Selector<HotelService, HotelConfig?>(
+                selector: (_, service) => service.currentHotelConfig,
+                builder: (context, hotelConfig, _) {
+                  return AnimatedSwitcher(
+                    duration: AppConfig.lowPowerMode ? Duration.zero : const Duration(milliseconds: 500),
+                    layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
+                      return Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          ...previousChildren,
+                          if (currentChild != null) currentChild,
+                        ],
+                      );
+                    },
+                    child: AppImage(path: 
+                      hotelConfig?.background ?? '',
+                      key: ValueKey<String>(hotelConfig?.id ?? ''),
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(color: Colors.black);
+                      },
+                    ),
                   );
                 },
-                child: AppImage(path: 
-                  hotelService.currentHotelConfig?.background ?? '',
-                  key: ValueKey<String>(hotelService.currentHotelId),
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: double.infinity,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(color: Colors.black);
-                  },
-                ),
               ),
             ),
 

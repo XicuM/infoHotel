@@ -35,3 +35,6 @@
 ## Agent Rules
 - **pdfx overrides**: Edits to the PDF viewer go directly to `packages/pdfx` (local override).
 - **Scratch Files**: Place temporary files ONLY in `<appDataDir>/brain/<conversation-id>/scratch/`. Never pollute the workspace root.
+- **Version Control**: Update the application version in `pubspec.yaml` whenever you make changes to the codebase.
+- **Git Operations**: Automatically commit your changes with a descriptive message and push them to the remote repository after completing a task.
+- **Privacy & Security**: Never leak real hotel information, API keys, or sensitive data in logs, commits, or responses.
