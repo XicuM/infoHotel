@@ -1,6 +1,20 @@
 import json
 import time
 
+# Check for the FlightRadar24 dependency once at import time so the warning
+# appears in the logs immediately on server startup instead of on first request.
+try:
+    from FlightRadar24 import FlightRadar24API
+    _FR24_AVAILABLE = True
+    _FR24_IMPORT_ERROR = None
+except ImportError as _e:
+    _FR24_AVAILABLE = False
+    _FR24_IMPORT_ERROR = (
+        f"FlightRadar24 package not installed: {_e}. "
+        "Run: pip install -r backend/requirements.txt --break-system-packages"
+    )
+    print(f"[flightradar] WARNING: {_FR24_IMPORT_ERROR}", flush=True)
+
 # In-memory cache for flight data to avoid spamming FlightRadar24
 FR_CACHE = {
     'timestamp': 0,
@@ -10,6 +24,20 @@ FR_CACHE_TTL = 300  # 5 minutes
 
 def handle_flightradar_get(request_handler):
     global FR_CACHE
+
+    # Fail fast with a clear message if the dependency is missing
+    if not _FR24_AVAILABLE:
+        body = json.dumps({
+            'error': 'missing_dependency',
+            'message': _FR24_IMPORT_ERROR,
+        }).encode('utf-8')
+        request_handler.send_response(503)
+        request_handler.send_header('Content-Type', 'application/json')
+        request_handler.send_header('Content-Length', str(len(body)))
+        request_handler.end_headers()
+        request_handler.wfile.write(body)
+        return
+
     now = time.time()
     
     # Return cached data if fresh
@@ -21,7 +49,6 @@ def handle_flightradar_get(request_handler):
         return
 
     try:
-        from FlightRadar24 import FlightRadar24API
         fr_api = FlightRadar24API()
         
         # Get airport details which contains departures

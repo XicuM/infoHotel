@@ -26,6 +26,16 @@ class IbizaFlightService {
       final rawFlights = data.map((item) => IbizaDeparture.fromCache(item)).toList();
       
       return rawFlights;
+    } else if (response.statusCode == 503) {
+      // Backend returned a structured error — surface the exact message (e.g. missing dependency)
+      String detail = 'Backend unavailable (503)';
+      try {
+        final body = jsonDecode(response.body);
+        if (body is Map && body.containsKey('message')) {
+          detail = body['message'] as String;
+        }
+      } catch (_) {}
+      throw Exception(detail);
     } else {
       throw Exception('API Error: ${response.statusCode}');
     }
