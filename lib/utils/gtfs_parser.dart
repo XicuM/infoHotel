@@ -6,11 +6,13 @@ class GtfsParseParams {
   final List<int> zipBytes;
   final List<String> stopIds;
   final Map<String, String> stopNames;
+  final Map<String, String> stopDirections;
 
   GtfsParseParams({
     required this.zipBytes,
     required this.stopIds,
     this.stopNames = const {},
+    this.stopDirections = const {},
   });
 }
 
@@ -274,11 +276,13 @@ class GtfsParser {
       });
 
       final displayName = params.stopNames[stopId] ?? stopMeta['name'] ?? stopId;
+      final direction = params.stopDirections[stopId] ?? '';
 
       stops.add(BusStop(
         id: stopId,
         code: stopMeta['code'] ?? '',
         name: displayName,
+        direction: direction,
         lines: linesForStop,
       ));
     }
@@ -286,7 +290,7 @@ class GtfsParser {
     return BusServiceData(
       stops: stops,
       lastUpdate: DateTime.now(),
-      version: '1.3', // bumped from 1.2 → display names with direction info
+      version: '1.4', // bumped from 1.3 → separate direction field
     );
   }
 

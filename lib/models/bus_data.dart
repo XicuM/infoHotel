@@ -44,12 +44,14 @@ class BusStop {
   final String id;
   final String code;
   final String name;
+  final String direction;
   final List<BusLine> lines;
 
   const BusStop({
     required this.id,
     required this.code,
     required this.name,
+    this.direction = '',
     required this.lines,
   });
 
@@ -58,6 +60,7 @@ class BusStop {
       id: json['id'] ?? '',
       code: json['code'] ?? '',
       name: json['name'] ?? '',
+      direction: json['direction'] ?? '',
       lines: (json['lines'] as List<dynamic>?)
               ?.map((e) => BusLine.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -70,6 +73,7 @@ class BusStop {
       'id': id,
       'code': code,
       'name': name,
+      'direction': direction,
       'lines': lines.map((e) => e.toJson()).toList(),
     };
   }

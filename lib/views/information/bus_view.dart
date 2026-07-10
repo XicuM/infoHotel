@@ -140,6 +140,16 @@ class _BusViewState extends State<BusView> {
                                   color: isSelected ? AppColors.information : Colors.black87,
                                 ),
                               ),
+                              subtitle: stop.direction.isNotEmpty
+                                  ? Text(
+                                      stop.direction,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w300,
+                                        color: isSelected ? AppColors.information.withValues(alpha: 0.7) : Colors.black54,
+                                      ),
+                                    )
+                                  : null,
                               selected: isSelected,
                               selectedTileColor: AppColors.information.withValues(alpha: 0.1),
                               onTap: () {
