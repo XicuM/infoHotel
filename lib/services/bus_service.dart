@@ -72,10 +72,10 @@ class BusService extends ChangeNotifier {
         final decoded = jsonDecode(cacheData);
         final data = BusServiceData.fromJson(decoded as Map<String, dynamic>);
         
-        // Version 1.2+ required: invalidates old Servibus (numeric lines) data.
+        // Version 1.3+ required: invalidates old Servibus (numeric lines) data and adds direction names.
         // Bump this version whenever the GTFS source or data schema changes.
-        if (data.version != '1.2') {
-          debugPrint('Bus cache version mismatch (got ${data.version}, expected 1.2). Clearing cache.');
+        if (data.version != '1.3') {
+          debugPrint('Bus cache version mismatch (got ${data.version}, expected 1.3). Clearing cache.');
           await CacheHelper.deleteCache('bus_cache.json');
           return;
         }
@@ -136,9 +136,12 @@ class BusService extends ChangeNotifier {
     final zipBytes = await _downloadGtfsZip();
     if (zipBytes == null) return null;
 
+    final stopNames = {for (final s in _hotelStops) s['id']!: s['name']!};
+
     return await compute(GtfsParser.parseGtfsInIsolate, GtfsParseParams(
       zipBytes: zipBytes,
       stopIds: _hotelStops.map((s) => s['id']!).toList(),
+      stopNames: stopNames,
     ));
   }
 

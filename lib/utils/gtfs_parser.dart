@@ -5,8 +5,13 @@ import '../models/bus_data.dart';
 class GtfsParseParams {
   final List<int> zipBytes;
   final List<String> stopIds;
+  final Map<String, String> stopNames;
 
-  GtfsParseParams({required this.zipBytes, required this.stopIds});
+  GtfsParseParams({
+    required this.zipBytes,
+    required this.stopIds,
+    this.stopNames = const {},
+  });
 }
 
 class GtfsParser {
@@ -268,10 +273,12 @@ class GtfsParser {
         return a.destination.compareTo(b.destination);
       });
 
+      final displayName = params.stopNames[stopId] ?? stopMeta['name'] ?? stopId;
+
       stops.add(BusStop(
         id: stopId,
         code: stopMeta['code'] ?? '',
-        name: stopMeta['name'] ?? stopId,
+        name: displayName,
         lines: linesForStop,
       ));
     }
@@ -279,7 +286,7 @@ class GtfsParser {
     return BusServiceData(
       stops: stops,
       lastUpdate: DateTime.now(),
-      version: '1.2', // bumped from 1.1 → new ALSA network (T/A/AERO/P lines)
+      version: '1.3', // bumped from 1.2 → display names with direction info
     );
   }
 
