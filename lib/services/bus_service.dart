@@ -24,9 +24,9 @@ class BusService extends ChangeNotifier {
   // OLD Servibus IDs: '155' (code 108), '407' (code 408), '148' (code 101).
   // NEW ALSA GTFS IDs (verified July 2026 from BUS_ALSA.zip stops.txt):
   static const List<Map<String, String>> _hotelStops = [
-    {'id': '0001454200000001', 'code': '108', 'name': 'H. Arenal', 'direction': "dir. Port des Torrent"},
-    {'id': '0001454300000001', 'code': '408', 'name': 'H. Arenal', 'direction': 'dir. Sant Antoni'},
-    {'id': '0001452800000001', 'code': '101', 'name': 'Estació de Sant Antoni', 'direction': 'Todas las direcciones'},
+    {'id': '0001454200000001', 'code': '108', 'name': 'H. Arenal', 'direction': 'bus_dir_port_des_torrent'},
+    {'id': '0001454300000001', 'code': '408', 'name': 'H. Arenal', 'direction': 'bus_dir_sant_antoni'},
+    {'id': '0001452800000001', 'code': '101', 'name': 'Estació de Sant Antoni', 'direction': 'bus_dir_all'},
   ];
 
   BusServiceData? _busData;
@@ -72,10 +72,10 @@ class BusService extends ChangeNotifier {
         final decoded = jsonDecode(cacheData);
         final data = BusServiceData.fromJson(decoded as Map<String, dynamic>);
         
-        // Version 1.4+ required: invalidates old Servibus (numeric lines) data and adds direction names.
+        // Version 1.5+ required: invalidates old Servibus (numeric lines) data and adds direction names.
         // Bump this version whenever the GTFS source or data schema changes.
-        if (data.version != '1.4') {
-          debugPrint('Bus cache version mismatch (got ${data.version}, expected 1.4). Clearing cache.');
+        if (data.version != '1.5') {
+          debugPrint('Bus cache version mismatch (got ${data.version}, expected 1.5). Clearing cache.');
           await CacheHelper.deleteCache('bus_cache.json');
           return;
         }

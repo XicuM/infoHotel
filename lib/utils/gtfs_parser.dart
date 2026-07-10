@@ -290,7 +290,7 @@ class GtfsParser {
     return BusServiceData(
       stops: stops,
       lastUpdate: DateTime.now(),
-      version: '1.4', // bumped from 1.3 → separate direction field
+      version: '1.5', // bumped from 1.4 → direction as translation keys
     );
   }
 
@@ -321,7 +321,7 @@ class GtfsParser {
     cleaned = cleaned.replaceFirst(RegExp(r'^[A-Za-z0-9]+-\s*'), '');
     cleaned = cleaned
         .replaceAll('Estació de Sant Antoni', 'Sant Antoni')
-        .replaceAll('Eivissa/CETIS', 'Eivissa')
+        .replaceAll('Eivissa/CETIS', 'Eivissa (CETIS)')
         .replaceAll('Airport', 'Aeroport')
         .replaceAll("Aeroport d'Eivissa", 'Aeroport')
         .replaceAll('Ibiza Airport', 'Aeroport');

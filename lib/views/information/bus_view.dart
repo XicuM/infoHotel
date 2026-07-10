@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../config/app_config.dart';
+import '../../l10n/translations.dart';
 import '../../models/bus_data.dart';
 import '../../services/bus_service.dart';
+import '../../services/language_service.dart';
 import '../../widgets/app_bar_widget.dart';
 import 'bus_map_view.dart';
 
@@ -132,6 +134,7 @@ class _BusViewState extends State<BusView> {
                           itemBuilder: (context, index) {
                             final stop = busService.stops[index];
                             final isSelected = _selectedStopIndex == index;
+                            final lang = context.watch<LanguageService>().currentLanguage; 
                             return ListTile(
                               title: Text(
                                 stop.name,
@@ -142,7 +145,7 @@ class _BusViewState extends State<BusView> {
                               ),
                               subtitle: stop.direction.isNotEmpty
                                   ? Text(
-                                      stop.direction,
+                                      Translations.get(stop.direction, lang),
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w300,
@@ -386,8 +389,8 @@ class _BusViewState extends State<BusView> {
   String _cleanDestinationName(String dest) {
     return dest
         .replaceAll('Estació de Sant Antoni', 'Sant Antoni')
-        .replaceAll('Eivissa/CETIS', 'Eivissa (Ibiza Town)')
         .replaceAll('Eivissa', 'Eivissa (Ibiza Town)')
+        .replaceAll('Eivissa (Ibiza Town)/CETIS', 'Eivissa (CETIS)')
         .replaceAll('Port des Torrent', 'Port des Torrent')
         .replaceAll('Cala Tarida', 'Cala Tarida');
   }
