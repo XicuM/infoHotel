@@ -171,11 +171,6 @@ class _WeatherViewState extends State<WeatherView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // UV Index on top
-          _buildUvIndex(weather),
-
-          const SizedBox(height: 20),
-
           // Row with Today/Conditions on the left, and Sun Arc on the right
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -214,6 +209,11 @@ class _WeatherViewState extends State<WeatherView> {
           Expanded(
             child: _buildTempGraph(weather),
           ),
+
+          const SizedBox(height: 20),
+
+          // UV Index on bottom
+          _buildUvIndex(weather),
         ],
       ),
     );
