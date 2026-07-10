@@ -10,38 +10,49 @@ class GtfsParseParams {
 }
 
 class GtfsParser {
+  // New ALSA Ibiza network (from April 2026)
+  // T-lines (Troncals): blue — connect main towns
+  // A-lines (Accessibilitat): green — connect smaller areas
+  // AERO-lines: purple — airport connections
+  // P-lines: orange — beach/leisure routes
+  // N-lines: dark navy — night services
   static const Map<String, String> routeColors = {
+    // T-Lines (Troncals) — blue
+    'T1': '#1565C0',
+    'T2': '#1976D2',
+    'T3': '#1E88E5',
+    'T4': '#2196F3',
+    'T5': '#42A5F5',
+    'T6': '#64B5F6',
+    'T7': '#90CAF9',
+    // A-Lines (Accessibilitat) — green
+    'A1': '#2E7D32',
+    'A2': '#388E3C',
+    'A3': '#43A047',
+    'A4': '#4CAF50',
+    'A5': '#66BB6A',
+    // AERO-Lines (Airport) — purple
+    'AERO1': '#6A1B9A',
+    'AERO2': '#7B1FA2',
+    'AERO3': '#8E24AA',
+    'AERO4': '#9C27B0',
+    // P-Lines (Platja/Beach) — orange
+    'P1': '#E65100',
+    'P2': '#EF6C00',
+    'P3': '#F57C00',
+    'P4': '#FB8C00',
+    'P5': '#FFA726',
+    // Night lines — dark navy
+    'N1': '#0D1B2A',
+    'N2': '#1B263B',
+    'N3': '#415A77',
+    // Legacy Servibus lines (kept for backward compatibility)
     '02': '#ea2423',
     '03': '#ea2423',
-    '03_1': '#ea2423',
     '08': '#ea2423',
     '10': '#ea2423',
     '11': '#ea2423',
-    '12A': '#ea2423',
-    '12B': '#ea2423',
     '13': '#ea2423',
-    '14': '#ea2423',
-    '15': '#ea2423',
-    '16': '#ea2423',
-    '17': '#ea2423',
-    '18A': '#ea2423',
-    '19': '#ea2423',
-    '20A': '#ea2423',
-    '20B': '#ea2423',
-    '25A': '#ea2423',
-    '27': '#ea2423',
-    '30': '#ea2423',
-    '31': '#ea2423',
-    '35': '#ea2423',
-    '41': '#ea2423',
-    '42B': '#ea2423',
-    '45': '#ea2423',
-    '50': '#ea2423',
-    '50B': '#ea2423',
-    'N03': '#ea2423',
-    'N08': '#ea2423',
-    'N13': '#ea2423',
-    'N20': '#ea2423',
   };
 
   static BusServiceData parseGtfsInIsolate(GtfsParseParams params) {
@@ -213,11 +224,17 @@ class GtfsParser {
       }
 
       linesForStop.sort((a, b) {
+        // Priority order: T-lines first, then A-lines, AERO-lines, P-lines, N-lines, then others
+        final prefixOrder = {'T': 0, 'A': 1, 'AERO': 2, 'P': 3, 'N': 4};
+        final prefixA = _getLinePrefix(a.number);
+        final prefixB = _getLinePrefix(b.number);
+        final orderA = prefixOrder[prefixA] ?? 5;
+        final orderB = prefixOrder[prefixB] ?? 5;
+        if (orderA != orderB) return orderA.compareTo(orderB);
+        // Within same prefix, sort by trailing number
         final numA = int.tryParse(a.number.replaceAll(RegExp(r'[^0-9]'), '')) ?? 999;
         final numB = int.tryParse(b.number.replaceAll(RegExp(r'[^0-9]'), '')) ?? 999;
         if (numA != numB) return numA.compareTo(numB);
-        if (a.number.contains('N') && !b.number.contains('N')) return 1;
-        if (!a.number.contains('N') && b.number.contains('N')) return -1;
         return a.destination.compareTo(b.destination);
       });
 
@@ -232,8 +249,14 @@ class GtfsParser {
     return BusServiceData(
       stops: stops,
       lastUpdate: DateTime.now(),
-      version: '1.1',
+      version: '1.2', // bumped from 1.1 → new ALSA network (T/A/AERO/P lines)
     );
+  }
+
+  /// Returns the alphabetic prefix of a line number (e.g. 'T' for 'T1', 'AERO' for 'AERO2').
+  static String _getLinePrefix(String lineNumber) {
+    final match = RegExp(r'^([A-Za-z]+)').firstMatch(lineNumber);
+    return match?.group(1)?.toUpperCase() ?? '';
   }
 
   static String _cleanDestination(String dest) {
@@ -241,7 +264,9 @@ class GtfsParser {
     final cleaned = dest
         .replaceAll('Estació de Sant Antoni', 'Sant Antoni')
         .replaceAll('Eivissa/CETIS', 'Eivissa')
-        .replaceAll('Airport', 'Aeroport');
+        .replaceAll('Airport', 'Aeroport')
+        .replaceAll('Aeroport d\'Eivissa', 'Aeroport')
+        .replaceAll('Ibiza Airport', 'Aeroport');
     return cleaned;
   }
 

@@ -11,7 +11,15 @@ import '../utils/gtfs_parser.dart';
 
 class BusService extends ChangeNotifier {
   static const String _napBaseUrl = 'https://nap.transportes.gob.es/api';
-  static const int _gtfsFileId = 1273;
+
+  // GTFS file ID on the NAP (Punt d'Accés Nacional de Transports).
+  // OLD (Servibus, numeric lines 02-50): 1273
+  // NEW (ALSA Ibiza, letter lines T1-T7 / A1-A2 / AERO1-4, since April 2026): update below.
+  // To find the current ID: log in at https://nap.transportes.gob.es and search for
+  // "ALSA" → "ALSA autobuses" → copy the numeric ID from the URL or file list.
+  // TODO: Replace 1273 with the new ALSA Ibiza GTFS file ID once obtained.
+  static const int _gtfsFileId = 1273; // ← UPDATE THIS to the new ALSA ID
+
   static const Duration _refreshInterval = Duration(hours: 6);
 
   static const List<Map<String, String>> _hotelStops = [
@@ -63,8 +71,10 @@ class BusService extends ChangeNotifier {
         final decoded = jsonDecode(cacheData);
         final data = BusServiceData.fromJson(decoded as Map<String, dynamic>);
         
-        if (data.version != '1.1') {
-          // Force refresh if version is old
+        // Version 1.2+ required: invalidates old Servibus (numeric lines) data.
+        // Bump this version whenever the GTFS source or data schema changes.
+        if (data.version != '1.2') {
+          debugPrint('Bus cache version mismatch (got ${data.version}, expected 1.2). Clearing cache.');
           await CacheHelper.deleteCache('bus_cache.json');
           return;
         }
@@ -99,8 +109,13 @@ class BusService extends ChangeNotifier {
         _busData = data;
         _lastUpdate = DateTime.now();
         await _saveDiskCache(data);
+        _error = null; // clear any previous error on success
+      } else {
+        // If we got null but no specific error was set, set a generic message.
+        _error ??= 'Failed to fetch bus data from GTFS source.\n'
+            'Note: If the ALSA Ibiza GTFS file ID has changed on the NAP, '
+            'update _gtfsFileId in bus_service.dart.';
       }
-      _error ??= 'Failed to fetch bus data';
     } catch (e) {
       _error = 'Unable to fetch bus data: $e';
       debugPrint(_error);
