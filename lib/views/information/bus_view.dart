@@ -245,7 +245,7 @@ class _BusViewState extends State<BusView> {
                       ),
                     ),
                   )
-                else if (line.number.startsWith('AERO'))
+                else if (RegExp(r'^[Aa]ero', caseSensitive: false).hasMatch(line.number))
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
@@ -270,6 +270,38 @@ class _BusViewState extends State<BusView> {
                     ),
                     child: const Text(
                       'PLATJA',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
+                else if (line.number.startsWith('D'))
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF00695C),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      'DISCO',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
+                else if (line.number.startsWith('U'))
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF006064),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      'URBÀ',
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
@@ -345,6 +377,7 @@ class _BusViewState extends State<BusView> {
     return dest
         .replaceAll('Estació de Sant Antoni', 'Sant Antoni')
         .replaceAll('Eivissa/CETIS', 'Eivissa (Ibiza Town)')
+        .replaceAll('Eivissa', 'Eivissa (Ibiza Town)')
         .replaceAll('Port des Torrent', 'Port des Torrent')
         .replaceAll('Cala Tarida', 'Cala Tarida');
   }

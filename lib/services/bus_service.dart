@@ -13,19 +13,20 @@ class BusService extends ChangeNotifier {
   static const String _napBaseUrl = 'https://nap.transportes.gob.es/api';
 
   // GTFS file ID on the NAP (Punt d'Accés Nacional de Transports).
-  // OLD (Servibus, numeric lines 02-50): 1273
-  // NEW (ALSA Ibiza, letter lines T1-T7 / A1-A2 / AERO1-4, since April 2026): update below.
-  // To find the current ID: log in at https://nap.transportes.gob.es and search for
-  // "ALSA" → "ALSA autobuses" → copy the numeric ID from the URL or file list.
-  // TODO: Replace 1273 with the new ALSA Ibiza GTFS file ID once obtained.
-  static const int _gtfsFileId = 1273; // ← UPDATE THIS to the new ALSA ID
+  // OLD (Servibus/TIB, numeric lines 02-50, Nov 2025): 1273
+  // NEW (ALSA autobuses national feed, contains Ibiza T/A/AERO/P/N/U lines): 1133
+  // Updated: July 2026. To verify: GET /api/Fichero/downloadLink/1133
+  static const int _gtfsFileId = 1133;
 
   static const Duration _refreshInterval = Duration(hours: 6);
 
+  // Stop IDs as they appear in the ALSA GTFS (stops.txt stop_id column).
+  // OLD Servibus IDs: '155' (code 108), '407' (code 408), '148' (code 101).
+  // NEW ALSA GTFS IDs (verified July 2026 from BUS_ALSA.zip stops.txt):
   static const List<Map<String, String>> _hotelStops = [
-    {'id': '155', 'code': '108', 'name': 'H. Arenal (108)'},
-    {'id': '407', 'code': '408', 'name': 'H. Arenal (408)'},
-    {'id': '148', 'code': '101', 'name': 'Estació de Sant Antoni'},
+    {'id': '0001454200000001', 'code': '108', 'name': "H. Arenal (S'Arenal dir. Port des Torrent)"},
+    {'id': '0001454300000001', 'code': '408', 'name': "H. Arenal (S'Arenal dir. Sant Antoni)"},
+    {'id': '0001452800000001', 'code': '101', 'name': 'Estació de Sant Antoni'},
   ];
 
   BusServiceData? _busData;
