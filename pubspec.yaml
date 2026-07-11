@@ -1,7 +1,7 @@
 name: info_hotel
 description: "Hotel information kiosk application for Ses Savines Arenal tourist complex"
 publish_to: 'none'
-version: 1.0.10+11
+version: 1.0.11+12
 
 environment:
   sdk: ^3.10.1
@@ -21,6 +21,9 @@ dependencies:
   
   # PDF viewing
   pdfx: ^2.8.0
+  
+  # Cupertino icons (needed by transitive dependencies)
+  cupertino_icons: ^1.0.6
   
   # Package info
   package_info_plus: ^8.0.2
