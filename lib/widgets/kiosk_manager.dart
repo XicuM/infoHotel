@@ -42,7 +42,6 @@ class _KioskManagerState extends State<KioskManager> {
       onKeyEvent: (event) {
         if (event is KeyDownEvent) {
           final isAltPressed = HardwareKeyboard.instance.isAltPressed;
-          
           if (isAltPressed && event.logicalKey == LogicalKeyboardKey.keyT) {
             hotelService.cycleNextHotel();
           } else if (isAltPressed && event.logicalKey == LogicalKeyboardKey.keyS) {
@@ -59,7 +58,8 @@ class _KioskManagerState extends State<KioskManager> {
             });
           } else if (event.logicalKey == LogicalKeyboardKey.f2) {
             contentService.toggleEditMode();
-          } else if (isAltPressed && event.logicalKey == LogicalKeyboardKey.keyM) {
+          } else if ((isAltPressed && event.logicalKey == LogicalKeyboardKey.keyM) ||
+                     event.logicalKey == LogicalKeyboardKey.f3) {
             setState(() {
               _cursorVisible = !_cursorVisible;
             });
