@@ -130,6 +130,7 @@ class IbizaFlightRepository {
     final now = DateTime.now();
     final filteredFlights = rawFlights.where((f) {
       final refTime = f.estimatedTime ?? f.scheduledTime;
+      if (refTime.difference(now).inMinutes < 30) return false;
       if (now.difference(refTime).inMinutes > 120) return false;
       
       final rawStatus = f.status.toLowerCase();
