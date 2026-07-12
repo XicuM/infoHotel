@@ -81,6 +81,7 @@ OUTPUT_ARCHIVE="infoHotel_web_kiosk.tar.gz"
 rm -f "$OUTPUT_ARCHIVE"
 
 gum spin --spinner dot --title "Packaging web and backend folders..." -- bash -c "tar -czf $OUTPUT_ARCHIVE build/web/ backend/"
+mv "$OUTPUT_ARCHIVE" build/web/"$OUTPUT_ARCHIVE"
 
 # 4. Host locally via secure tunnel
 # Kill any stale process on port 8080 and wait for the port to free up
@@ -91,7 +92,7 @@ for i in $(seq 1 10); do
 done
 echo "Starting local HTTP server on port 8080..."
 set +m
-python3 -m http.server 8080 > /dev/null 2>&1 &
+(cd build/web && python3 -m http.server 8080 > /dev/null 2>&1) &
 SERVER_PID=$!
 set -m
 sleep 0.5
@@ -116,11 +117,11 @@ SSH_PID=$!
 gum spin --spinner dot --title "Trying localhost.run tunnel..." -- bash -c '
     for i in $(seq 1 18); do
         if grep -q "tunneled with tls termination" .tunnel.log 2>/dev/null; then exit 0; fi
-        if ! kill -0 '$SSH_PID' 2>/dev/null; then exit 1; fi
+        if ! kill -0 '"$SSH_PID"' 2>/dev/null; then exit 1; fi
         sleep 1
     done
     exit 1
-'
+' || true
 
 if grep -q "tunneled with tls termination" .tunnel.log 2>/dev/null; then
     TUNNEL_URL=$(grep -o 'https://[a-zA-Z0-9.-]*\.lhr\.life' .tunnel.log | head -n 1)
@@ -133,7 +134,7 @@ else
     CLOUDFLARED_BIN="/tmp/opencode/cloudflared"
     if [ ! -x "$CLOUDFLARED_BIN" ]; then
         gum spin --spinner dot --title "Downloading cloudflared..." -- \
-            curl -sSL -o "$CLOUDFLARED_BIN" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64"
+            curl -sSL -o "$CLOUDFLARED_BIN" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64" || true
         chmod +x "$CLOUDFLARED_BIN"
     fi
 
@@ -143,15 +144,17 @@ else
     TUNNEL_PID=$!
 
     gum spin --spinner dot --title "Waiting for Cloudflare tunnel URL..." -- bash -c '
-        for i in $(seq 1 15); do
-            if grep -q "trycloudflare.com" '"$CLOUDFLARE_LOG"' 2>/dev/null; then exit 0; fi
+        for i in $(seq 1 60); do
+            if grep -o "https://[a-zA-Z0-9.-]*\.trycloudflare\.com" '"$CLOUDFLARE_LOG"' 2>/dev/null | head -1 | grep -q .; then exit 0; fi
             sleep 1
         done
         exit 1
-    '
+    ' || true
 
     TUNNEL_URL=$(grep -o 'https://[a-zA-Z0-9.-]*\.trycloudflare\.com' "$CLOUDFLARE_LOG" | head -n 1)
-    gum style --foreground 72 "Cloudflare tunnel established."
+    if [ -n "$TUNNEL_URL" ]; then
+        gum style --foreground 72 "Cloudflare tunnel established."
+    fi
 fi
 
 if [ -z "$TUNNEL_URL" ]; then
