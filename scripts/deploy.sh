@@ -83,22 +83,79 @@ rm -f "$OUTPUT_ARCHIVE"
 gum spin --spinner dot --title "Packaging web and backend folders..." -- bash -c "tar -czf $OUTPUT_ARCHIVE build/web/ backend/"
 
 # 4. Host locally via secure tunnel
+# Kill any stale process on port 8080
+STALE_PID=$(ss -tlnp 2>/dev/null | grep -oP 'pid=\K[0-9]+(?=.*:8080)' | head -n 1)
+if [ -n "$STALE_PID" ]; then
+    kill "$STALE_PID" 2>/dev/null
+    sleep 0.5
+fi
 echo "Starting local HTTP server on port 8080..."
 python3 -m http.server 8080 > /dev/null 2>&1 &
 SERVER_PID=$!
+sleep 1
+if ! kill -0 $SERVER_PID 2>/dev/null; then
+    echo "Error: HTTP server failed to start! Port 8080 may be blocked."
+    exit 1
+fi
+TUNNEL_PID=""
 
-echo "Starting secure tunnel via localhost.run..."
+cleanup() {
+    kill $SERVER_PID $TUNNEL_PID 2>/dev/null
+    rm -f .tunnel.log /tmp/opencode/cloudflared_tunnel.log
+}
+trap cleanup EXIT
+
+# Try localhost.run first (with 15s timeout), fall back to cloudflared
+TUNNEL_URL=""
 rm -f .tunnel.log
-ssh -o StrictHostKeyChecking=no -R 80:localhost:8080 nokey@localhost.run > .tunnel.log 2>&1 &
-TUNNEL_PID=$!
+ssh -o StrictHostKeyChecking=no -o ConnectTimeout=15 -R 80:localhost:8080 nokey@localhost.run > .tunnel.log 2>&1 &
+SSH_PID=$!
 
-# Ensure we clean up background processes when the script exits (e.g. user presses Ctrl+C)
-trap "kill $SERVER_PID $TUNNEL_PID 2>/dev/null; rm -f .tunnel.log" EXIT
+gum spin --spinner dot --title "Trying localhost.run tunnel..." -- bash -c '
+    for i in $(seq 1 18); do
+        if grep -q "tunneled with tls termination" .tunnel.log 2>/dev/null; then exit 0; fi
+        if ! kill -0 '$SSH_PID' 2>/dev/null; then exit 1; fi
+        sleep 1
+    done
+    exit 1
+'
 
-# Wait for the tunnel URL to appear in the log
-gum spin --spinner dot --title "Waiting for tunnel URL..." -- bash -c 'while ! grep -q "tunneled with tls termination" .tunnel.log; do sleep 1; done'
+if grep -q "tunneled with tls termination" .tunnel.log 2>/dev/null; then
+    TUNNEL_URL=$(grep -o 'https://[a-zA-Z0-9.-]*\.lhr\.life' .tunnel.log | head -n 1)
+    TUNNEL_PID=$SSH_PID
+    gum style --foreground 72 "localhost.run tunnel established."
+else
+    kill $SSH_PID 2>/dev/null
+    gum style --foreground 214 "localhost.run unreachable, falling back to Cloudflare Tunnel..."
 
-TUNNEL_URL=$(grep -o 'https://[a-zA-Z0-9.-]*\.lhr\.life' .tunnel.log | head -n 1)
+    CLOUDFLARED_BIN="/tmp/opencode/cloudflared"
+    if [ ! -x "$CLOUDFLARED_BIN" ]; then
+        gum spin --spinner dot --title "Downloading cloudflared..." -- \
+            curl -sSL -o "$CLOUDFLARED_BIN" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64"
+        chmod +x "$CLOUDFLARED_BIN"
+    fi
+
+    CLOUDFLARE_LOG="/tmp/opencode/cloudflared_tunnel.log"
+    rm -f "$CLOUDFLARE_LOG"
+    "$CLOUDFLARED_BIN" tunnel --url http://localhost:8080 > "$CLOUDFLARE_LOG" 2>&1 &
+    TUNNEL_PID=$!
+
+    gum spin --spinner dot --title "Waiting for Cloudflare tunnel URL..." -- bash -c '
+        for i in $(seq 1 15); do
+            if grep -q "trycloudflare.com" '"$CLOUDFLARE_LOG"' 2>/dev/null; then exit 0; fi
+            sleep 1
+        done
+        exit 1
+    '
+
+    TUNNEL_URL=$(grep -o 'https://[a-zA-Z0-9.-]*\.trycloudflare\.com' "$CLOUDFLARE_LOG" | head -n 1)
+    gum style --foreground 72 "Cloudflare tunnel established."
+fi
+
+if [ -z "$TUNNEL_URL" ]; then
+    gum style --foreground 196 "Error: Could not establish any tunnel. Check your network connection."
+    exit 1
+fi
 
 echo ""
 gum style \
@@ -118,7 +175,6 @@ gum style --foreground 196 "The server is running in the background."
 gum style --foreground 72 "Press Ctrl+C to close the server once the download finishes."
 echo ""
 
-# Wait infinitely until the user presses Ctrl+C
 wait $TUNNEL_PID
 
 echo ""
