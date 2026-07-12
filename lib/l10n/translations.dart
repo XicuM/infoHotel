@@ -95,16 +95,16 @@ class Translations {
       'it': 'Pagine web',
       'nl': "Webpagina's",
     },
-    'map_legend_arenal': {
-      'ca': ' 1. Recepció\n 2. Menjador\n 3. Gimnàs\n 4. Aparcament\n 5. Bar\n 6. Snack-Bar\n 7. Piscina exterior\n 8. Piscina interior\n 9. Terrassa\n10. Arenal Diving\n11. Paseig\n12. Bocata Express',
-      'de': ' 1. Rezeption\n 2. Esszimmer\n 3. Gym\n 4. Parking\n 5. Bar\n 6. Snack-Bar\n 7. Aussen Pool\n 8. Innenpool\n 9. Terrasse\n10. Arenal Diving\n11. Promenade\n12. Bocata Express',
-      'en': ' 1. Reception\n 2. Dining Room\n 3. Gym\n 4. Parking\n 5. Bar\n 6. Snack-Bar\n 7. Outdoor Pool\n 8. Indoor Pool\n 9. Terrace\n10. Arenal Diving\n11. Promenade\n12. Bocata Express',
-      'es': ' 1. Recepción\n 2. Comedor\n 3. Gimnasio\n 4. Aparcamiento \n 5. Bar\n 6. Snack-Bar\n 7. Piscina exterior\n 8. Piscina interior\n 9. Terraza\n10. Arenal Diving\n11. Paseo\n12. Bocata Express',
-      'fr': ' 1. Réception\n 2. Salle à manger\n 3. Gym\n 4. Parking\n 5. Bar\n 6. Snack-Bar\n 7. Piscine extérieure\n 8. Piscine intérieure\n 9. Terrasse\n10. Arenal Diving\n11. Promenade\n12. Bocata Express',
-      'it': " 1. Réception\n 2. Salle á manger\n 3. Palestra\n 4. Parcheggio\n 5. Bar\n 6. Snack-Bar\n 7. Piscina all'aperto\n 8. Piscina al coperto\n 9. Terrazza\n10. Arenal Diving\n11. Promenade\n12. Bocata Express",
-      'nl': ' 1. Receptie\n 2. Eetkamer\n 3. Gym\n 4. Parking\n 5. Bar\n 6. Snack-Bar\n 7. Buitenzwembad\n 8. Binnenzwembad\n 9. Terras\n10. Arenal Diving\n11. Promenade\n12. Bocata Express',
+    'map_legend_default': {
+      'ca': ' 1. Recepció\n 2. Menjador\n 3. Gimnàs\n 4. Aparcament\n 5. Bar\n 6. Snack-Bar\n 7. Piscina exterior\n 8. Piscina interior\n 9. Terrassa\n10. Diving Centre\n11. Paseig\n12. Bocata Express',
+      'de': ' 1. Rezeption\n 2. Esszimmer\n 3. Gym\n 4. Parking\n 5. Bar\n 6. Snack-Bar\n 7. Aussen Pool\n 8. Innenpool\n 9. Terrasse\n10. Diving Centre\n11. Promenade\n12. Bocata Express',
+      'en': ' 1. Reception\n 2. Dining Room\n 3. Gym\n 4. Parking\n 5. Bar\n 6. Snack-Bar\n 7. Outdoor Pool\n 8. Indoor Pool\n 9. Terrace\n10. Diving Centre\n11. Promenade\n12. Bocata Express',
+      'es': ' 1. Recepción\n 2. Comedor\n 3. Gimnasio\n 4. Aparcamiento \n 5. Bar\n 6. Snack-Bar\n 7. Piscina exterior\n 8. Piscina interior\n 9. Terraza\n10. Diving Centre\n11. Paseo\n12. Bocata Express',
+      'fr': ' 1. Réception\n 2. Salle à manger\n 3. Gym\n 4. Parking\n 5. Bar\n 6. Snack-Bar\n 7. Piscine extérieure\n 8. Piscine intérieure\n 9. Terrasse\n10. Diving Centre\n11. Promenade\n12. Bocata Express',
+      'it': " 1. Réception\n 2. Salle á manger\n 3. Palestra\n 4. Parcheggio\n 5. Bar\n 6. Snack-Bar\n 7. Piscina all'aperto\n 8. Piscina al coperto\n 9. Terrazza\n10. Diving Centre\n11. Promenade\n12. Bocata Express",
+      'nl': ' 1. Receptie\n 2. Eetkamer\n 3. Gym\n 4. Parking\n 5. Bar\n 6. Snack-Bar\n 7. Buitenzwembad\n 8. Binnenzwembad\n 9. Terras\n10. Diving Centre\n11. Promenade\n12. Bocata Express',
     },
-    'map_legend_savines': {
+    'map_legend_secondary': {
       'ca': " 1. Recepció de l'hotel\n 2. Recepció dels apts.\n 3. Menjador\n 4. Bar de l'Hotel\n 5. Terrassa de l'Hotel\n 6. Piscina de l'hotel\n 7. Bar dels apts\n 8. Terrassa dels apts\n 9. Piscina dels apts\n10. Platja privada\n11. Passeig\n12. Minigolf\n13. Zona de jocs\n14. Pista de squash\n15. Pista de tennis gran\n16. Pista de tennis petita\n17. Aparcament\n18. Parada de transfers",
       'de': " 1. Hotel-Rezeption\n 2. Apts Rezeption\n 3. Esszimmer\n 4. Hotel Bar\n 5. Hotel Terrasse\n 6. Hotel Pool\n 7. Appartements Bar\n 8. Apts Terrasse\n 9. Apts Pool\n10. Privater Strand\n11. Promenade\n12. Minigolf\n13. Spielplatz\n14. Squash Court\n15. Große Tennisplatz\n16. Kleiner Tennisplatz\n17. Parkplatz\n18. Transferhaltestelle",
       'en': " 1. Hotel Reception\n 2. Apartments Reception\n 3. Dining Room\n 4. Hotel Bar\n 5. Hotel Terrace\n 6. Hotel Pool\n 7. Apartments Bar\n 8. Apartments Terrace\n 9. Apartments Pool\n10. Private Beach\n11. Promenade\n12. Crazy Golf\n13. Playground\n14. Squash Court\n15. Big Tennis Court\n16. Small Tennis Court\n17. Parking\n18. Transfer Stop",
@@ -129,19 +129,19 @@ class Translations {
     },
     'info_for_all_clients': {
       'ca':
-          "Els nostres clients podran gaudir al complet de tots els serveis oferts pel complex turístic Ses Savines Arenal.",
+          "Els nostres clients podran gaudir al complet de tots els serveis oferts pel complex turístic.",
       'de':
-          'Unsere Kunden können die Dienstleistungen des Touristenkomplexes Ses Savines Arenal in vollem Umfang nutzen.',
+          'Unsere Kunden können die Dienstleistungen des Touristikkomplexes in vollem Umfang nutzen.',
       'en':
-          'Our clients will be able to fully enjoy the services offered by the Ses Savines Arenal tourist complex.',
+          'Our clients will be able to fully enjoy the services offered by the tourist complex.',
       'es':
-          'Nuestros clientes podrán disfrutar al completo de los servicios ofrecidos por el complejo turístico Ses Savines Arenal.',
+          'Nuestros clientes podrán disfrutar al completo de los servicios ofrecidos por el complejo turístico.',
       'fr':
-          'Nos clients pourront profiter pleinement des services offerts par le complexe touristique Ses Savines Arenal.',
+          'Nos clients pourront profiter pleinement des services offerts par le complexe touristique.',
       'it':
-          'I nostri clienti potranno godere appieno dei servizi offerti dal complesso turistico Ses Savines Arenal.',
+          'I nostri clienti potranno godere appieno dei servizi offerti dal complesso turistico.',
       'nl':
-          'Ons klanten zullen ten volle kunnen genieten van de diensten van het toeristisch complex Ses Savines Arenal.',
+          'Ons klanten zullen ten volle kunnen genieten van de diensten van het toeristisch complex.',
     },
     'hotel_map': {
       'ca': "Plànol de l'hotel",
@@ -427,14 +427,14 @@ class Translations {
       'it': 'Mappa Bus',
       'nl': 'Bus Kaart',
     },
-    'h_arenal_stop': {
-      'ca': 'Parada H. Arenal',
-      'de': 'H. Arenal Haltestelle',
-      'en': 'H. Arenal Stop',
-      'es': 'Parada H. Arenal',
-      'fr': 'Arrêt H. Arenal',
-      'it': 'Fermata H. Arenal',
-      'nl': 'H. Arenal Halte',
+    'h_stop': {
+      'ca': 'Parada Hotel',
+      'de': 'Hotel Haltestelle',
+      'en': 'Hotel Stop',
+      'es': 'Parada Hotel',
+      'fr': 'Arrêt Hôtel',
+      'it': 'Fermata Hotel',
+      'nl': 'Hotel Halte',
     },
     'sant_antoni_station': {
       'ca': 'Estació de Sant Antoni',

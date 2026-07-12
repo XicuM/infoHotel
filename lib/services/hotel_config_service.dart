@@ -45,7 +45,7 @@ class HotelConfigService extends ChangeNotifier {
       _parseHotelsJson(parsed);
     } catch (e) {
       debugPrint('Error loading default hotels.json: $e');
-      _hotels = {'Savines': [], 'Arenal': []};
+      _hotels = {};
       _hotelConfigs = _defaultHotelConfigs();
     }
   }
@@ -66,25 +66,15 @@ class HotelConfigService extends ChangeNotifier {
 
   Map<String, HotelConfig> _defaultHotelConfigs() {
     return {
-      'Savines': const HotelConfig(
-        id: 'Savines',
-        name: 'Hotel Ses Savines',
-        background: 'hotel_assets/images/background/savines.jpg',
-        logo: 'hotel_assets/images/logo/savines.png',
-        cardImage: 'hotel_assets/images/facilities/savines.png',
-        showsLogo: 'hotel_assets/images/shows/savines.png',
+      'Hotel1': const HotelConfig(
+        id: 'Hotel1',
+        name: 'Hotel',
+        background: '',
+        logo: '',
+        cardImage: '',
+        showsLogo: '',
         showShows: true,
         sortOrder: 0,
-      ),
-      'Arenal': const HotelConfig(
-        id: 'Arenal',
-        name: 'Hotel Arenal',
-        background: 'hotel_assets/images/background/arenal.jpg',
-        logo: 'hotel_assets/images/logo/arenal.png',
-        cardImage: 'hotel_assets/images/facilities/arenal.png',
-        showsLogo: 'hotel_assets/images/shows/arenal.png',
-        showShows: true,
-        sortOrder: 1,
       ),
     };
   }

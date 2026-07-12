@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../config/theme.dart';
+import '../../models/hotel_config.dart';
 import '../../services/hotel_config_service.dart';
 import '../../widgets/app_bar_widget.dart';
 import '../../widgets/app_image.dart';
@@ -62,7 +63,7 @@ class SafetyRulesView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            _buildPoolsPanel(langService, hotelId),
+                            _buildPoolsPanel(langService, hotelConfig),
                             const SizedBox(height: 24),
                             _buildWarningCard(
                               color: const Color(0xFFF9A825),
@@ -192,8 +193,8 @@ class SafetyRulesView extends StatelessWidget {
     );
   }
 
-  Widget _buildPoolsPanel(LanguageService langService, String hotelId) {
-    final isArenal = hotelId == 'Arenal';
+  Widget _buildPoolsPanel(LanguageService langService, HotelConfig? hotelConfig) {
+    final hasIndoorPool = hotelConfig?.name.contains('indoor') ?? false;
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
@@ -213,7 +214,7 @@ class SafetyRulesView extends StatelessWidget {
           const Icon(Icons.pool, color: Color(0xFF29B6F6), size: 42),
           const SizedBox(height: 16),
           Text(
-            langService.translate(isArenal ? 'pool_rules_title_outdoor' : 'pool_rules_title_hotel'),
+            langService.translate(hasIndoorPool ? 'pool_rules_title_outdoor' : 'pool_rules_title_hotel'),
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 24,
@@ -221,7 +222,7 @@ class SafetyRulesView extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          if (isArenal) ...[
+          if (hasIndoorPool) ...[
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -244,7 +245,7 @@ class SafetyRulesView extends StatelessWidget {
           Container(height: 1, color: const Color(0xFF29B6F6).withValues(alpha: 0.3)),
           const SizedBox(height: 20),
           Text(
-            langService.translate(isArenal ? 'pool_rules_title_indoor' : 'pool_rules_title_apts'),
+            langService.translate(hasIndoorPool ? 'pool_rules_title_indoor' : 'pool_rules_title_apts'),
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 24,

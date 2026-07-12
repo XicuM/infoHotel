@@ -1,6 +1,6 @@
 # InfoHotel Kiosk Application
 
-A hotel information kiosk application for the Ses Savines Arenal tourist complex, built with Flutter.
+A hotel information kiosk application built with Flutter.
 
 ## Features
 - Immersive Kiosk Mode support
@@ -39,8 +39,7 @@ A hotel information kiosk application for the Ses Savines Arenal tourist complex
    - **F11**: Toggle Fullscreen Kiosk Mode.
    - **F2**: Toggle Content Edit Mode (allows managing excursions and market data).
    - **F1**: Toggle Help Overlay.
-   - **Alt + A**: Switch view to 'Arenal' hotel layout.
-   - **Alt + S**: Switch view to 'Savines' hotel layout.
+    - **Alt + T**: Cycle through hotel layouts.
 
 ## Project Structure
 - `lib/config`: Theming, environment variables, and constants.

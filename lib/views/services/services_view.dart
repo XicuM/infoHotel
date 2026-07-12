@@ -237,10 +237,10 @@ class ServicesView extends StatelessWidget {
 
   void _addHotel(BuildContext context, HotelConfigService hotelConfigService) {
     final nameController = TextEditingController(text: 'New Hotel');
-    final bgController = TextEditingController(text: 'hotel_assets/images/background/savines.jpg');
-    final logoController = TextEditingController(text: 'hotel_assets/images/logo/savines.png');
-    final cardImageController = TextEditingController(text: 'hotel_assets/images/facilities/savines.png');
-    final showsLogoController = TextEditingController(text: 'hotel_assets/images/shows/savines.png');
+    final bgController = TextEditingController(text: '');
+    final logoController = TextEditingController(text: '');
+    final cardImageController = TextEditingController(text: '');
+    final showsLogoController = TextEditingController(text: '');
     bool showShows = true;
 
     showDialog(

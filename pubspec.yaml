@@ -1,7 +1,7 @@
 name: info_hotel
-description: "Hotel information kiosk application for Ses Savines Arenal tourist complex"
+description: "Hotel information kiosk application, built with Flutter"
 publish_to: 'none'
-version: 1.0.12+13
+version: 1.1.0+14
 
 environment:
   sdk: ^3.10.1
@@ -52,8 +52,6 @@ flutter:
     - hotel_assets/images/excursions/
     - hotel_assets/images/excursions/ex_ibiza/
     - hotel_assets/images/facilities/
-    - hotel_assets/images/facilities/arenal/
-    - hotel_assets/images/facilities/savines/
     - assets/images/flags/
     - assets/images/icons/
     - hotel_assets/images/information/

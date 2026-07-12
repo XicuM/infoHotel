@@ -3,7 +3,7 @@ import '../models/hotel_config.dart';
 import 'hotel_config_service.dart';
 
 class HotelService extends ChangeNotifier {
-  String _currentHotelId = 'Savines';
+  String _currentHotelId = '';
   HotelConfigService? _hotelConfigService;
 
   String get currentHotelId => _currentHotelId;
@@ -44,6 +44,18 @@ class HotelService extends ChangeNotifier {
       _currentHotelId = configs.first.id;
     } else {
       _currentHotelId = configs[(currentIndex + 1) % configs.length].id;
+    }
+    notifyListeners();
+  }
+
+  void cyclePreviousHotel() {
+    final configs = hotelConfigs;
+    if (configs.isEmpty) return;
+    final currentIndex = configs.indexWhere((c) => c.id == _currentHotelId);
+    if (currentIndex < 0) {
+      _currentHotelId = configs.last.id;
+    } else {
+      _currentHotelId = configs[(currentIndex - 1 + configs.length) % configs.length].id;
     }
     notifyListeners();
   }

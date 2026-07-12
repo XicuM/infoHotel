@@ -11,27 +11,28 @@ void main() {
       hotelService = HotelService();
     });
 
-    test('Initial hotel id should be Savines', () {
-      expect(hotelService.currentHotelId, 'Savines');
+    test('Initial hotel id should be empty', () {
+      expect(hotelService.currentHotelId, '');
     });
 
     test('setHotel updates hotel id', () {
       bool notified = false;
       hotelService.addListener(() => notified = true);
 
-      hotelService.setHotel('Arenal');
+      hotelService.setHotel('TestHotel');
 
-      expect(hotelService.currentHotelId, 'Arenal');
+      expect(hotelService.currentHotelId, 'TestHotel');
       expect(notified, isTrue);
     });
 
     test('setHotel does nothing for same hotel', () {
+      hotelService.setHotel('TestHotel');
       bool notified = false;
       hotelService.addListener(() => notified = true);
 
-      hotelService.setHotel('Savines');
+      hotelService.setHotel('TestHotel');
 
-      expect(hotelService.currentHotelId, 'Savines');
+      expect(hotelService.currentHotelId, 'TestHotel');
       expect(notified, isFalse);
     });
 
@@ -44,8 +45,9 @@ void main() {
     });
 
     test('cycleNextHotel does nothing when no configs', () {
+      hotelService.setHotel('TestHotel');
       hotelService.cycleNextHotel();
-      expect(hotelService.currentHotelId, 'Savines');
+      expect(hotelService.currentHotelId, 'TestHotel');
     });
   });
 }

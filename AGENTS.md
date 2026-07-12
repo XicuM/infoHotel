@@ -12,7 +12,7 @@
 - **State**: `Provider` (Services for Hotels, Language, Weather, Content, Markets, Excursions, Shows, Buses, etc.).
 - **L10n**: Custom dictionary map in `lib/l10n/translations.dart` (en, es, ca, fr, de, it, nl).
 - **Data (`StorageRepository`)**: Services load `markets.json`, `shows.json`, `excursions.json`, etc. from `infohotel_data/` dir (next to executable or app documents) or fall back to baked-in defaults.
-- **Hotels**: Savines (default) & Arenal layouts.
+- **Hotels**: Loaded from `hotels.json`. Multiple layouts supported via hotel switching.
 - **Theme**: Forced `ThemeMode.dark`. Map images get inverted via `AppColors.darkMapFilter`. Landscape orientation locked.
 
 ## APIs
@@ -24,7 +24,7 @@
 - **F11**: Fullscreen kiosk toggle.
 - **F1**: Help overlay toggle.
 - **F2**: Edit Mode toggle (UI to manage excursions/markets, saves to JSON).
-- **Alt+S / Alt+A**: Switch layout (Savines / Arenal).
+- **Alt+T**: Cycle hotel layouts.
 
 ## Performance (Low Power Mode)
 `AppConfig.lowPowerMode` defaults to `true` to ensure Raspberry Pi performance by:

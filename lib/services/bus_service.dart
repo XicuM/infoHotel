@@ -24,8 +24,8 @@ class BusService extends ChangeNotifier {
   // OLD Servibus IDs: '155' (code 108), '407' (code 408), '148' (code 101).
   // NEW ALSA GTFS IDs (verified July 2026 from BUS_ALSA.zip stops.txt):
   static const List<Map<String, String>> _hotelStops = [
-    {'id': '0001454200000001', 'code': '108', 'name': 'H. Arenal', 'direction': 'bus_dir_port_des_torrent'},
-    {'id': '0001454300000001', 'code': '408', 'name': 'H. Arenal', 'direction': 'bus_dir_sant_antoni'},
+    {'id': '0001454200000001', 'code': '108', 'name': 'Hotel', 'direction': 'bus_dir_port_des_torrent'},
+    {'id': '0001454300000001', 'code': '408', 'name': 'Hotel', 'direction': 'bus_dir_sant_antoni'},
     {'id': '0001452800000001', 'code': '101', 'name': 'Estació de Sant Antoni', 'direction': 'bus_dir_all'},
   ];
 
