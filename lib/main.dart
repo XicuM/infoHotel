@@ -9,6 +9,7 @@ import 'services/content_service.dart';
 import 'services/market_service.dart';
 import 'services/excursion_service.dart';
 import 'services/show_service.dart';
+import 'services/beach_service.dart';
 import 'services/hotel_config_service.dart';
 import 'repositories/storage_repository.dart';
 import 'services/bus_service.dart';
@@ -88,6 +89,7 @@ class InfoHotelApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => MarketService(storage: storage)..init()),
         ChangeNotifierProvider(create: (_) => ExcursionService(storage: storage)..init()),
         ChangeNotifierProvider(create: (_) => ShowService(storage: storage)..init()),
+        ChangeNotifierProvider(create: (_) => BeachService(storage: storage)..init()),
         ChangeNotifierProvider(create: (_) => HotelConfigService(storage: storage)..init()),
         ChangeNotifierProvider(create: (_) => BusService()),
       ],

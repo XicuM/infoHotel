@@ -8,6 +8,7 @@ import 'markets_view.dart';
 import 'taxi_view.dart';
 import 'car_rental_view.dart';
 import 'bus_view.dart';
+import 'beaches_view.dart';
 
 /// Tourist information view
 /// Ported from layout/information/information.py
@@ -24,6 +25,17 @@ class InformationView extends StatelessWidget {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => const MapsView(),
+            ),
+          );
+        },
+      ),
+      CardData(
+        imagePath: 'hotel_assets/images/information/beaches.jpg',
+        titleKey: 'beaches',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const BeachesView(),
             ),
           );
         },
