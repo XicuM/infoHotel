@@ -68,8 +68,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: SafeArea(
             child: Row(
               children: [
-                // Back button
-                if (parentRoute != null || onBack != null) ...[
+                // Back button — only show if there is a route to pop back to
+                if ((parentRoute != null || onBack != null) && Navigator.of(context).canPop()) ...[
                   IconButton(
                     onPressed: onBack ?? () => Navigator.of(context).pop(),
                     iconSize: 32,
