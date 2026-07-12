@@ -83,16 +83,18 @@ rm -f "$OUTPUT_ARCHIVE"
 gum spin --spinner dot --title "Packaging web and backend folders..." -- bash -c "tar -czf $OUTPUT_ARCHIVE build/web/ backend/"
 
 # 4. Host locally via secure tunnel
-# Kill any stale process on port 8080
-STALE_PID=$(ss -tlnp 2>/dev/null | grep -oP 'pid=\K[0-9]+(?=.*:8080)' | head -n 1)
-if [ -n "$STALE_PID" ]; then
-    kill "$STALE_PID" 2>/dev/null
-    sleep 0.5
-fi
+# Kill any stale process on port 8080 and wait for the port to free up
+fuser -k 8080/tcp 2>/dev/null
+for i in $(seq 1 10); do
+    if ! ss -tlnp 2>/dev/null | grep -q ':8080\b'; then break; fi
+    sleep 0.2
+done
 echo "Starting local HTTP server on port 8080..."
+set +m
 python3 -m http.server 8080 > /dev/null 2>&1 &
 SERVER_PID=$!
-sleep 1
+set -m
+sleep 0.5
 if ! kill -0 $SERVER_PID 2>/dev/null; then
     echo "Error: HTTP server failed to start! Port 8080 may be blocked."
     exit 1
