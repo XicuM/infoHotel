@@ -193,17 +193,15 @@ class _MarketDetailViewState extends State<MarketDetailView> {
         String actualDesc = '';
         String? hoursText;
 
-        if (_localizedDescriptions.containsKey(currentLang) || widget.market.isCustom) {
-          actualDesc = _localizedDescriptions[currentLang] ?? '';
-          hoursText = _localizedOpeningHours[currentLang];
-          if (hoursText == null || hoursText.isEmpty) {
-            hoursText = widget.market.openingHours;
-          }
+        if (_localizedDescriptions.containsKey(currentLang) && _localizedDescriptions[currentLang]!.isNotEmpty) {
+          actualDesc = _localizedDescriptions[currentLang]!;
         } else {
-          final descRaw = Translations.get(widget.market.description, currentLang);
-          final parts = descRaw.split('\n');
-          actualDesc = parts.first;
-          hoursText = parts.length > 1 ? parts.sublist(1).join('\n') : null;
+          actualDesc = Translations.get(widget.market.description, currentLang);
+        }
+
+        hoursText = _localizedOpeningHours[currentLang];
+        if (hoursText == null || hoursText.isEmpty) {
+          hoursText = widget.market.openingHours;
         }
 
         final double panelWidth = isEditMode ? 480.0 : 320.0;

@@ -862,51 +862,51 @@ class Translations {
     // Market Descriptions
     'las_dalias_desc': {
       'ca':
-          "Las Dalias gairebé no necessita descripció. Famós a tot el món, aquest mercat de Sant Carles de Peralta destaca per la seva enorme varietat de productes i oferta cultural d'essència 'hippy'.\nL'horari del mercat és el següent: DISSABTES de 10 a 20 hores; DILLUNS, DIMARTS i DIUMENGES de juliol i agost des de les 19 del vespre fins a la 1 de la matinada.",
+          "Las Dalias gairebé no necessita descripció. Famós a tot el món, aquest mercat de Sant Carles de Peralta destaca per la seva enorme varietat de productes i oferta cultural d'essència 'hippy'.",
       'de':
-          "Las Dalias Markt braucht keine Beschreibung. Der weltberühmte Markt in Sant Carles de Peralta zeichnet sich durch eine große Produktvielfalt und Hippie-Essenz aus.\nDie Öffnungszeiten des Las Dalias-Marktes sind wie folgt: SAMSTAGE von 10 bis 20 Uhr. MONTAGS, DIENSTAGS und SONNTAGS im Juli und August von 19 bis 1 Uhr morgens.",
+          "Las Dalias Markt braucht keine Beschreibung. Der weltberühmte Markt in Sant Carles de Peralta zeichnet sich durch eine große Produktvielfalt und Hippie-Essenz aus.",
       'en':
-          "Las Dalias market doesn't need any description. Famous all over the world, this market located in Sant Carles de Peralta stands out for its huge variety of products and hippy essence.\nThe opening hours of Las Dalias market are as follows: SATURDAYS from 10 to 20 hours. MONDAYS, TUESDAYS and SUNDAYS of July and August from 19 to 1 am.",
+          "Las Dalias market doesn't need any description. Famous all over the world, this market located in Sant Carles de Peralta stands out for its huge variety of products and hippy essence.",
       'es':
-          "Las Dalias casi no necesita descripción. Famoso en todo el mundo, este mercadillo de Sant Carles de Peralta destaca por su enorme variedad de productos y oferta cultural de esencia 'hippy'.\nEl horario del mercadillo es el siguiente: SÁBADOS de 10 a 20 horas; LUNES, MARTES y DOMINGOS de julio y agosto desde las 19 de la tarde hasta la 1 de la madrugada.",
+          "Las Dalias casi no necesita descripción. Famoso en todo el mundo, este mercadillo de Sant Carles de Peralta destaca por su enorme variedad de productos y oferta cultural de esencia 'hippy'.",
       'fr':
-          "Le marché de Las Dalias n'a pas besoin de description. Célèbre dans le monde entier, ce marché situé à Sant Carles de Peralta se distingue par sa grande variété de produits et son essence hippie.\nLes heures d'ouverture du marché de Las Dalias sont les suivantes: SAMEDI de 10 à 20 heures. Les lundis, mardis et dimanches de juillet et août de 19h à 1h du matin.",
+          "Le marché de Las Dalias n'a pas besoin de description. Célèbre dans le monde entier, ce marché situé à Sant Carles de Peralta se distingue par sa grande variété de produits et son essence hippie.",
       'it':
-          "Il mercato di Las Dalias non ha bisogno di alcuna descrizione. Famoso in tutto il mondo, questo mercato situato a Sant Carles de Peralta si distingue per l'enorme varietà di prodotti e l'essenza hippy.\nGli orari di apertura del mercato di Las Dalias sono i seguenti: SABATO dalle 10 alle 20 ore. LUNEDÌ, MARTEDÌ e DOMENICA di luglio e agosto dal 19 all'1 del mattino.",
+          "Il mercato di Las Dalias non ha bisogno di alcuna descrizione. Famoso in tutto il mondo, questo mercato situato a Sant Carles de Peralta si distingue per l'enorme varietà di prodotti e l'essenza hippy.",
       'nl':
-          "De markt van Las Dalias heeft geen beschrijving nodig. Beroemd over de hele wereld, deze markt in Sant Carles de Peralta onderscheidt zich door de enorme verscheidenheid aan producten en de hippie-essentie.\nDe openingstijden van Las Dalias zijn als volgt: ZATERDAG van 10 tot 20 uur. MAANDAGEN, DINSDAGEN EN ZONDAGEN in juli en augustus van 19 tot 1 uur 's ochtends.",
+          "De markt van Las Dalias heeft geen beschrijving nodig. Beroemd over de hele wereld, deze markt in Sant Carles de Peralta onderscheidt zich door de enorme verscheidenheid aan producten en de hippie-essentie.",
     },
     'punta_arabi_desc': {
       'ca':
-          "El mercat de Punta Arabí és el més antic de l'illa. Fundat el 1973 a la població d'Es Canar (Santa Eulària), ofereix als seus visitants no només productes artesanals, sinó una àmplia oferta d'esdeveniments relacionats amb la cultura hippy. També es realitzen activitats especials per a nens, amb la qual cosa es consolida com una visita excel·lent per a tota la família.\nEl mercat obre tots els DIMECRES de 10 a 20 hores. A causa de la seva fama i afluència, el bus que uneix Sant Antoni amb Santa Eulària (línia 19) finalitza el seu trajecte en el mercat el citat dia de la setmana.",
+          "El mercat de Punta Arabí és el més antic de l'illa. Fundat el 1973 a la població d'Es Canar (Santa Eulària), ofereix als seus visitants no només productes artesanals, sinó una àmplia oferta d'esdeveniments relacionats amb la cultura hippy. També es realitzen activitats especials per a nens, amb la qual cosa es consolida com una visita excel·lent per a tota la família.",
       'de':
-          "Punta Arabí ist der älteste Markt auf der Insel. Das 1973 in der Stadt Es Canar in der Gemeinde Santa Eulària gegründete Unternehmen bietet seinen Besuchern nicht nur handgefertigte Produkte, sondern auch eine Vielzahl von Veranstaltungen rund um die Hippie-Kultur. Es gibt auch spezielle Aktivitäten für Kinder, was den Markt zu einem hervorragenden Besuch für die ganze Familie macht.\nDer Markt ist jeden MITTWOCH von 10 bis 20 Uhr geöffnet. An diesem Tag endet der Bus, der Sant Antoni mit Santa Eulària (Linie 19) verbindet, seine Reise auf dem Markt.",
+          "Punta Arabí ist der älteste Markt auf der Insel. Das 1973 in der Stadt Es Canar in der Gemeinde Santa Eulària gegründete Unternehmen bietet seinen Besuchern nicht nur handgefertigte Produkte, sondern auch eine Vielzahl von Veranstaltungen rund um die Hippie-Kultur. Es gibt auch spezielle Aktivitäten für Kinder, was den Markt zu einem hervorragenden Besuch für die ganze Familie macht.",
       'en':
-          "The Punta Arabí market is the oldest on the island. Founded in 1973 in the town of Es Canar, located in the municipality of Santa Eulària, offers its visitors not only handcrafted products, but a wide range of events related to hippie culture. There are also special activities for children, making the market as an excellent visit for the whole family.\nThe market opens every WEDNESDAY from 10 am to 8 pm. This day the bus that connects Sant Antoni with Santa Eulària (line 19) will ends its journey at the market.",
+          "The Punta Arabí market is the oldest on the island. Founded in 1973 in the town of Es Canar, located in the municipality of Santa Eulària, offers its visitors not only handcrafted products, but a wide range of events related to hippie culture. There are also special activities for children, making the market as an excellent visit for the whole family.",
       'es':
-          "El mercadillo de Punta Arabí es el más antiguo de la isla. Fundado en 1973 en la población de Es Canar (Santa Eulària), ofrece a sus visitantes no solo productos artesanales, sino una amplia oferta de eventos relacionados con la cultura hippy. También se realizan actividades especiales para niños, con lo cual se consolida como una visita excelente para toda la familia.\nEl mercadillo abre todos los MIÉRCOLES de 10 a 20 horas. Debido a su fama y afluencia, el bus que une Sant Antoni con Santa Eulària (línea 19) finaliza su trayecto en el mercadillo el citado día de la semana.",
+          "El mercadillo de Punta Arabí es el más antiguo de la isla. Fundado en 1973 en la población de Es Canar (Santa Eulària), ofrece a sus visitantes no solo productos artesanales, sino una amplia oferta de eventos relacionados con la cultura hippy. También se realizan actividades especiales para niños, con lo cual se consolida como una visita excelente para toda la familia.",
       'fr':
-          "Le marché de Punta Arabí est le plus ancien de l'île. Fondée en 1973 dans la ville d'Es Canar, située dans la municipalité de Santa Eulària, elle propose à ses visiteurs no seulement des produits artisanaux, mais également un large éventail d'événements liés à la culture hippie. Il y a aussi des activités spéciales pour les enfants, faisant du marché une excellente visite pour toute la famille.\nLe marché ouvre tous les mercredis de 10h à 20h. Ce jour-là, le bus qui relie Sant Antoni à Santa Eulària (ligne 19) termine son parcours au marché.",
+          "Le marché de Punta Arabí est le plus ancien de l'île. Fondée en 1973 dans la ville d'Es Canar, située dans la municipalité de Santa Eulària, elle propose à ses visiteurs no seulement des produits artisanaux, mais également un large éventail d'événements liés à la culture hippie. Il y a aussi des activités spéciales pour les enfants, faisant du marché une excellente visite pour toute la famille.",
       'it':
-          "Il mercato di Punta Arabí è il più antico dell'isola. Fondata nel 1973 nella città di Es Canar, situata nel comune di Santa Eulària, offre ai suoi visitatori non solo prodotti artigianali, ma una vasta gamma di eventi legati alla cultura hippie. Ci sono anche attività speciali per i bambini, che rendono il mercato una visita eccellente per tutta la famiglia.\nIl mercato apre ogni mercoledì dalle 10 alle 20. Oggi l'autobus che collega Sant Antoni con Santa Eulària (linea 19) termina il suo viaggio al mercato.",
+          "Il mercato di Punta Arabí è il più antico dell'isola. Fondata nel 1973 nella città di Es Canar, situata nel comune di Santa Eulària, offre ai suoi visitatori non solo prodotti artigianali, ma una vasta gamma di eventi legati alla cultura hippie. Ci sono anche attività speciali per i bambini, che rendono il mercato una visita eccellente per tutta la famiglia.",
       'nl':
-          "De markt van Punta Arabí is de oudste van het eiland. Opgericht in 1973 in de stad Es Canar, gelegen in de gemeente Santa Eulària, biedt haar bezoekers niet alleen handgemaakte producten, maar een breed scala aan evenementen met betrekking tot hippiecultuur. Er zijn ook speciale activiteiten voor kinderen, waardoor de markt een uitstekend bezoek is voor het hele gezin.\nDe markt opent elke WOENSDAG van 10.00 tot 20.00 uur. Vandaag eindigt de bus die Sant Antoni verbindt met Santa Eulària (lijn 19) zijn reis naar de markt."
+          "De markt van Punta Arabí is de oudste van het eiland. Opgericht in 1973 in de stad Es Canar, gelegen in de gemeente Santa Eulària, biedt haar bezoekers niet alleen handgemaakte producten, maar een breed scala aan evenementen met betrekking tot hippiecultuur. Er zijn ook speciale activiteiten voor kinderen, waardoor de markt een uitstekend bezoek is voor het hele gezin."
     },
     'platja_desc': {
       'ca':
-          "Aquest mercat artesanal municipal està situat a dos carrers de la coneguda zona turística de Platja d'en Bossa.\nObre CADA DIA, de 18 a 24 hores, entre els mesos de juny i octubre, ambdós inclosos.",
+          "Aquest mercat artesanal municipal està situat a dos carrers de la coneguda zona turística de Platja d'en Bossa.",
       'de':
-          "Dieser städtische Kunsthandwerksmarkt befindet sich in zwei Straßen des bekannten Touristenviertels Platja d'en Bossa.\nEs öffnet JEDEN TAG von 18 bis 24 Uhr zwischen Juni und Oktober, beide eingeschlossen.",
+          "Dieser städtische Kunsthandwerksmarkt befindet sich in zwei Straßen des bekannten Touristenviertels Platja d'en Bossa.",
       'en':
-          "This municipal handicraft market is located in two streets of the well-known tourist area of Platja d'en Bossa.\nIt opens EVERY DAY, from 18 to 24 hours, between the months of June and October, both included.",
+          "This municipal handicraft market is located in two streets of the well-known tourist area of Platja d'en Bossa.",
       'es':
-          "Este mercado artesanal municipal se sitía en dos calles de la conocida zona turística de Platja d'en Bossa.\nAbierto TODOS LOS DÍAS, de 18 a 24 horas, entre los meses de junio y octubre, ambos incluidos.",
+          "Este mercado artesanal municipal se sitía en dos calles de la conocida zona turística de Platja d'en Bossa.",
       'fr':
-          "Ce marché artisanal municipal est situé dans deux rues de la célébre zone touristique de Platja d'en Bossa.\nIl est ouvert TOUS LES JOURS de 18 á 24 heures, entre juin et octobre, inclus.",
+          "Ce marché artisanal municipal est situé dans deux rues de la célébre zone touristique de Platja d'en Bossa.",
       'it':
-          "Questo mercato comunale dell'artigianato si trova in due strade della famosa zona turistica di Platja d'en Bossa.\nApre TUTTI I GIORNI, dalle 18 alle 24 ore, tra i mesi di giugno e ottobre, entrambi inclusi.",
+          "Questo mercato comunale dell'artigianato si trova in due strade della famosa zona turistica di Platja d'en Bossa.",
       'nl':
-          "Deze gemeentelijke ambachtsmarkt bevindt zich in twee straten van het bekende toeristengebied van Platja d'en Bossa.\nHet opent ELKE DAG, van 18 tot 24 uur, tussen de maanden juni en oktober, beide inbegrepen."
+          "Deze gemeentelijke ambachtsmarkt bevindt zich in twee straten van het bekende toeristengebied van Platja d'en Bossa."
     },
     'sant_joan_desc': {
       'ca':
