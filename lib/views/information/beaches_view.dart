@@ -154,6 +154,7 @@ class _BeachDetailViewState extends State<BeachDetailView> {
       localizedDescriptions: _localizedDescriptions,
       localizedMunicipalities: _localizedMunicipalities,
       services: _services,
+      distanceKm: widget.beach.distanceKm,
     );
 
     beachService.updateBeach(updatedBeach);
@@ -453,6 +454,43 @@ class _BeachDetailViewState extends State<BeachDetailView> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 12),
+        ],
+        if (widget.beach.distanceKm > 0) ...[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [accent.withValues(alpha: 0.1), Colors.transparent],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: accent.withValues(alpha: 0.2)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.directions_car, color: accent, size: 16),
+                const SizedBox(width: 8),
+                Text(
+                  '${widget.beach.distanceKm.toStringAsFixed(1)} km',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  Translations.get('from_hotel', currentLang),
+                  style: const TextStyle(
+                    color: Colors.white54,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
         ],

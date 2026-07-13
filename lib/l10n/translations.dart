@@ -337,6 +337,15 @@ class Translations {
       'it': 'Spiagge',
       'nl': 'Stranden',
     },
+    'from_hotel': {
+      'ca': 'des de l\'hotel',
+      'de': 'vom Hotel',
+      'en': 'from hotel',
+      'es': 'desde el hotel',
+      'fr': "depuis l'hôtel",
+      'it': "dall'hotel",
+      'nl': 'van hotel',
+    },
     'sant_josep': {
       'ca': 'Sant Josep de sa Talaia',
       'de': 'Sant Josep de sa Talaia',

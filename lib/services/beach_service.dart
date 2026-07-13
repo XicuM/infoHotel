@@ -41,6 +41,7 @@ class BeachService extends ChangeNotifier {
         services: ['parking', 'restaurant', 'lifeguard', 'sunbeds', 'accessible'],
         imagePath: 'hotel_assets/images/beaches/cala_comte.jpg',
         galleryImages: ['beaches/cala_comte.jpg'],
+        distanceKm: 6.2,
       ),
       BeachModel(
         id: 'cala_bassa',
@@ -50,6 +51,7 @@ class BeachService extends ChangeNotifier {
         services: ['parking', 'restaurant', 'lifeguard', 'sunbeds', 'wc', 'water_sports'],
         imagePath: 'hotel_assets/images/beaches/cala_bassa.jpg',
         galleryImages: ['beaches/cala_bassa.jpg'],
+        distanceKm: 5.5,
       ),
       BeachModel(
         id: 'cala_salada',
@@ -59,6 +61,7 @@ class BeachService extends ChangeNotifier {
         services: ['restaurant', 'lifeguard', 'wc'],
         imagePath: 'hotel_assets/images/beaches/cala_salada.jpg',
         galleryImages: ['beaches/cala_salada.jpg'],
+        distanceKm: 4.1,
       ),
       BeachModel(
         id: 'plata_en_bossa',
@@ -68,6 +71,7 @@ class BeachService extends ChangeNotifier {
         services: ['parking', 'restaurant', 'bar', 'lifeguard', 'sunbeds', 'wc', 'water_sports', 'accessible'],
         imagePath: 'hotel_assets/images/beaches/plata_en_bossa.jpg',
         galleryImages: ['beaches/plata_en_bossa.jpg'],
+        distanceKm: 13.8,
       ),
       BeachModel(
         id: 'cala_hort',
@@ -77,6 +81,7 @@ class BeachService extends ChangeNotifier {
         services: ['restaurant', 'lifeguard', 'sunbeds'],
         imagePath: 'hotel_assets/images/beaches/cala_hort.jpg',
         galleryImages: ['beaches/cala_hort.jpg'],
+        distanceKm: 11.0,
       ),
       BeachModel(
         id: 'benirras',
@@ -86,6 +91,7 @@ class BeachService extends ChangeNotifier {
         services: ['parking', 'restaurant', 'bar', 'lifeguard', 'sunbeds', 'wc'],
         imagePath: 'hotel_assets/images/beaches/benirras.jpg',
         galleryImages: ['beaches/benirras.jpg'],
+        distanceKm: 18.2,
       ),
       BeachModel(
         id: 'cala_jondal',
@@ -95,6 +101,7 @@ class BeachService extends ChangeNotifier {
         services: ['parking', 'restaurant', 'bar', 'sunbeds'],
         imagePath: 'hotel_assets/images/beaches/cala_jondal.jpg',
         galleryImages: ['beaches/cala_jondal.jpg'],
+        distanceKm: 12.5,
       ),
       BeachModel(
         id: 'ses_salines',
@@ -104,6 +111,7 @@ class BeachService extends ChangeNotifier {
         services: ['parking', 'restaurant', 'bar', 'lifeguard', 'sunbeds', 'wc', 'water_sports', 'accessible'],
         imagePath: 'hotel_assets/images/beaches/ses_salines.jpg',
         galleryImages: ['beaches/ses_salines.jpg'],
+        distanceKm: 16.7,
       ),
       BeachModel(
         id: 'cala_tarida',
@@ -113,6 +121,7 @@ class BeachService extends ChangeNotifier {
         services: ['parking', 'restaurant', 'bar', 'lifeguard', 'sunbeds', 'wc', 'water_sports'],
         imagePath: 'hotel_assets/images/beaches/cala_tarida.jpg',
         galleryImages: ['beaches/cala_tarida.jpg'],
+        distanceKm: 6.8,
       ),
       BeachModel(
         id: 'cala_vadella',
@@ -122,6 +131,7 @@ class BeachService extends ChangeNotifier {
         services: ['parking', 'restaurant', 'lifeguard', 'sunbeds', 'wc'],
         imagePath: 'hotel_assets/images/beaches/cala_vadella.jpg',
         galleryImages: ['beaches/cala_vadella.jpg'],
+        distanceKm: 7.7,
       ),
       BeachModel(
         id: 'cala_llonga',
@@ -131,6 +141,7 @@ class BeachService extends ChangeNotifier {
         services: ['parking', 'restaurant', 'bar', 'lifeguard', 'sunbeds', 'wc', 'water_sports', 'accessible'],
         imagePath: 'hotel_assets/images/beaches/cala_llonga.jpg',
         galleryImages: ['beaches/cala_llonga.jpg'],
+        distanceKm: 18.7,
       ),
       BeachModel(
         id: 'port_sant_miquel',
@@ -140,6 +151,7 @@ class BeachService extends ChangeNotifier {
         services: ['parking', 'restaurant', 'bar', 'lifeguard', 'sunbeds', 'wc', 'water_sports'],
         imagePath: 'hotel_assets/images/beaches/port_sant_miquel.jpg',
         galleryImages: ['beaches/port_sant_miquel.jpg'],
+        distanceKm: 16.4,
       ),
     ];
   }

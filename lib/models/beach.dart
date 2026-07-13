@@ -7,6 +7,7 @@ class BeachModel {
   String imagePath;
   List<String> galleryImages;
   final bool isCustom;
+  double distanceKm;
 
   Map<String, String> localizedNames;
   Map<String, String> localizedDescriptions;
@@ -22,6 +23,7 @@ class BeachModel {
     required this.imagePath,
     this.galleryImages = const [],
     this.isCustom = false,
+    this.distanceKm = 0,
     this.localizedNames = const {},
     this.localizedDescriptions = const {},
     this.localizedMunicipalities = const {},
@@ -38,6 +40,7 @@ class BeachModel {
       'imagePath': imagePath,
       'galleryImages': galleryImages,
       'isCustom': isCustom,
+      'distanceKm': distanceKm,
       'localizedNames': localizedNames,
       'localizedDescriptions': localizedDescriptions,
       'localizedMunicipalities': localizedMunicipalities,
@@ -55,6 +58,7 @@ class BeachModel {
       imagePath: json['imagePath'] as String,
       galleryImages: (json['galleryImages'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
       isCustom: json['isCustom'] as bool? ?? false,
+      distanceKm: (json['distanceKm'] as num?)?.toDouble() ?? 0,
       localizedNames: (json['localizedNames'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as String)) ?? {},
       localizedDescriptions: (json['localizedDescriptions'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as String)) ?? {},
       localizedMunicipalities: (json['localizedMunicipalities'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as String)) ?? {},
