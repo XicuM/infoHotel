@@ -13,13 +13,6 @@ class Env {
   /// AEMET Municipality Code (Sant Antoni de Portmany)
   static const String municipalityCode = '07046';
 
-  /// RapidAPI Key for Aerodatabox Flight API
-  /// Load from build config: flutter run --dart-define=FLIGHT_API_KEY=your_key
-  static const String flightApiKey = String.fromEnvironment(
-    'FLIGHT_API_KEY',
-    defaultValue: '',
-  );
-
   /// NAP (National Access Point) API Key for Ibiza Bus GTFS data
   /// Load from build config: flutter run --dart-define=BUS_API_KEY=your_key
   static const String busApiKey = String.fromEnvironment(

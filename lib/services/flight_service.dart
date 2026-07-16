@@ -1,18 +1,14 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import '../models/flight_model.dart';
 import '../config/env.dart';
 import '../utils/cache_helper.dart';
 
 class IbizaFlightService {
-  final String _apiKey;
-  final String _baseUrl = "https://aerodatabox.p.rapidapi.com/flights/airports/iata/IBZ";
   final http.Client _client;
 
-  IbizaFlightService({http.Client? client, String? apiKey})
-      : _client = client ?? http.Client(),
-        _apiKey = apiKey ?? Env.flightApiKey;
+  IbizaFlightService({http.Client? client})
+      : _client = client ?? http.Client();
 
   Future<List<IbizaDeparture>> fetchNextDepartures() async {
     final requestUrl = '${Env.proxyBaseUrl}/api/flights';

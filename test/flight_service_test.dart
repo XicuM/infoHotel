@@ -37,7 +37,7 @@ void main() {
       });
 
       // 2. Act: Inject the mock client into our modularized service
-      final service = IbizaFlightService(client: mockClient, apiKey: 'mock_key');
+      final service = IbizaFlightService(client: mockClient, );
       final departures = await service.fetchNextDepartures();
 
       // 3. Assert: Verify the model parsed correctly
@@ -55,7 +55,7 @@ void main() {
         return http.Response('Unauthorized', 401);
       });
 
-      final service = IbizaFlightService(client: mockClient, apiKey: 'mock_key');
+      final service = IbizaFlightService(client: mockClient, );
 
       // 2 & 3. Act & Assert: Expect an exception to be thrown
       expect(() => service.fetchNextDepartures(), throwsException);

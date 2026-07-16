@@ -22,16 +22,11 @@ get_env() {
 
 # 1. Gather API Keys
 API_KEY=""
-FLIGHT_KEY=""
 BUS_KEY=""
 
 if [ -f ".env" ]; then
     gum style --foreground 72 "Found .env file. Loading API keys..."
     API_KEY=$(get_env "AEMET_API_KEY")
-    FLIGHT_KEY=$(get_env "FLIGHT_API_KEY")
-    if [ -z "$FLIGHT_KEY" ]; then
-        FLIGHT_KEY=$(get_env "FIGHT_API_KEY") # Typo fallback
-    fi
     BUS_KEY=$(get_env "BUS_API_KEY")
 fi
 
@@ -41,13 +36,6 @@ while [ -z "$API_KEY" ]; do
 done
 if [ "$API_KEY" = "skip" ]; then
     API_KEY=""
-fi
-
-while [ -z "$FLIGHT_KEY" ]; do
-    FLIGHT_KEY=$(gum input --placeholder "Enter your RapidAPI Key (or type 'skip' to skip)" --header "RapidAPI Flight Key:")
-done
-if [ "$FLIGHT_KEY" = "skip" ]; then
-    FLIGHT_KEY=""
 fi
 
 while [ -z "$BUS_KEY" ]; do
@@ -60,9 +48,6 @@ fi
 BUILD_ARGS="--release"
 if [ -n "$API_KEY" ]; then
     BUILD_ARGS="$BUILD_ARGS --dart-define=AEMET_API_KEY=\"$API_KEY\""
-fi
-if [ -n "$FLIGHT_KEY" ]; then
-    BUILD_ARGS="$BUILD_ARGS --dart-define=FLIGHT_API_KEY=\"$FLIGHT_KEY\""
 fi
 if [ -n "$BUS_KEY" ]; then
     BUILD_ARGS="$BUILD_ARGS --dart-define=BUS_API_KEY=\"$BUS_KEY\""
