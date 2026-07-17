@@ -169,5 +169,4 @@ class WeatherService extends ChangeNotifier {
     }
     return null;
   }
-
 }

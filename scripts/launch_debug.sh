@@ -68,6 +68,16 @@ fi
 
 echo ""
 
+# 2b. Skip hotel_assets
+if gum confirm "Skip hotel_assets (use baked-in defaults, no private data)?"; then
+    DART_DEFINES="$DART_DEFINES --dart-define=SKIP_HOTEL_ASSETS=true"
+    gum style --foreground 46 " ✓ Skipping hotel_assets."
+else
+    gum style --foreground 240 " ✗ Loading hotel_assets normally."
+fi
+
+echo ""
+
 # 4. Device Selection
 gum style --foreground 99 "➜ Select the target device for debugging:"
 TARGET=$(gum choose "web-server" "linux" "chrome")

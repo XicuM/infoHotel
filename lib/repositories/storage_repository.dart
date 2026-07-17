@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:http/http.dart' as http;
+import '../config/app_config.dart';
 import '../utils/path_resolver.dart';
 
 class StorageRepository {
@@ -13,6 +14,11 @@ class StorageRepository {
 
   Future<void> init() async {
     if (kIsWeb) return;
+
+    if (AppConfig.skipHotelAssets) {
+      _dataDir = Directory.systemTemp;
+      return;
+    }
     
     if (Platform.isWindows || Platform.isLinux) {
       try {
@@ -61,6 +67,8 @@ class StorageRepository {
   }
 
   Future<dynamic> readJson(String fileName) async {
+    if (AppConfig.skipHotelAssets) return null;
+
     if (kIsWeb) {
       try {
         final proxyUrl = const String.fromEnvironment('PROXY_URL', defaultValue: 'http://localhost:8080');
@@ -91,6 +99,8 @@ class StorageRepository {
   }
 
   Future<void> writeJson(String fileName, dynamic data) async {
+    if (AppConfig.skipHotelAssets) return;
+
     if (kIsWeb) {
       try {
         final proxyUrl = const String.fromEnvironment('PROXY_URL', defaultValue: 'http://localhost:8080');

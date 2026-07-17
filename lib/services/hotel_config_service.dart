@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import '../config/app_config.dart';
 import '../models/hotel_config.dart';
 import '../repositories/storage_repository.dart';
 
@@ -39,15 +40,18 @@ class HotelConfigService extends ChangeNotifier {
       return;
     }
 
-    try {
-      final jsonString = await rootBundle.loadString('hotel_assets/data/hotels.json');
-      final parsed = json.decode(jsonString) as Map<String, dynamic>;
-      _parseHotelsJson(parsed);
-    } catch (e) {
-      debugPrint('Error loading default hotels.json: $e');
-      _hotels = {};
-      _hotelConfigs = _defaultHotelConfigs();
+    if (!AppConfig.skipHotelAssets) {
+      try {
+        final jsonString = await rootBundle.loadString('hotel_assets/data/hotels.json');
+        final parsed = json.decode(jsonString) as Map<String, dynamic>;
+        _parseHotelsJson(parsed);
+        return;
+      } catch (e) {
+        debugPrint('Error loading default hotels.json: $e');
+      }
     }
+    _hotels = {};
+    _hotelConfigs = _defaultHotelConfigs();
   }
 
   void _parseHotelsJson(Map<String, dynamic> parsed) {

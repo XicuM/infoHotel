@@ -12,6 +12,24 @@ A hotel information kiosk application built with Flutter, targeting Raspberry Pi
 - Interactive beaches panel with hotel distance info
 - Data loaded from `hotel_assets` submodule with fallback to baked-in defaults
 
+## Screenshots
+
+| Welcome | Weather |
+|:---:|:---:|
+| ![Welcome](assets/screenshots/01-welcome.png) | ![Weather](assets/screenshots/02-weather.png) |
+
+| Services | Tourist Info |
+|:---:|:---:|
+| ![Services](assets/screenshots/03-services.png) | ![Tourist Info](assets/screenshots/04-tourist-info.png) |
+
+| Excursions | Flight Board |
+|:---:|:---:|
+| ![Excursions](assets/screenshots/05-excursions.png) | ![Flight Board](assets/screenshots/06-flight-board.png) |
+
+| Webpages | — |
+|:---:|:---:|
+| ![Webpages](assets/screenshots/07-webpages.png) | |
+
 ## Requirements
 - Flutter SDK `^3.10.1`
 - AEMET OpenData API Key (weather)
@@ -38,6 +56,12 @@ A hotel information kiosk application built with Flutter, targeting Raspberry Pi
    ```bash
    flutter build web --dart-define=AEMET_API_KEY=<key1> --dart-define=BUS_API_KEY=<key2>
    ```
+
+   *Skip Private Data (screenshots/demos):*
+   ```bash
+   flutter run --dart-define=SKIP_HOTEL_ASSETS=true
+   ```
+   When set, the app falls back to baked-in defaults and does not load any `hotel_assets` data.
 
 3. **Kiosk Interactions**
    - **F11**: Toggle Fullscreen Kiosk Mode.

@@ -1,10 +1,13 @@
 import http.server
 import socketserver
 import sys
+import os
 import mimetypes
 from backend.api_proxy import handle_proxy_get
 from backend.api_storage import handle_write_json, handle_save_image, handle_delete_image
 from backend.flightradar_scraper import handle_flightradar_get
+
+SKIP_HOTEL_ASSETS = os.environ.get('SKIP_HOTEL_ASSETS', '').lower() == 'true'
 
 mimetypes.add_type('application/wasm', '.wasm')
 mimetypes.add_type('application/javascript', '.js')
@@ -71,6 +74,13 @@ class MainHandler(http.server.SimpleHTTPRequestHandler):
         path_without_query = urllib.parse.unquote(path_without_query)
         
         if path_without_query.startswith('/hotel_assets/'):
+            if SKIP_HOTEL_ASSETS:
+                self.send_response(403)
+                self.send_header('Content-Type', 'text/plain')
+                self.end_headers()
+                self.wfile.write(b'SKIP_HOTEL_ASSETS is active')
+                return
+
             # Strip the leading slash to make it relative to BASE_DIR
             relative_path = path_without_query.lstrip('/')
             file_path = os.path.join(BASE_DIR, relative_path)

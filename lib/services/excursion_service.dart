@@ -27,62 +27,7 @@ class ExcursionService extends ChangeNotifier {
       _excursions = data.map((j) => ExcursionModel.fromJson(j as Map<String, dynamic>)).toList();
       return;
     }
-    _loadDefaultExcursions();
-    await _saveExcursions();
-  }
-
-  void _loadDefaultExcursions() {
-    _excursions = [
-      ExcursionModel(
-        id: 'alsabini_trans',
-        name: 'Alsabini Transfers',
-        imagePath: 'hotel_assets/images/excursions/alsabini_logo.jpg',
-        type: ExcursionType.images,
-        content: ['hotel_assets/images/excursions/transfers.png'],
-      ),
-      ExcursionModel(
-        id: 'aquabus',
-        name: 'Aquabus',
-        imagePath: 'hotel_assets/images/excursions/aquabus_logo.png',
-        type: ExcursionType.pdf,
-        content: 'hotel_assets/pdf/excursions/aquabus.pdf',
-      ),
-      ExcursionModel(
-        id: 'balearia',
-        name: 'Baleària',
-        imagePath: 'hotel_assets/images/excursions/balearia_logo.png',
-        type: ExcursionType.images,
-        content: ['hotel_assets/images/excursions/balearia.jpg'],
-      ),
-      ExcursionModel(
-        id: 'mediter_pitiusa',
-        name: 'Mediterránea Pitiusa',
-        imagePath: 'hotel_assets/images/excursions/med_pitiusa_logo.jpg',
-        type: ExcursionType.images,
-        content: ['hotel_assets/images/excursions/mediterranea_pitiusa.jpg'],
-      ),
-      ExcursionModel(
-        id: 'alsabini_excur',
-        name: 'Alsabini Excursions',
-        imagePath: 'hotel_assets/images/excursions/alsabini_logo.jpg',
-        type: ExcursionType.images,
-        content: ['hotel_assets/images/excursions/alsabini.jpg'],
-      ),
-      ExcursionModel(
-        id: 'capitan_nemo',
-        name: 'Capitán Nemo',
-        imagePath: 'hotel_assets/images/excursions/nemo_logo.png',
-        type: ExcursionType.images,
-        content: ['hotel_assets/images/excursions/capitan_nemo.jpg'],
-      ),
-      ExcursionModel(
-        id: 'excursions_ibiza',
-        name: 'Excursions Ibiza',
-        imagePath: 'hotel_assets/images/excursions/ex_ibiza_logo.png',
-        type: ExcursionType.pdf,
-        content: 'hotel_assets/pdf/excursions/excursiones_ibiza_esvedraformentera.pdf',
-      ),
-    ];
+    _excursions = [];
   }
 
   Future<void> _saveExcursions() async {

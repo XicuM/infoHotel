@@ -27,67 +27,7 @@ class MarketService extends ChangeNotifier {
       _markets = data.map((j) => MarketModel.fromJson(j as Map<String, dynamic>)).toList();
       return;
     }
-    _loadDefaultMarkets();
-    await _saveMarkets();
-  }
-
-  void _loadDefaultMarkets() {
-    _markets = [
-      MarketModel(
-        id: 'las_dalias',
-        name: 'Las Dalias',
-        description: 'las_dalias_desc',
-        imagePath: 'hotel_assets/images/markets/las_dalias_logo.png',
-        galleryImages: [
-          'markets/las_dalias.jpg',
-          'markets/las_dalias_logo.png',
-          'markets/las_dalias.jpg',
-          'markets/las_dalias_logo.png',
-        ],
-      ),
-      MarketModel(
-        id: 'punta_arabi',
-        name: 'Punta Arabí',
-        description: 'punta_arabi_desc',
-        imagePath: 'hotel_assets/images/markets/punta_arabi_logo.jpg',
-        galleryImages: ['markets/punta_arabi.jpg'],
-      ),
-      MarketModel(
-        id: 'platja_den_bossa',
-        name: "Platja d'en Bossa",
-        description: 'platja_desc',
-        imagePath: 'hotel_assets/images/markets/platja_market_logo.png',
-        galleryImages: ['markets/platja_den_bossa.jpg'],
-      ),
-      MarketModel(
-        id: 'sant_joan',
-        name: 'Sant Joan',
-        description: 'sant_joan_desc',
-        imagePath: 'hotel_assets/images/markets/sant_joan_logo.jpg',
-        galleryImages: ['markets/sant_joan.jpg'],
-      ),
-      MarketModel(
-        id: 'sant_miquel',
-        name: 'Sant Miquel',
-        description: 'sant_miquel_desc',
-        imagePath: 'hotel_assets/images/markets/sant_miquel_logo.jpg',
-        galleryImages: ['markets/sant_miquel.jpg'],
-      ),
-      MarketModel(
-        id: 'sant_rafel',
-        name: 'Sant Rafel',
-        description: 'sant_rafel_desc',
-        imagePath: 'hotel_assets/images/markets/sant_rafel_logo.jpg',
-        galleryImages: ['markets/sant_rafel.jpg'],
-      ),
-      MarketModel(
-        id: 'forada',
-        name: 'Forada',
-        description: 'forada_desc',
-        imagePath: 'hotel_assets/images/markets/forada_logo.jpeg',
-        galleryImages: ['markets/forada.jpg'],
-      ),
-    ];
+    _markets = [];
   }
 
   Future<void> _saveMarkets() async {
