@@ -89,7 +89,7 @@ TUNNEL_PID=""
 
 cleanup() {
     kill $SERVER_PID $TUNNEL_PID 2>/dev/null
-    rm -f .tunnel.log /tmp/opencode/cloudflared_tunnel.log
+    rm -f .tunnel.log /tmp/cloudflared/cloudflared_tunnel.log /tmp/opencode/cloudflared_tunnel.log
 }
 trap cleanup EXIT
 
@@ -101,29 +101,35 @@ SSH_PID=$!
 
 gum spin --spinner dot --title "Trying localhost.run tunnel..." -- bash -c '
     for i in $(seq 1 18); do
-        if grep -q "tunneled with tls termination" .tunnel.log 2>/dev/null; then exit 0; fi
+        if grep -qE "(tunneled with tls termination|https://)" .tunnel.log 2>/dev/null; then exit 0; fi
         if ! kill -0 '"$SSH_PID"' 2>/dev/null; then exit 1; fi
         sleep 1
     done
     exit 1
 ' || true
 
-if grep -q "tunneled with tls termination" .tunnel.log 2>/dev/null; then
-    TUNNEL_URL=$(grep -o 'https://[a-zA-Z0-9.-]*\.lhr\.life' .tunnel.log | head -n 1)
-    TUNNEL_PID=$SSH_PID
-    gum style --foreground 72 "localhost.run tunnel established."
-else
+if grep -qE "(tunneled with tls termination|https://)" .tunnel.log 2>/dev/null; then
+    TUNNEL_URL=$(grep -o -E 'https://[a-zA-Z0-9.-]+\.(lhr\.life|lhrtunnel\.link|localhost\.run|lhr\.rocks)' .tunnel.log | head -n 1)
+    if [ -n "$TUNNEL_URL" ]; then
+        TUNNEL_PID=$SSH_PID
+        gum style --foreground 72 "localhost.run tunnel established."
+    fi
+fi
+
+if [ -z "$TUNNEL_URL" ]; then
     kill $SSH_PID 2>/dev/null
     gum style --foreground 214 "localhost.run unreachable, falling back to Cloudflare Tunnel..."
 
-    CLOUDFLARED_BIN="/tmp/opencode/cloudflared"
+    CLOUDFLARED_DIR="/tmp/cloudflared"
+    mkdir -p "$CLOUDFLARED_DIR"
+    CLOUDFLARED_BIN="$CLOUDFLARED_DIR/cloudflared"
     if [ ! -x "$CLOUDFLARED_BIN" ]; then
         gum spin --spinner dot --title "Downloading cloudflared..." -- \
             curl -sSL -o "$CLOUDFLARED_BIN" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64" || true
         chmod +x "$CLOUDFLARED_BIN"
     fi
 
-    CLOUDFLARE_LOG="/tmp/opencode/cloudflared_tunnel.log"
+    CLOUDFLARE_LOG="$CLOUDFLARED_DIR/cloudflared_tunnel.log"
     rm -f "$CLOUDFLARE_LOG"
     "$CLOUDFLARED_BIN" tunnel --url http://localhost:8080 > "$CLOUDFLARE_LOG" 2>&1 &
     TUNNEL_PID=$!
