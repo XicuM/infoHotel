@@ -53,7 +53,7 @@ class InformationView extends StatelessWidget {
           },
         ),
       CardData(
-        iconData: Icons.local_taxi,
+        imagePath: 'hotel_assets/images/information/taxi.jpg',
         titleKey: 'taxi',
         onTap: () {
           Navigator.of(context).push(
@@ -64,7 +64,7 @@ class InformationView extends StatelessWidget {
         },
       ),
       CardData(
-        iconData: Icons.car_rental,
+        imagePath: 'hotel_assets/images/information/rental.webp',
         titleKey: 'car_rental',
         onTap: () {
           Navigator.of(context).push(
