@@ -70,7 +70,7 @@ mv "$OUTPUT_ARCHIVE" build/web/"$OUTPUT_ARCHIVE"
 
 # 4. Host locally via secure tunnel
 # Kill any stale process on port 8080 and wait for the port to free up
-fuser -k 8080/tcp 2>/dev/null
+fuser -k 8080/tcp 2>/dev/null || true
 for i in $(seq 1 10); do
     if ! ss -tlnp 2>/dev/null | grep -q ':8080\b'; then break; fi
     sleep 0.2
@@ -88,7 +88,7 @@ fi
 TUNNEL_PID=""
 
 cleanup() {
-    kill $SERVER_PID $TUNNEL_PID 2>/dev/null
+    kill $SERVER_PID $TUNNEL_PID 2>/dev/null || true
     rm -f .tunnel.log /tmp/cloudflared/cloudflared_tunnel.log /tmp/opencode/cloudflared_tunnel.log
 }
 trap cleanup EXIT
@@ -117,7 +117,7 @@ if grep -qE "(tunneled with tls termination|https://)" .tunnel.log 2>/dev/null; 
 fi
 
 if [ -z "$TUNNEL_URL" ]; then
-    kill $SSH_PID 2>/dev/null
+    kill $SSH_PID 2>/dev/null || true
     gum style --foreground 214 "localhost.run unreachable, falling back to Cloudflare Tunnel..."
 
     CLOUDFLARED_DIR="/tmp/cloudflared"
@@ -171,7 +171,7 @@ gum style --foreground 196 "The server is running in the background."
 gum style --foreground 72 "Press Ctrl+C to close the server once the download finishes."
 echo ""
 
-wait $TUNNEL_PID
+wait $TUNNEL_PID 2>/dev/null || true
 
 echo ""
 gum style --foreground 72 "This will replace the web files and automatically restart Cage and Cog!"
