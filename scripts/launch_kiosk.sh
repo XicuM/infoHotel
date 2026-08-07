@@ -18,8 +18,9 @@ echo "Initializing Cage + Cog Kiosk Display..."
 
 # Configure Wayland/EGL environment variables using the current user ID
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
-# Clean up any stale Wayland socket from a previous run to ensure the wait loop triggers correctly
+# Clean up any stale Wayland socket and WebKit browser cache to ensure clean updates
 rm -f "$XDG_RUNTIME_DIR/wayland-0" "$XDG_RUNTIME_DIR/wayland-0.lock"
+rm -rf "$HOME/.cache/cog" "$HOME/.cache/wpe" "$HOME/.cache/WPE" "$HOME/.cache/webkit" "$HOME/.cache/WebKit"
 export COG_PLATFORM_WL_VIEW_FULLSCREEN=1
 
 # Enable remote Web Inspector for debugging (access at http://<pi-ip>:8081)

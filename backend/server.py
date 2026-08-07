@@ -48,7 +48,11 @@ def send_file_response(handler, file_path, content):
     if use_gzip:
         handler.send_header('Content-Encoding', 'gzip')
     handler.send_header('Content-Length', str(len(content)))
-    cache_header = 'no-cache' if file_path.endswith('.json') else 'public, max-age=86400'
+    # HTML, JS, JSON, and bootstrap files MUST NOT be cached so code updates apply immediately
+    if file_path.endswith('.json') or file_path.endswith('.html') or file_path.endswith('.js'):
+        cache_header = 'no-cache, no-store, must-revalidate'
+    else:
+        cache_header = 'public, max-age=86400'
     handler.send_header('Cache-Control', cache_header)
     handler.end_headers()
     handler.wfile.write(content)
