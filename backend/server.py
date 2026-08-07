@@ -101,65 +101,66 @@ class MainHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(404, "Not found")
             return
             
-        # Intercept requests for dynamic assets/data to serve from project root
         import os
         from backend.config import BASE_DIR
-        
-        # Remove query params (like ?cb=1234) for file path resolution
         import urllib.parse
+        
         path_without_query = self.path.split('?')[0]
         path_without_query = urllib.parse.unquote(path_without_query)
-        
-        if path_without_query.startswith('/hotel_assets/') or path_without_query.startswith('/assets/hotel_assets/'):
-            if SKIP_HOTEL_ASSETS:
-                self.send_response(403)
-                self.send_header('Content-Type', 'text/plain')
-                self.end_headers()
-                self.wfile.write(b'SKIP_HOTEL_ASSETS is active')
-                return
+        clean_path = path_without_query.lstrip('/')
+        if not clean_path:
+            clean_path = 'index.html'
 
-            if path_without_query.startswith('/assets/hotel_assets/'):
-                relative_path = path_without_query[len('/assets/'):]
-            else:
-                relative_path = path_without_query.lstrip('/')
-            file_path = os.path.join(BASE_DIR, relative_path)
-            
-            if os.path.exists(file_path) and os.path.isfile(file_path):
-                try:
-                    with open(file_path, 'rb') as f:
-                        content = f.read()
-                    send_file_response(self, file_path, content)
-                    return
-                except Exception as e:
-                    self.send_error(500, f"Error reading file: {e}")
-                    return
-
-        elif path_without_query.startswith('/assets/'):
-            relative_path = path_without_query.lstrip('/')
-            file_path = os.path.join(BASE_DIR, relative_path)
-            if os.path.exists(file_path) and os.path.isfile(file_path):
-                try:
-                    with open(file_path, 'rb') as f:
-                        content = f.read()
-                    send_file_response(self, file_path, content)
-                    return
-                except Exception as e:
-                    self.send_error(500, f"Error reading file: {e}")
-                    return
-            
-        # Serve static web directory files (main.dart.js, canvaskit, etc.) with Gzip and Caching
         serve_dir = sys.argv[2] if len(sys.argv) > 2 else '.'
-        target_file = os.path.join(serve_dir, path_without_query.lstrip('/'))
-        if os.path.isfile(target_file):
+
+        # 1. Try build/web directory first (compiled JS, canvaskit, AssetManifest, icons, flags, JSON data)
+        target_file = os.path.join(serve_dir, clean_path)
+        if os.path.isdir(target_file):
+            target_file = os.path.join(target_file, 'index.html')
+
+        if not (os.path.exists(target_file) and os.path.isfile(target_file)):
+            alt_target = os.path.join(serve_dir, 'assets', clean_path)
+            if os.path.exists(alt_target) and os.path.isfile(alt_target):
+                target_file = alt_target
+
+        if os.path.exists(target_file) and os.path.isfile(target_file):
             try:
                 with open(target_file, 'rb') as f:
                     content = f.read()
                 send_file_response(self, target_file, content)
                 return
-            except Exception:
-                pass
+            except Exception as e:
+                self.send_error(500, f"Error reading file: {e}")
+                return
 
-        super().do_GET()
+        # 2. Fallback to project root BASE_DIR (for heavy git-tracked hotel_assets)
+        if SKIP_HOTEL_ASSETS and ('hotel_assets' in clean_path):
+            self.send_response(403)
+            self.send_header('Content-Type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(b'SKIP_HOTEL_ASSETS is active')
+            return
+
+        if clean_path.startswith('assets/hotel_assets/'):
+            git_path = clean_path[len('assets/'):]
+        else:
+            git_path = clean_path
+
+        git_file = os.path.join(BASE_DIR, git_path)
+        if os.path.exists(git_file) and os.path.isfile(git_file):
+            try:
+                with open(git_file, 'rb') as f:
+                    content = f.read()
+                send_file_response(self, git_file, content)
+                return
+            except Exception as e:
+                self.send_error(500, f"Error reading file: {e}")
+                return
+
+        self.send_error(404, "File not found")
+
+    def do_HEAD(self):
+        self.do_GET()
 
     def log_message(self, fmt, *args):
         print(f"[server] {args[0]}", flush=True)
