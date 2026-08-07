@@ -77,7 +77,7 @@ class MainHandler(http.server.SimpleHTTPRequestHandler):
         path_without_query = self.path.split('?')[0]
         path_without_query = urllib.parse.unquote(path_without_query)
         
-        if path_without_query.startswith('/hotel_assets/'):
+        if path_without_query.startswith('/hotel_assets/') or path_without_query.startswith('/assets/hotel_assets/'):
             if SKIP_HOTEL_ASSETS:
                 self.send_response(403)
                 self.send_header('Content-Type', 'text/plain')
@@ -85,8 +85,10 @@ class MainHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(b'SKIP_HOTEL_ASSETS is active')
                 return
 
-            # Strip the leading slash to make it relative to BASE_DIR
-            relative_path = path_without_query.lstrip('/')
+            if path_without_query.startswith('/assets/hotel_assets/'):
+                relative_path = path_without_query[len('/assets/'):]
+            else:
+                relative_path = path_without_query.lstrip('/')
             file_path = os.path.join(BASE_DIR, relative_path)
             
             if os.path.exists(file_path) and os.path.isfile(file_path):
