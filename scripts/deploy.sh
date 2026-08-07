@@ -161,9 +161,11 @@ gum style \
 
 echo "Copy and paste this exact snippet into your Raspberry Pi Connect terminal:"
 echo ""
-gum style --foreground 15 --background 0 --padding "1 2" "wget $TUNNEL_URL/$OUTPUT_ARCHIVE -O $OUTPUT_ARCHIVE
-mkdir -p ~/infoHotel
-tar -xzf $OUTPUT_ARCHIVE -C ~/infoHotel
+gum style --foreground 15 --background 0 --padding "1 2" "mkdir -p ~/infoHotel && cd ~/infoHotel
+wget $TUNNEL_URL/$OUTPUT_ARCHIVE -O $OUTPUT_ARCHIVE
+rm -rf build/web
+tar -xzf $OUTPUT_ARCHIVE
+rm -f $OUTPUT_ARCHIVE
 sudo systemctl restart infohotel.service"
 
 echo ""
