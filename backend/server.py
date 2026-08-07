@@ -5,6 +5,7 @@ import os
 import mimetypes
 from backend.api_proxy import handle_proxy_get
 from backend.api_storage import handle_write_json, handle_save_image, handle_delete_image
+from backend.api_system import handle_open_terminal
 from backend.flightradar_scraper import handle_flightradar_get
 
 SKIP_HOTEL_ASSETS = os.environ.get('SKIP_HOTEL_ASSETS', '').lower() == 'true'
@@ -48,6 +49,9 @@ class MainHandler(http.server.SimpleHTTPRequestHandler):
             return
         if self.path.startswith('/api/deleteImage'):
             handle_delete_image(self)
+            return
+        if self.path.startswith('/api/openTerminal'):
+            handle_open_terminal(self)
             return
         self.send_error(404, "Not found")
 

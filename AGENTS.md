@@ -25,6 +25,7 @@
 - **F11**: Fullscreen kiosk toggle.
 - **F1**: Help overlay toggle.
 - **F2**: Edit Mode toggle (UI to manage excursions/markets, saves to JSON).
+- **Ctrl+Alt+T** / **F4**: Open Terminal.
 - **Alt+T**: Cycle hotel layouts.
 - **Ctrl+M** / **F3**: Toggle cursor visibility.
 

@@ -45,12 +45,15 @@ class IbizaDeparture {
   }
 
   factory IbizaDeparture.fromCache(Map<String, dynamic> json) {
+    if (json['departure'] != null) {
+      return IbizaDeparture.fromJson(json);
+    }
     return IbizaDeparture(
       flightNumbers: json['flightNumbers'] != null 
           ? List<String>.from(json['flightNumbers']) 
           : [json['flightNumber'] ?? '---'],
       destination: json['destination'] ?? 'Unknown',
-      scheduledTime: DateTime.parse(json['scheduledTime']),
+      scheduledTime: json['scheduledTime'] != null ? DateTime.parse(json['scheduledTime']) : DateTime.now(),
       estimatedTime: json['estimatedTime'] != null ? DateTime.parse(json['estimatedTime']) : null,
       status: json['status'] ?? 'Scheduled',
       gate: json['gate'] ?? '-',

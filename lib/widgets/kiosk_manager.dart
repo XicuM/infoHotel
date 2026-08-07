@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import '../services/hotel_service.dart';
 import '../services/content_service.dart';
+import '../services/terminal_service.dart';
 import 'help_popup.dart';
 
 class KioskManager extends StatefulWidget {
@@ -42,7 +43,11 @@ class _KioskManagerState extends State<KioskManager> {
       onKeyEvent: (event) {
         if (event is KeyDownEvent) {
           final isAltPressed = HardwareKeyboard.instance.isAltPressed;
-          if (isAltPressed && event.logicalKey == LogicalKeyboardKey.keyT) {
+          final isControlPressed = HardwareKeyboard.instance.isControlPressed;
+          if ((isControlPressed && isAltPressed && event.logicalKey == LogicalKeyboardKey.keyT) ||
+              event.logicalKey == LogicalKeyboardKey.f4) {
+            TerminalService.launchTerminal();
+          } else if (isAltPressed && event.logicalKey == LogicalKeyboardKey.keyT) {
             hotelService.cycleNextHotel();
           } else if (isAltPressed && event.logicalKey == LogicalKeyboardKey.keyS) {
             hotelService.cyclePreviousHotel();

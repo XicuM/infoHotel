@@ -41,7 +41,7 @@ gum style \
 # 3. Update system and install kiosk dependencies using Gum spinner
 gum spin --spinner dot --title "Updating package lists..." -- sudo apt-get update -y
 gum style --foreground 72 "    ✓ Package lists updated."
-gum spin --spinner dot --title "Installing dependencies (curl, unzip, xz-utils, zip, python3, python3-pip, cage, cog, wlr-randr)..." -- sudo apt-get install -y curl unzip xz-utils zip python3 python3-pip cage cog wlr-randr
+gum spin --spinner dot --title "Installing dependencies (curl, unzip, xz-utils, zip, python3, python3-pip, cage, cog, wlr-randr, lxterminal)..." -- sudo apt-get install -y curl unzip xz-utils zip python3 python3-pip cage cog wlr-randr lxterminal
 gum style --foreground 72 "    ✓ Dependencies installed."
 
 echo -e "${BLUE}--> Installing Python backend dependencies...${NC}"

@@ -35,6 +35,7 @@ class HelpPopup extends StatelessWidget {
           _buildShortcutRow('Alt + H', 'Show Help'),
           _buildShortcutRow('Alt + M', 'Toggle Cursor'),
           _buildShortcutRow('Alt + T', 'Cycle Hotels'),
+          _buildShortcutRow('Ctrl + Alt + T / F4', 'Open Terminal'),
           _buildShortcutRow('F2', 'Toggle Edit Mode'),
           _buildShortcutRow('F11', 'Toggle Fullscreen'),
         ],
