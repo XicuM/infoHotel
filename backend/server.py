@@ -101,7 +101,8 @@ class MainHandler(http.server.SimpleHTTPRequestHandler):
                     if ctype:
                         self.send_header('Content-Type', ctype)
                     self.send_header('Content-Length', str(len(content)))
-                    self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                    cache_header = 'no-cache' if file_path.endswith('.json') else 'public, max-age=86400'
+                    self.send_header('Cache-Control', cache_header)
                     self.end_headers()
                     self.wfile.write(content)
                     return
@@ -121,7 +122,8 @@ class MainHandler(http.server.SimpleHTTPRequestHandler):
                     if ctype:
                         self.send_header('Content-Type', ctype)
                     self.send_header('Content-Length', str(len(content)))
-                    self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                    cache_header = 'no-cache' if file_path.endswith('.json') else 'public, max-age=86400'
+                    self.send_header('Cache-Control', cache_header)
                     self.end_headers()
                     self.wfile.write(content)
                     return

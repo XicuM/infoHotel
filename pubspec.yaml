@@ -1,7 +1,7 @@
 name: info_hotel
 description: "Hotel information kiosk application, built with Flutter"
 publish_to: 'none'
-version: 1.4.1+31
+version: 1.4.1+32
 
 environment:
   sdk: ^3.10.1
@@ -46,26 +46,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - hotel_assets/data/
-    - hotel_assets/images/
-    - hotel_assets/images/background/
-    - hotel_assets/images/excursions/
-    - hotel_assets/images/excursions/ex_ibiza/
-    - hotel_assets/images/facilities/
     - assets/images/flags/
     - assets/images/icons/
-    - hotel_assets/images/information/
-    - hotel_assets/images/logo/
-    - hotel_assets/images/beaches/
-    - hotel_assets/images/maps/
-    - hotel_assets/images/markets/
-    - hotel_assets/images/shows/
-    - hotel_assets/images/shows/old/
     - assets/images/weather/
     - assets/images/weather/sky_states/
     - assets/images/weather/wind/
-    - hotel_assets/pdf/
-    - hotel_assets/pdf/excursions/
 
 dependency_overrides:
   pdfx:
