@@ -24,6 +24,35 @@ mimetypes.add_type('font/woff2', '.woff2')
 mimetypes.add_type('font/ttf', '.ttf')
 mimetypes.add_type('image/svg+xml', '.svg')
 
+import gzip
+
+def send_file_response(handler, file_path, content):
+    accept_encoding = handler.headers.get('Accept-Encoding', '')
+    ctype, _ = mimetypes.guess_type(file_path)
+    
+    use_gzip = 'gzip' in accept_encoding and (
+        file_path.endswith('.js') or
+        file_path.endswith('.json') or
+        file_path.endswith('.wasm') or
+        file_path.endswith('.html') or
+        file_path.endswith('.css') or
+        file_path.endswith('.svg')
+    )
+    
+    if use_gzip:
+        content = gzip.compress(content)
+        
+    handler.send_response(200)
+    if ctype:
+        handler.send_header('Content-Type', ctype)
+    if use_gzip:
+        handler.send_header('Content-Encoding', 'gzip')
+    handler.send_header('Content-Length', str(len(content)))
+    cache_header = 'no-cache' if file_path.endswith('.json') else 'public, max-age=86400'
+    handler.send_header('Cache-Control', cache_header)
+    handler.end_headers()
+    handler.wfile.write(content)
+
 class MainHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         # Serve the web directory if passed as second argument, else current directory
@@ -95,16 +124,7 @@ class MainHandler(http.server.SimpleHTTPRequestHandler):
                 try:
                     with open(file_path, 'rb') as f:
                         content = f.read()
-                    self.send_response(200)
-                    # Guess MIME type
-                    ctype, _ = mimetypes.guess_type(file_path)
-                    if ctype:
-                        self.send_header('Content-Type', ctype)
-                    self.send_header('Content-Length', str(len(content)))
-                    cache_header = 'no-cache' if file_path.endswith('.json') else 'public, max-age=86400'
-                    self.send_header('Cache-Control', cache_header)
-                    self.end_headers()
-                    self.wfile.write(content)
+                    send_file_response(self, file_path, content)
                     return
                 except Exception as e:
                     self.send_error(500, f"Error reading file: {e}")
@@ -117,20 +137,24 @@ class MainHandler(http.server.SimpleHTTPRequestHandler):
                 try:
                     with open(file_path, 'rb') as f:
                         content = f.read()
-                    self.send_response(200)
-                    ctype, _ = mimetypes.guess_type(file_path)
-                    if ctype:
-                        self.send_header('Content-Type', ctype)
-                    self.send_header('Content-Length', str(len(content)))
-                    cache_header = 'no-cache' if file_path.endswith('.json') else 'public, max-age=86400'
-                    self.send_header('Cache-Control', cache_header)
-                    self.end_headers()
-                    self.wfile.write(content)
+                    send_file_response(self, file_path, content)
                     return
                 except Exception as e:
                     self.send_error(500, f"Error reading file: {e}")
                     return
             
+        # Serve static web directory files (main.dart.js, canvaskit, etc.) with Gzip and Caching
+        serve_dir = sys.argv[2] if len(sys.argv) > 2 else '.'
+        target_file = os.path.join(serve_dir, path_without_query.lstrip('/'))
+        if os.path.isfile(target_file):
+            try:
+                with open(target_file, 'rb') as f:
+                    content = f.read()
+                send_file_response(self, target_file, content)
+                return
+            except Exception:
+                pass
+
         super().do_GET()
 
     def log_message(self, fmt, *args):
