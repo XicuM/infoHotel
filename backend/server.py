@@ -108,6 +108,26 @@ class MainHandler(http.server.SimpleHTTPRequestHandler):
                 except Exception as e:
                     self.send_error(500, f"Error reading file: {e}")
                     return
+
+        elif path_without_query.startswith('/assets/'):
+            relative_path = path_without_query.lstrip('/')
+            file_path = os.path.join(BASE_DIR, relative_path)
+            if os.path.exists(file_path) and os.path.isfile(file_path):
+                try:
+                    with open(file_path, 'rb') as f:
+                        content = f.read()
+                    self.send_response(200)
+                    ctype, _ = mimetypes.guess_type(file_path)
+                    if ctype:
+                        self.send_header('Content-Type', ctype)
+                    self.send_header('Content-Length', str(len(content)))
+                    self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                    self.end_headers()
+                    self.wfile.write(content)
+                    return
+                except Exception as e:
+                    self.send_error(500, f"Error reading file: {e}")
+                    return
             
         super().do_GET()
 
