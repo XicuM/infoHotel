@@ -29,7 +29,9 @@ class BeachesView extends StatelessWidget {
               ? beach.imagePath
               : (beach.imagePath.startsWith('hotel_assets/')
                   ? beach.imagePath
-                  : 'hotel_assets/images/${beach.imagePath}');
+                  : (beach.imagePath.startsWith('images/')
+                      ? 'hotel_assets/${beach.imagePath}'
+                      : 'hotel_assets/images/${beach.imagePath}'));
 
           return CardData(
             imagePath: cardImage,

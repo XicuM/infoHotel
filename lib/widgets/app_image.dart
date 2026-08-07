@@ -86,8 +86,6 @@ class AppImage extends StatelessWidget {
             width: width,
             height: height,
             fit: fit,
-            cacheWidth: finalCacheWidth,
-            cacheHeight: finalCacheWidth == null ? finalCacheHeight : null,
             errorBuilder: errorBuilder ?? (context, error, stackTrace) => _buildError(context),
           );
         } else if (path!.startsWith('hotel_assets/')) {
@@ -103,8 +101,6 @@ class AppImage extends StatelessWidget {
             width: width,
             height: height,
             fit: fit,
-            cacheWidth: finalCacheWidth,
-            cacheHeight: finalCacheWidth == null ? finalCacheHeight : null,
             errorBuilder: errorBuilder ?? (context, error, stackTrace) => _buildError(context),
           );
         } else {
@@ -113,8 +109,6 @@ class AppImage extends StatelessWidget {
             width: width,
             height: height,
             fit: fit,
-            cacheWidth: finalCacheWidth,
-            cacheHeight: finalCacheWidth == null ? finalCacheHeight : null,
             errorBuilder: errorBuilder ?? (context, error, stackTrace) => _buildError(context),
           );
         }
