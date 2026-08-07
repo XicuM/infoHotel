@@ -65,7 +65,7 @@ gum style --foreground 72 "Build successful!"
 OUTPUT_ARCHIVE="infoHotel_web_kiosk.tar.gz"
 rm -f "$OUTPUT_ARCHIVE" "build/web/$OUTPUT_ARCHIVE"
 
-gum spin --spinner dot --title "Packaging web build (excluding git-tracked assets)..." -- bash -c "tar --exclude='build/web/assets' --exclude='*.tar.gz' -czf $OUTPUT_ARCHIVE build/web/ backend/"
+gum spin --spinner dot --title "Packaging web build (excluding heavy git-tracked media)..." -- bash -c "tar --exclude='build/web/assets/hotel_assets/images' --exclude='build/web/assets/hotel_assets/pdf' --exclude='*.tar.gz' -czf $OUTPUT_ARCHIVE build/web/ backend/"
 mv "$OUTPUT_ARCHIVE" build/web/"$OUTPUT_ARCHIVE"
 
 # 4. Host locally via secure tunnel
