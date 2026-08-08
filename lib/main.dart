@@ -99,6 +99,7 @@ class InfoHotelApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.dark, // Force dark mode for new UI
+        scrollBehavior: AlwaysVisibleScrollBehavior(),
         home: const MainLayout(),
       ),
     );

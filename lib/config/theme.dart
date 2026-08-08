@@ -187,6 +187,14 @@ class AppTheme {
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
+      scrollbarTheme: ScrollbarThemeData(
+        thumbVisibility: WidgetStateProperty.all(true),
+        trackVisibility: WidgetStateProperty.all(true),
+        interactive: true,
+        thickness: WidgetStateProperty.all(8.0),
+        radius: const Radius.circular(4),
+        thumbColor: WidgetStateProperty.all(const Color(0x80000000)),
+      ),
     );
   }
 
@@ -215,6 +223,26 @@ class AppTheme {
         backgroundColor: Colors.transparent,
         indicatorColor: Color(0x40FFFFFF),
       ),
+      scrollbarTheme: ScrollbarThemeData(
+        thumbVisibility: WidgetStateProperty.all(true),
+        trackVisibility: WidgetStateProperty.all(true),
+        interactive: true,
+        thickness: WidgetStateProperty.all(8.0),
+        radius: const Radius.circular(4),
+        thumbColor: WidgetStateProperty.all(const Color(0x80FFFFFF)),
+      ),
+    );
+  }
+}
+
+class AlwaysVisibleScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Widget buildScrollbar(BuildContext context, Widget child, ScrollableDetails details) {
+    return Scrollbar(
+      controller: details.controller,
+      thumbVisibility: true,
+      trackVisibility: true,
+      child: child,
     );
   }
 }
