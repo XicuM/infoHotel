@@ -441,7 +441,10 @@ class _FacilityDetailViewState extends State<FacilityDetailView> {
   String? _getDescription(LanguageService langService) {
     final currentLang = langService.currentLanguage;
     if (_localizedDescriptions.containsKey(currentLang) && _localizedDescriptions[currentLang]!.isNotEmpty) {
-      return _localizedDescriptions[currentLang]!;
+      final text = _localizedDescriptions[currentLang]!;
+      final translated = Translations.get(text, currentLang);
+      if (translated != text) return translated;
+      return text;
     }
     if (widget.facility.descriptionKey != null) {
       return Translations.get(widget.facility.descriptionKey!, currentLang);
