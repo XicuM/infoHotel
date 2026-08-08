@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:path/path.dart' as p;
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
@@ -10,6 +9,7 @@ import '../../services/excursion_service.dart';
 import '../../widgets/app_bar_widget.dart';
 import '../../widgets/localized_text_field.dart';
 import '../../widgets/app_image.dart';
+import '../../widgets/asset_image_picker_modal.dart';
 
 class ExcursionEditView extends StatefulWidget {
   final ExcursionModel excursion;
@@ -157,16 +157,10 @@ class _ExcursionEditViewState extends State<ExcursionEditView> {
                     const SizedBox(width: 16),
                     ElevatedButton(
                       onPressed: () async {
-                        FilePickerResult? result = await FilePicker.pickFiles(type: FileType.image, withData: true);
-                        if (result != null && (result.files.single.path != null || kIsWeb)) {
-                           final newPath = await contentService.saveImage(
-                             result.files.single.path ?? '', 
-                             subFolder: 'excursions/logos',
-                             bytes: result.files.single.bytes,
-                             originalName: result.files.single.name,
-                           );
+                        final selected = await AssetImagePickerModal.show(context, subFolder: 'excursions/logos');
+                        if (selected is String && selected.isNotEmpty) {
                            setState(() {
-                             _imagePath = newPath;
+                             _imagePath = selected;
                              _isLocalImage = true;
                            });
                         }
@@ -226,20 +220,10 @@ class _ExcursionEditViewState extends State<ExcursionEditView> {
         ),
         ElevatedButton(
           onPressed: () async {
-            final result = await FilePicker.pickFiles(
-              type: FileType.custom,
-              allowedExtensions: ['pdf'],
-              withData: true,
-            );
-            if (result != null && (result.files.single.path != null || kIsWeb)) {
-              final newPath = await contentService.saveImage(
-                result.files.single.path ?? '', 
-                subFolder: 'excursions/pdf',
-                bytes: result.files.single.bytes,
-                originalName: result.files.single.name,
-              );
+            final selected = await AssetImagePickerModal.show(context, subFolder: 'excursions/pdf', allowPdf: true);
+            if (selected is String && selected.isNotEmpty) {
               setState(() {
-                _content = newPath;
+                _content = selected;
               });
             }
           },
@@ -290,22 +274,17 @@ class _ExcursionEditViewState extends State<ExcursionEditView> {
         const SizedBox(height: 8),
         ElevatedButton(
           onPressed: () async {
-             final result = await FilePicker.pickFiles(type: FileType.image, allowMultiple: true, withData: true);
-             if (result != null) {
-                for (var file in result.files) {
-                  if (file.path != null || kIsWeb) {
-                     final newPath = await contentService.saveImage(
-                       file.path ?? '', 
-                       subFolder: 'excursions/images',
-                       bytes: file.bytes,
-                       originalName: file.name,
-                     );
-                     setState(() {
-                       images.add(newPath);
-                       _content = images;
-                     });
+             final selected = await AssetImagePickerModal.show(context, subFolder: 'excursions/images', allowMultiple: true);
+             if (selected != null) {
+                final list = selected is List ? selected.cast<String>() : [selected.toString()];
+                setState(() {
+                  for (final item in list) {
+                    if (!images.contains(item)) {
+                      images.add(item);
+                    }
                   }
-                }
+                  _content = images;
+                });
              }
           },
           child: const Text('Add Images'),

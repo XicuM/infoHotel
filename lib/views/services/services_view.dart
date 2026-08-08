@@ -11,7 +11,7 @@ import '../../widgets/app_bar_widget.dart';
 import '../../widgets/card_widget.dart';
 import 'shows_view.dart';
 import 'hotel_services_view.dart';
-import 'package:file_picker/file_picker.dart';
+import '../../widgets/asset_image_picker_modal.dart';
 import '../../services/show_service.dart';
 
 class ServicesView extends StatelessWidget {
@@ -167,16 +167,10 @@ class ServicesView extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.image_search),
                       onPressed: () async {
-                        final result = await FilePicker.pickFiles(type: FileType.image, withData: true);
-                        if (result != null && (result.files.single.path != null || kIsWeb)) {
-                          final localPath = await contentService.saveImage(
-                            result.files.single.path ?? '',
-                            subFolder: 'shows',
-                            bytes: result.files.single.bytes,
-                            originalName: result.files.single.name,
-                          );
+                        final selected = await AssetImagePickerModal.show(context, subFolder: 'shows');
+                        if (selected is String && selected.isNotEmpty) {
                           setDialogState(() {
-                            newImagePath = localPath;
+                            newImagePath = selected;
                           });
                         }
                       },

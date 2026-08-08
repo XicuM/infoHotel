@@ -27,6 +27,18 @@ class ContentService extends ChangeNotifier {
   Future<void> deleteImage(String imagePath) async {
     await _storage.deleteImage(imagePath);
   }
+
+  Future<List<String>> listAvailableImages() async {
+    return await _storage.listAvailableImages();
+  }
+
+  Future<List<Map<String, dynamic>>> listUsbFiles() async {
+    return await _storage.listUsbFiles();
+  }
+
+  Future<String> copyUsbFile(String usbPath, {String subFolder = 'markets'}) async {
+    return await _storage.copyUsbFile(usbPath, subFolder: subFolder);
+  }
 }
 
 

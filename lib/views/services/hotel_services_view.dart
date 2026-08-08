@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:file_picker/file_picker.dart';
 import '../../config/theme.dart';
 import '../../widgets/app_bar_widget.dart';
 import '../../widgets/grid_widget.dart';
@@ -10,6 +9,7 @@ import '../../l10n/translations.dart';
 import '../../services/language_service.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/app_image.dart';
+import '../../widgets/asset_image_picker_modal.dart';
 import 'safety_rules_view.dart';
 import '../../models/hotel_config.dart';
 import '../../services/content_service.dart';
@@ -1079,15 +1079,12 @@ class _FacilityDetailViewState extends State<FacilityDetailView> {
             icon: const Icon(Icons.add_photo_alternate, size: 18),
             label: const Text('Add Logo Image'),
             onPressed: () async {
-              FilePickerResult? result = await FilePicker.pickFiles(type: FileType.image, withData: true);
-              if (result != null && (result.files.single.path != null || kIsWeb)) {
-                final savedPath = await contentService.saveImage(
-                  result.files.single.path ?? '',
-                  subFolder: 'facilities/${widget.hotelId.toLowerCase()}',
-                  bytes: result.files.single.bytes,
-                  originalName: result.files.single.name,
-                );
-                final relativePath = savedPath.replaceFirst('hotel_assets/images/', '');
+              final selected = await AssetImagePickerModal.show(
+                context, 
+                subFolder: 'facilities/${widget.hotelId.toLowerCase()}',
+              );
+              if (selected is String && selected.isNotEmpty) {
+                final relativePath = selected.replaceFirst('hotel_assets/images/', '');
                 setState(() {
                   _logoPath = relativePath;
                 });
@@ -1163,15 +1160,12 @@ class _FacilityDetailViewState extends State<FacilityDetailView> {
           icon: const Icon(Icons.add_a_photo, size: 18),
           label: const Text('Add Image'),
           onPressed: () async {
-            FilePickerResult? result = await FilePicker.pickFiles(type: FileType.image, withData: true);
-            if (result != null && (result.files.single.path != null || kIsWeb)) {
-              final savedPath = await contentService.saveImage(
-                result.files.single.path ?? '',
-                subFolder: 'facilities/${widget.hotelId.toLowerCase()}',
-                bytes: result.files.single.bytes,
-                originalName: result.files.single.name,
-              );
-              final relativePath = savedPath.replaceFirst('hotel_assets/images/', '');
+            final selected = await AssetImagePickerModal.show(
+              context, 
+              subFolder: 'facilities/${widget.hotelId.toLowerCase()}',
+            );
+            if (selected is String && selected.isNotEmpty) {
+              final relativePath = selected.replaceFirst('hotel_assets/images/', '');
               setState(() {
                 _imagePaths.add(relativePath);
               });

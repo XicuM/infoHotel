@@ -4,7 +4,7 @@ import sys
 import os
 import mimetypes
 from backend.api_proxy import handle_proxy_get
-from backend.api_storage import handle_write_json, handle_save_image, handle_delete_image
+from backend.api_storage import handle_write_json, handle_save_image, handle_delete_image, handle_list_images, handle_list_usb_files, handle_copy_usb_file
 from backend.api_system import handle_open_terminal
 from backend.flightradar_scraper import handle_flightradar_get
 
@@ -83,6 +83,9 @@ class MainHandler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/deleteImage'):
             handle_delete_image(self)
             return
+        if self.path.startswith('/api/copyUsbFile'):
+            handle_copy_usb_file(self)
+            return
         if self.path.startswith('/api/openTerminal'):
             handle_open_terminal(self)
             return
@@ -94,6 +97,12 @@ class MainHandler(http.server.SimpleHTTPRequestHandler):
             return
         if self.path.startswith('/api/flights'):
             handle_flightradar_get(self)
+            return
+        if self.path.startswith('/api/listImages'):
+            handle_list_images(self)
+            return
+        if self.path.startswith('/api/listUsbFiles'):
+            handle_list_usb_files(self)
             return
         
         # If it's an API route but not proxy, return 404

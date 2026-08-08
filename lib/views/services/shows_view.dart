@@ -1,4 +1,3 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
@@ -9,6 +8,7 @@ import '../../services/show_service.dart';
 import '../../models/hotel_config.dart';
 import '../../widgets/app_bar_widget.dart';
 import '../../widgets/app_image.dart';
+import '../../widgets/asset_image_picker_modal.dart';
 
 class ShowsView extends StatelessWidget {
   const ShowsView({super.key});
@@ -250,15 +250,9 @@ class ShowsView extends StatelessWidget {
   }
 
   Future<void> _pickImage(BuildContext context, String dayKey, ContentService contentService) async {
-    FilePickerResult? result = await FilePicker.pickFiles(type: FileType.image, withData: true);
-    if (result != null && (result.files.single.path != null || kIsWeb)) {
-      final newPath = await contentService.saveImage(
-        result.files.single.path ?? '',
-        subFolder: 'shows',
-        bytes: result.files.single.bytes,
-        originalName: result.files.single.name,
-      );
-      context.read<ShowService>().updateShowImage(dayKey, newPath);
+    final selected = await AssetImagePickerModal.show(context, subFolder: 'shows');
+    if (selected is String && selected.isNotEmpty) {
+      context.read<ShowService>().updateShowImage(dayKey, selected);
     }
   }
 

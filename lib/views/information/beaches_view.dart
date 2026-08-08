@@ -1,4 +1,3 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
@@ -12,6 +11,7 @@ import '../../widgets/grid_widget.dart';
 import '../../widgets/generic_menu_view.dart';
 import '../../widgets/localized_text_field.dart';
 import '../../widgets/app_image.dart';
+import '../../widgets/asset_image_picker_modal.dart';
 
 class BeachesView extends StatelessWidget {
   const BeachesView({super.key});
@@ -717,16 +717,10 @@ class _BeachDetailViewState extends State<BeachDetailView> {
             icon: const Icon(Icons.add_photo_alternate, size: 18),
             label: const Text('Add Logo Image'),
             onPressed: () async {
-              FilePickerResult? result = await FilePicker.pickFiles(type: FileType.image, withData: true);
-              if (result != null && (result.files.single.path != null || kIsWeb)) {
-                final savedPath = await contentService.saveImage(
-                  result.files.single.path ?? '',
-                  subFolder: 'beaches',
-                  bytes: result.files.single.bytes,
-                  originalName: result.files.single.name,
-                );
+              final selected = await AssetImagePickerModal.show(context, subFolder: 'beaches');
+              if (selected is String && selected.isNotEmpty) {
                 setState(() {
-                  _imagePath = savedPath.replaceFirst('hotel_assets/images/', '');
+                  _imagePath = selected.replaceFirst('hotel_assets/images/', '');
                 });
               }
             },
@@ -806,17 +800,12 @@ class _BeachDetailViewState extends State<BeachDetailView> {
           icon: const Icon(Icons.add_a_photo, size: 18),
           label: const Text('Add Image'),
           onPressed: () async {
-            FilePickerResult? result = await FilePicker.pickFiles(type: FileType.image, withData: true);
-            if (result != null && (result.files.single.path != null || kIsWeb)) {
-              final savedPath = await contentService.saveImage(
-                result.files.single.path ?? '',
-                bytes: result.files.single.bytes,
-                originalName: result.files.single.name,
-              );
+            final selected = await AssetImagePickerModal.show(context, subFolder: 'beaches');
+            if (selected is String && selected.isNotEmpty) {
               setState(() {
-                _galleryImages.add(savedPath);
+                _galleryImages.add(selected);
                 if (_imagePath.isEmpty || _imagePath.contains('placeholder')) {
-                  _imagePath = savedPath;
+                  _imagePath = selected;
                 }
               });
             }

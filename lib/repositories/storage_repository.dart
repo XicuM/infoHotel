@@ -232,4 +232,119 @@ class StorageRepository {
       debugPrint('Error deleting image: $e');
     }
   }
+
+  Future<List<String>> listAvailableImages() async {
+    if (kIsWeb) {
+      try {
+        final proxyUrl = const String.fromEnvironment('PROXY_URL', defaultValue: 'http://localhost:8080');
+        final response = await http.get(Uri.parse('$proxyUrl/api/listImages'));
+        if (response.statusCode == 200) {
+          final jsonResp = json.decode(response.body);
+          if (jsonResp['success'] == true && jsonResp['files'] is List) {
+            return List<String>.from(jsonResp['files']);
+          }
+        }
+      } catch (e) {
+        debugPrint('Error listing images via API: $e');
+      }
+      return [];
+    }
+
+    try {
+      final assetsDir = Directory(PathResolver.resolve('hotel_assets'));
+      if (!await assetsDir.exists()) return [];
+
+      final files = <String>[];
+      final validExts = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.pdf'];
+
+      await for (final entity in assetsDir.list(recursive: true)) {
+        if (entity is File) {
+          final ext = p.extension(entity.path).toLowerCase();
+          if (validExts.contains(ext)) {
+            final rel = p.relative(entity.path, from: PathResolver.resolve('.')).replaceAll('\\', '/');
+            files.add(rel);
+          }
+        }
+      }
+      files.sort();
+      return files;
+    } catch (e) {
+      debugPrint('Error listing local asset images: $e');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> listUsbFiles() async {
+    if (kIsWeb) {
+      try {
+        final proxyUrl = const String.fromEnvironment('PROXY_URL', defaultValue: 'http://localhost:8080');
+        final response = await http.get(Uri.parse('$proxyUrl/api/listUsbFiles'));
+        if (response.statusCode == 200) {
+          final jsonResp = json.decode(response.body);
+          if (jsonResp['success'] == true && jsonResp['files'] is List) {
+            return List<Map<String, dynamic>>.from(jsonResp['files']);
+          }
+        }
+      } catch (e) {
+        debugPrint('Error listing USB files via API: $e');
+      }
+      return [];
+    }
+
+    try {
+      final usbFiles = <Map<String, dynamic>>[];
+      final validExts = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.pdf'];
+      final mountPoints = ['/media', '/mnt', '/run/media'];
+
+      for (final mount in mountPoints) {
+        final dir = Directory(mount);
+        if (await dir.exists()) {
+          await for (final entity in dir.list(recursive: true)) {
+            if (entity is File) {
+              final ext = p.extension(entity.path).toLowerCase();
+              if (validExts.contains(ext)) {
+                usbFiles.add({
+                  'path': entity.path,
+                  'name': p.basename(entity.path),
+                  'size': await entity.length(),
+                });
+              }
+            }
+          }
+        }
+      }
+      usbFiles.sort((a, b) => (a['name'] as String).compareTo(b['name'] as String));
+      return usbFiles;
+    } catch (e) {
+      debugPrint('Error listing local USB files: $e');
+      return [];
+    }
+  }
+
+  Future<String> copyUsbFile(String usbPath, {String subFolder = 'markets'}) async {
+    if (kIsWeb) {
+      try {
+        final proxyUrl = const String.fromEnvironment('PROXY_URL', defaultValue: 'http://localhost:8080');
+        final request = http.Request('POST', Uri.parse('$proxyUrl/api/copyUsbFile'));
+        request.headers['Content-Type'] = 'application/json';
+        request.body = json.encode({
+          'usbPath': usbPath,
+          'subFolder': subFolder,
+        });
+        final response = await request.send();
+        if (response.statusCode == 200) {
+          final respData = await response.stream.bytesToString();
+          final jsonResp = json.decode(respData);
+          if (jsonResp['success'] == true) {
+            return jsonResp['path'];
+          }
+        }
+      } catch (e) {
+        debugPrint('Error copying USB file via API: $e');
+      }
+      return usbPath;
+    }
+
+    return await saveImageToAssets(usbPath, subFolder: subFolder);
+  }
 }
