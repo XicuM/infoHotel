@@ -42,14 +42,21 @@ class AssetImagePickerModal extends StatefulWidget {
 class _AssetImagePickerModalState extends State<AssetImagePickerModal> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   
+  // Asset Gallery State
   bool _isLoadingAssets = true;
   List<String> _allAssets = [];
   List<String> _filteredAssets = [];
   String _selectedFolderFilter = 'All';
   List<String> _selectedSubFolders = [];
+  String _gallerySearchQuery = '';
 
+  // USB State
   bool _isLoadingUsb = false;
   List<Map<String, dynamic>> _usbFiles = [];
+  List<Map<String, dynamic>> _filteredUsbFiles = [];
+  List<String> _usbFolderList = [];
+  String _selectedUsbFolder = 'All Folders';
+  String _usbSearchQuery = '';
 
   final List<String> _selectedPaths = [];
   final TextEditingController _customPathController = TextEditingController();
@@ -93,18 +100,22 @@ class _AssetImagePickerModalState extends State<AssetImagePickerModal> with Sing
 
   void _applyFolderFilter() {
     setState(() {
-      if (_selectedFolderFilter == 'All') {
-        _filteredAssets = _allAssets.where((f) {
-          if (widget.allowPdf) return true;
-          return !f.toLowerCase().endsWith('.pdf');
-        }).toList();
-      } else {
-        _filteredAssets = _allAssets.where((f) {
-          final isSub = f.contains('/$_selectedFolderFilter/');
-          if (widget.allowPdf) return isSub;
-          return isSub && !f.toLowerCase().endsWith('.pdf');
-        }).toList();
-      }
+      final query = _gallerySearchQuery.toLowerCase().trim();
+      _filteredAssets = _allAssets.where((f) {
+        // PDF filter
+        if (!widget.allowPdf && f.toLowerCase().endsWith('.pdf')) {
+          return false;
+        }
+        // Subfolder filter
+        if (_selectedFolderFilter != 'All' && !f.contains('/$_selectedFolderFilter/')) {
+          return false;
+        }
+        // Search query filter
+        if (query.isNotEmpty && !f.toLowerCase().contains(query)) {
+          return false;
+        }
+        return true;
+      }).toList();
     });
   }
 
@@ -112,13 +123,50 @@ class _AssetImagePickerModalState extends State<AssetImagePickerModal> with Sing
     setState(() => _isLoadingUsb = true);
     final contentService = Provider.of<ContentService>(context, listen: false);
     final files = await contentService.listUsbFiles();
+
+    final validFiles = files.where((f) {
+      final path = f['path'] as String? ?? '';
+      if (widget.allowPdf) return true;
+      return !path.toLowerCase().endsWith('.pdf');
+    }).toList();
+
+    // Extract USB folders
+    final folders = <String>{'All Folders'};
+    for (final file in validFiles) {
+      final path = file['path'] as String? ?? '';
+      final dirName = p.basename(p.dirname(path));
+      if (dirName.isNotEmpty) {
+        folders.add(dirName);
+      }
+    }
+
     setState(() {
-      _usbFiles = files.where((f) {
-        final path = f['path'] as String? ?? '';
-        if (widget.allowPdf) return true;
-        return !path.toLowerCase().endsWith('.pdf');
-      }).toList();
+      _usbFiles = validFiles;
+      _usbFolderList = folders.toList()..sort();
+      _selectedUsbFolder = 'All Folders';
       _isLoadingUsb = false;
+      _applyUsbFilter();
+    });
+  }
+
+  void _applyUsbFilter() {
+    setState(() {
+      final query = _usbSearchQuery.toLowerCase().trim();
+      _filteredUsbFiles = _usbFiles.where((file) {
+        final path = file['path'] as String? ?? '';
+        final name = file['name'] as String? ?? '';
+        final dirName = p.basename(p.dirname(path));
+
+        // Folder filter
+        if (_selectedUsbFolder != 'All Folders' && dirName != _selectedUsbFolder) {
+          return false;
+        }
+        // Search query filter
+        if (query.isNotEmpty && !name.toLowerCase().contains(query) && !path.toLowerCase().contains(query)) {
+          return false;
+        }
+        return true;
+      }).toList();
     });
   }
 
@@ -153,8 +201,8 @@ class _AssetImagePickerModalState extends State<AssetImagePickerModal> with Sing
       backgroundColor: const Color(0xFF1E1E2E),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
-        width: 800,
-        height: 600,
+        width: 850,
+        height: 650,
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
@@ -249,112 +297,149 @@ class _AssetImagePickerModalState extends State<AssetImagePickerModal> with Sing
 
     return Column(
       children: [
-        // Folder Filter Dropdown
+        // Controls Row: Search Bar & Folder Filter Dropdown
         Row(
           children: [
-            const Text('Folder: ', style: TextStyle(color: Colors.white70)),
-            const SizedBox(width: 8),
-            DropdownButton<String>(
-              value: _selectedFolderFilter,
-              dropdownColor: const Color(0xFF2A2A3D),
-              style: const TextStyle(color: Colors.white),
-              items: _selectedSubFolders.map((folder) {
-                return DropdownMenuItem(
-                  value: folder,
-                  child: Text(folder.toUpperCase()),
-                );
-              }).toList(),
-              onChanged: (val) {
-                if (val != null) {
-                  setState(() {
-                    _selectedFolderFilter = val;
-                    _applyFolderFilter();
-                  });
-                }
-              },
+            // Search Input
+            Expanded(
+              child: TextField(
+                onChanged: (val) {
+                  _gallerySearchQuery = val;
+                  _applyFolderFilter();
+                },
+                style: const TextStyle(color: Colors.white, fontSize: 13),
+                decoration: InputDecoration(
+                  hintText: 'Search gallery images...',
+                  hintStyle: const TextStyle(color: Colors.white38),
+                  prefixIcon: const Icon(Icons.search, color: Colors.white54, size: 18),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  filled: true,
+                  fillColor: const Color(0xFF2A2A3D),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
             ),
-            const Spacer(),
-            Text('${_filteredAssets.length} items', style: const TextStyle(color: Colors.white54)),
+            const SizedBox(width: 12),
+
+            // Folder Filter Dropdown
+            const Text('Folder: ', style: TextStyle(color: Colors.white70, fontSize: 13)),
+            const SizedBox(width: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2A2A3D),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedFolderFilter,
+                  dropdownColor: const Color(0xFF2A2A3D),
+                  style: const TextStyle(color: Colors.white, fontSize: 13),
+                  items: _selectedSubFolders.map((folder) {
+                    return DropdownMenuItem(
+                      value: folder,
+                      child: Text(folder.toUpperCase()),
+                    );
+                  }).toList(),
+                  onChanged: (val) {
+                    if (val != null) {
+                      setState(() {
+                        _selectedFolderFilter = val;
+                        _applyFolderFilter();
+                      });
+                    }
+                  },
+                ),
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
 
         // Grid View of Images
         Expanded(
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 5,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              childAspectRatio: 1,
-            ),
-            itemCount: _filteredAssets.length,
-            itemBuilder: (context, index) {
-              final path = _filteredAssets[index];
-              final isSelected = _selectedPaths.contains(path);
-              final isPdf = path.toLowerCase().endsWith('.pdf');
+          child: _filteredAssets.isEmpty
+              ? const Center(
+                  child: Text('No matching assets found.', style: TextStyle(color: Colors.white38)),
+                )
+              : GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 5,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 1,
+                  ),
+                  itemCount: _filteredAssets.length,
+                  itemBuilder: (context, index) {
+                    final path = _filteredAssets[index];
+                    final isSelected = _selectedPaths.contains(path);
+                    final isPdf = path.toLowerCase().endsWith('.pdf');
 
-              return InkWell(
-                onTap: () => _toggleSelection(path),
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: isSelected ? Colors.blueAccent : Colors.white24,
-                      width: isSelected ? 3 : 1,
-                    ),
-                    color: Colors.black26,
-                  ),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(6),
-                        child: isPdf
-                            ? const Center(
-                                child: Icon(Icons.picture_as_pdf, size: 40, color: Colors.redAccent),
-                              )
-                            : AppImage(
-                                path: path,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, color: Colors.white38),
-                              ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          color: const Color(0xB3000000),
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                          child: Text(
-                            p.basename(path),
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.white, fontSize: 10),
+                    return InkWell(
+                      onTap: () => _toggleSelection(path),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: isSelected ? Colors.blueAccent : Colors.white24,
+                            width: isSelected ? 3 : 1,
                           ),
+                          color: Colors.black26,
                         ),
-                      ),
-                      if (isSelected)
-                        Positioned(
-                          top: 4,
-                          right: 4,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              color: Colors.blueAccent,
-                              shape: BoxShape.circle,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: isPdf
+                                  ? const Center(
+                                      child: Icon(Icons.picture_as_pdf, size: 40, color: Colors.redAccent),
+                                    )
+                                  : AppImage(
+                                      path: path,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, color: Colors.white38),
+                                    ),
                             ),
-                            padding: const EdgeInsets.all(2),
-                            child: const Icon(Icons.check, size: 16, color: Colors.white),
-                          ),
+                            Positioned(
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              child: Container(
+                                color: const Color(0xB3000000),
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                child: Text(
+                                  p.basename(path),
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(color: Colors.white, fontSize: 10),
+                                ),
+                              ),
+                            ),
+                            if (isSelected)
+                              Positioned(
+                                top: 4,
+                                right: 4,
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.blueAccent,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  padding: const EdgeInsets.all(2),
+                                  child: const Icon(Icons.check, size: 16, color: Colors.white),
+                                ),
+                              ),
+                          ],
                         ),
-                    ],
-                  ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         ),
       ],
     );
@@ -389,45 +474,127 @@ class _AssetImagePickerModalState extends State<AssetImagePickerModal> with Sing
 
     return Column(
       children: [
+        // USB Header Controls: Search Bar + Folder Filter Dropdown + Refresh Button
         Row(
           children: [
-            Text('Found ${_usbFiles.length} file(s) on USB drive:', style: const TextStyle(color: Colors.white70)),
-            const Spacer(),
+            // Search Input
+            Expanded(
+              child: TextField(
+                onChanged: (val) {
+                  _usbSearchQuery = val;
+                  _applyUsbFilter();
+                },
+                style: const TextStyle(color: Colors.white, fontSize: 13),
+                decoration: InputDecoration(
+                  hintText: 'Search USB files...',
+                  hintStyle: const TextStyle(color: Colors.white38),
+                  prefixIcon: const Icon(Icons.search, color: Colors.white54, size: 18),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  filled: true,
+                  fillColor: const Color(0xFF2A2A3D),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+
+            // Folder Filter Dropdown
+            const Text('Folder: ', style: TextStyle(color: Colors.white70, fontSize: 13)),
+            const SizedBox(width: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2A2A3D),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedUsbFolder,
+                  dropdownColor: const Color(0xFF2A2A3D),
+                  style: const TextStyle(color: Colors.white, fontSize: 13),
+                  items: _usbFolderList.map((folder) {
+                    return DropdownMenuItem(
+                      value: folder,
+                      child: Text(folder),
+                    );
+                  }).toList(),
+                  onChanged: (val) {
+                    if (val != null) {
+                      setState(() {
+                        _selectedUsbFolder = val;
+                        _applyUsbFilter();
+                      });
+                    }
+                  },
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 8),
             IconButton(
               icon: const Icon(Icons.refresh, color: Colors.blueAccent),
+              tooltip: 'Refresh USB scan',
               onPressed: _loadUsbFiles,
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        Expanded(
-          child: ListView.builder(
-            itemCount: _usbFiles.length,
-            itemBuilder: (context, index) {
-              final file = _usbFiles[index];
-              final usbPath = file['path'] as String;
-              final fileName = file['name'] as String;
-              final size = file['size'] as int? ?? 0;
-              final sizeMb = (size / (1024 * 1024)).toStringAsFixed(2);
+        const SizedBox(height: 12),
 
-              return ListTile(
-                leading: Icon(
-                  fileName.toLowerCase().endsWith('.pdf') ? Icons.picture_as_pdf : Icons.image,
-                  color: Colors.blueAccent,
-                ),
-                title: Text(fileName, style: const TextStyle(color: Colors.white)),
-                subtitle: Text('$usbPath ($sizeMb MB)', style: const TextStyle(color: Colors.white38, fontSize: 12)),
-                trailing: ElevatedButton(
-                  child: const Text('Import'),
-                  onPressed: () async {
-                    final contentService = Provider.of<ContentService>(context, listen: false);
-                    final newPath = await contentService.copyUsbFile(usbPath, subFolder: widget.subFolder);
-                    _toggleSelection(newPath);
+        // USB Files List
+        Expanded(
+          child: _filteredUsbFiles.isEmpty
+              ? const Center(
+                  child: Text('No files match the search or folder filter.', style: TextStyle(color: Colors.white38)),
+                )
+              : ListView.builder(
+                  itemCount: _filteredUsbFiles.length,
+                  itemBuilder: (context, index) {
+                    final file = _filteredUsbFiles[index];
+                    final usbPath = file['path'] as String;
+                    final fileName = file['name'] as String;
+                    final size = file['size'] as int? ?? 0;
+                    final sizeMb = (size / (1024 * 1024)).toStringAsFixed(2);
+                    final dirName = p.basename(p.dirname(usbPath));
+                    final isSelected = _selectedPaths.contains(usbPath);
+
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 6),
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.blueAccent.withValues(alpha: 0.2) : const Color(0xFF252538),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isSelected ? Colors.blueAccent : Colors.transparent,
+                        ),
+                      ),
+                      child: ListTile(
+                        dense: true,
+                        leading: Icon(
+                          fileName.toLowerCase().endsWith('.pdf') ? Icons.picture_as_pdf : Icons.image,
+                          color: isSelected ? Colors.blueAccent : Colors.white70,
+                        ),
+                        title: Text(fileName, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                        subtitle: Text('📁 $dirName • $sizeMb MB\n$usbPath', style: const TextStyle(color: Colors.white38, fontSize: 11)),
+                        trailing: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isSelected ? Colors.green : Colors.blueAccent,
+                            foregroundColor: Colors.white,
+                          ),
+                          icon: Icon(isSelected ? Icons.check : Icons.file_download, size: 16),
+                          label: Text(isSelected ? 'Imported' : 'Import'),
+                          onPressed: () async {
+                            final contentService = Provider.of<ContentService>(context, listen: false);
+                            final newPath = await contentService.copyUsbFile(usbPath, subFolder: widget.subFolder);
+                            _toggleSelection(newPath);
+                          },
+                        ),
+                      ),
+                    );
                   },
                 ),
-              );
-            },
-          ),
         ),
       ],
     );
