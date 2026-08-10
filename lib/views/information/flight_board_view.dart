@@ -233,12 +233,11 @@ class _FlightBoardViewState extends State<FlightBoardView> {
                                             ),
                                           ),
                                           Expanded(
-                                            flex: 2,
+                                            flex: 3,
                                             child: _FlightNumberTicker(flightNumbers: flight.flightNumbers),
                                           ),
-
                                           Expanded(
-                                            flex: 5,
+                                            flex: 4,
                                             child: Text(
                                               statusText,
                                               style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: statusColor),
@@ -287,8 +286,8 @@ class _FlightBoardViewState extends State<FlightBoardView> {
         children: [
           Expanded(flex: 2, child: Text('TIME', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber, letterSpacing: 1.0))),
           Expanded(flex: 4, child: Text('DESTINATION', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber, letterSpacing: 1.0))),
-          Expanded(flex: 2, child: Text('FLIGHT', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber, letterSpacing: 1.0))),
-          Expanded(flex: 5, child: Text('REMARKS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber, letterSpacing: 1.0))),
+          Expanded(flex: 3, child: Text('FLIGHT', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber, letterSpacing: 1.0))),
+          Expanded(flex: 4, child: Text('REMARKS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber, letterSpacing: 1.0))),
         ],
       ),
     );
@@ -399,6 +398,8 @@ class _FlightNumberTickerState extends State<_FlightNumberTicker> {
         child: Text(
           flightNumber,
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white70),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );
