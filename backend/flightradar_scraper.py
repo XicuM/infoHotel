@@ -1,5 +1,10 @@
 import json
+import logging
 import time
+
+# Suppress the redundant and noisy gzip decoding warning from the FlightRadarAPI request library.
+# The warning is harmless as curl-cffi already decompresses the payload automatically.
+logging.getLogger("FlightRadarAPI").setLevel(logging.ERROR)
 
 # Check for the FlightRadar24 dependency once at import time so the warning
 # appears in the logs immediately on server startup instead of on first request.
