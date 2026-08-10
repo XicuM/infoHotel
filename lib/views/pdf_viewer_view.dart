@@ -9,6 +9,8 @@ import '../widgets/zoomable_viewer.dart';
 import '../widgets/app_image.dart';
 import '../utils/path_resolver.dart';
 import '../utils/pdf_disk_cache.dart';
+import '../config/env.dart';
+import 'package:http/http.dart' as http;
 
 /// PDF Viewer widget for displaying PDF brochures
 /// Supports "book mode" (2 pages side-by-side) in landscape.
@@ -56,7 +58,20 @@ class _PdfViewerViewState extends State<PdfViewerView> {
     try {
       PdfDocument document;
       if (kIsWeb) {
-        document = await PdfDocument.openAsset(widget.pdfPath);
+        if (widget.pdfPath.startsWith('http')) {
+          final response = await http.get(Uri.parse(widget.pdfPath));
+          document = await PdfDocument.openData(response.bodyBytes);
+        } else if (widget.pdfPath.startsWith('hotel_assets/')) {
+          final proxyUrl = Env.proxyBaseUrl;
+          final encodedPath = Uri.encodeFull(widget.pdfPath);
+          final networkUrl = proxyUrl.isEmpty 
+              ? '/$encodedPath' 
+              : '$proxyUrl/$encodedPath';
+          final response = await http.get(Uri.parse(networkUrl));
+          document = await PdfDocument.openData(response.bodyBytes);
+        } else {
+          document = await PdfDocument.openAsset(widget.pdfPath);
+        }
       } else if (!widget.isLocal && widget.pdfPath.startsWith('hotel_assets/')) {
         document = await PdfDocument.openAsset(widget.pdfPath);
       } else {
