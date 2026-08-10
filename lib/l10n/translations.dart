@@ -1427,6 +1427,18 @@ class Translations {
     'de': 'Deutsch',
     'it': 'Italiano',
     'nl': 'Nederlands',
+    'january': {'ca': 'Gener', 'de': 'Januar', 'en': 'January', 'es': 'Enero', 'fr': 'Janvier', 'it': 'Gennaio', 'nl': 'Januari'},
+    'february': {'ca': 'Febrer', 'de': 'Februar', 'en': 'February', 'es': 'Febrero', 'fr': 'Février', 'it': 'Febbraio', 'nl': 'Februari'},
+    'march': {'ca': 'Març', 'de': 'März', 'en': 'March', 'es': 'Marzo', 'fr': 'Mars', 'it': 'Marzo', 'nl': 'Maart'},
+    'april': {'ca': 'Abril', 'de': 'April', 'en': 'April', 'es': 'Abril', 'fr': 'Avril', 'it': 'Aprile', 'nl': 'April'},
+    'may': {'ca': 'Maig', 'de': 'Mai', 'en': 'May', 'es': 'Mayo', 'fr': 'Mai', 'it': 'Maggio', 'nl': 'Mei'},
+    'june': {'ca': 'Juny', 'de': 'Juni', 'en': 'June', 'es': 'Junio', 'fr': 'Juin', 'it': 'Giugno', 'nl': 'Juni'},
+    'july': {'ca': 'Juliol', 'de': 'Juli', 'en': 'July', 'es': 'Julio', 'fr': 'Juillet', 'it': 'Luglio', 'nl': 'Juli'},
+    'august': {'ca': 'Agost', 'de': 'August', 'en': 'August', 'es': 'Agosto', 'fr': 'Août', 'it': 'Agosto', 'nl': 'Augustus'},
+    'september': {'ca': 'Setembre', 'de': 'September', 'en': 'September', 'es': 'Septiembre', 'fr': 'Septembre', 'it': 'Settembre', 'nl': 'September'},
+    'october': {'ca': 'Octubre', 'de': 'Oktober', 'en': 'October', 'es': 'Octubre', 'fr': 'Octobre', 'it': 'Ottobre', 'nl': 'Oktober'},
+    'november': {'ca': 'Novembre', 'de': 'November', 'en': 'November', 'es': 'Noviembre', 'fr': 'Novembre', 'it': 'Novembre', 'nl': 'November'},
+    'december': {'ca': 'Desembre', 'de': 'Dezember', 'en': 'December', 'es': 'Diciembre', 'fr': 'Décembre', 'it': 'Dicembre', 'nl': 'December'},
   };
 
   static const Map<String, String> flagAssets = {
@@ -1459,5 +1471,15 @@ class Translations {
     ];
     final dayKey = weekdays[day % 7];
     return get(dayKey, lang);
+  }
+
+  /// Get month name by month number (1 = January, 12 = December)
+  static String getMonth(int month, String lang) {
+    const monthKeys = [
+      'january', 'february', 'march', 'april', 'may', 'june',
+      'july', 'august', 'september', 'october', 'november', 'december'
+    ];
+    final monthKey = monthKeys[(month - 1) % 12];
+    return get(monthKey, lang);
   }
 }

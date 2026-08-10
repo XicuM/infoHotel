@@ -260,7 +260,7 @@ class _ShowsViewState extends State<ShowsView> {
                       FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
-                          _getDateString(index),
+                          _getDateString(index, langService),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 11,
@@ -600,7 +600,7 @@ class _ShowsViewState extends State<ShowsView> {
     );
   }
 
-  String _getDateString(int dayIndex) {
+  String _getDateString(int dayIndex, LanguageService langService) {
     final now = DateTime.now();
     final currentMonday = DateTime(now.year, now.month, now.day).subtract(Duration(days: now.weekday - 1));
     final currentWeekParity = (_getWeekNumber(now) % 2 == 1) ? 1 : 2;
@@ -611,9 +611,8 @@ class _ShowsViewState extends State<ShowsView> {
     }
 
     final targetDate = currentMonday.add(Duration(days: weekOffset * 7 + dayIndex));
-    final dayStr = targetDate.day.toString().padLeft(2, '0');
-    final monthStr = targetDate.month.toString().padLeft(2, '0');
-    return '$dayStr/$monthStr';
+    final monthName = langService.getMonth(targetDate.month);
+    return '$monthName ${targetDate.day}';
   }
 
   int _getWeekNumber(DateTime date) {

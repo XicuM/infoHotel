@@ -27,6 +27,11 @@ class LanguageService extends ChangeNotifier {
     return Translations.getWeekday(day, _currentLanguage);
   }
 
+  /// Get month name for current language
+  String getMonth(int month) {
+    return Translations.getMonth(month, _currentLanguage);
+  }
+
   /// Get the flag asset path for a language
   String getFlagAsset(String lang) {
     return Translations.flagAssets[lang] ?? 'assets/images/flags/uk.png';
