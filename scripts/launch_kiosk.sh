@@ -29,6 +29,11 @@ export WEBKIT_INSPECTOR_SERVER=0.0.0.0:8081
 # Prevent wlroots/cage from crashing if no mouse or keyboard is plugged in
 export WLR_LIBINPUT_NO_DEVICES=1
 
+# Force software cursor rendering so Cog/WebKit's CSS `cursor: none` is
+# honoured by Cage. Without this, wlroots renders a hardware cursor on top
+# of the page that ignores the app's cursor:none style entirely.
+export WLR_NO_HARDWARE_CURSORS=1
+
 # Disable the WebKit sandbox to fix the 'bwrap' / 'dbus-proxy' crash on Raspbian
 export WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1
 export WPE_DISABLE_SANDBOX=1
