@@ -199,6 +199,24 @@ class Translations {
       'it': 'Rimuovi locandina',
       'nl': 'Poster verwijderen',
     },
+    'edit_time': {
+      'ca': "Editar hora d'inici",
+      'de': 'Startzeit bearbeiten',
+      'en': 'Edit starting time',
+      'es': 'Editar hora de inicio',
+      'fr': "Modifier l'heure de début",
+      'it': 'Modifica ora di inizio',
+      'nl': 'Begintijd bewerken',
+    },
+    'start_time': {
+      'ca': "Hora d'inici",
+      'de': 'Startzeit',
+      'en': 'Starting time',
+      'es': 'Hora de inicio',
+      'fr': 'Heure de début',
+      'it': 'Ora di inizio',
+      'nl': 'Begintijd',
+    },
     'info_for_all_clients': {
       'ca':
           "Els nostres clients podran gaudir al complet de tots els serveis oferts pel complex turístic.",

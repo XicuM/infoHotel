@@ -194,6 +194,9 @@ class StorageRepository {
       await destFile.writeAsBytes(bytes);
       
       debugPrint('Successfully copied image to $destPath');
+      try {
+        await Process.run('python3', ['scripts/optimize_assets.py', destPath]);
+      } catch (_) {}
     } catch (e) {
       debugPrint('Error copying image: $e');
     }
@@ -202,7 +205,7 @@ class StorageRepository {
   }
 
   Future<void> deleteImage(String imagePath) async {
-    if (imagePath.isEmpty || !imagePath.startsWith('hotel_assets/images/')) {
+    if (imagePath.isEmpty || !imagePath.startsWith('hotel_assets/')) {
       return;
     }
 

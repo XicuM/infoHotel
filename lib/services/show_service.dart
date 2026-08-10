@@ -52,9 +52,6 @@ class ShowService extends ChangeNotifier {
     if (key == 'card_image') {
       return _showsImages['card_image'] ?? 'hotel_assets/images/facilities/shows.jpg';
     }
-    if (key == 'background') {
-      return _showsImages['background'] ?? 'hotel_assets/images/shows/shows.png';
-    }
 
     if (week == 2) {
       final week2Key = '${key}_2';
@@ -80,6 +77,22 @@ class ShowService extends ChangeNotifier {
 
   Future<void> setStartHotelIndex(int week, int hotelIndex) async {
     _showsImages['start_hotel_week$week'] = hotelIndex.toString();
+    await _saveShows();
+    notifyListeners();
+  }
+
+  String getShowTime(String dayKey, {int week = 1}) {
+    final timeKey = _getKeyForWeek('${dayKey}_time', week);
+    if (_showsImages.containsKey(timeKey)) {
+      final val = _showsImages[timeKey]!.trim();
+      if (val.isNotEmpty) return val;
+    }
+    return '21:30';
+  }
+
+  Future<void> updateShowTime(String dayKey, String time, {int week = 1}) async {
+    final timeKey = _getKeyForWeek('${dayKey}_time', week);
+    _showsImages[timeKey] = time.trim();
     await _saveShows();
     notifyListeners();
   }

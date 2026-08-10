@@ -39,6 +39,30 @@
 
   <title>info_hotel</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- Global Cursor Control for Kiosk Mode -->
+  <style id="global-cursor-style">
+    html, body, canvas, flt-glass-pane, flutter-view, * {
+      cursor: none !important;
+    }
+  </style>
+  <script>
+    window.setCursorVisible = function(visible) {
+      var style = document.getElementById('global-cursor-style');
+      if (!style) {
+        if (!visible) {
+          style = document.createElement('style');
+          style.id = 'global-cursor-style';
+          style.innerHTML = 'html, body, canvas, flt-glass-pane, flutter-view, * { cursor: none !important; }';
+          document.head.appendChild(style);
+        }
+      } else {
+        if (visible) {
+          style.remove();
+        }
+      }
+    };
+  </script>
 </head>
 <body>
   <!--

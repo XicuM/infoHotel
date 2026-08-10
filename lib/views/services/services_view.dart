@@ -101,25 +101,25 @@ class ServicesView extends StatelessWidget {
                             ],
                           ),
                         ),
-                      const SizedBox(width: 16),
-                      ...hotelConfigs.map((config) {
-                        return Expanded(
+                      for (int i = 0; i < hotelConfigs.length; i++) ...[
+                        if (i > 0) const SizedBox(width: 16),
+                        Expanded(
                           flex: 40,
                           child: InfoCard(
-                            imagePath: config.cardImage,
-                            title: config.name,
+                            imagePath: hotelConfigs[i].cardImage,
+                            title: hotelConfigs[i].name,
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => FacilitiesView(hotelId: config.id),
+                                  builder: (context) => FacilitiesView(hotelId: hotelConfigs[i].id),
                                 ),
                               );
                             },
                           ),
-                        );
-                      }),
-                      ...hotelConfigs.map((c) => const SizedBox(width: 16)),
-                      if (contentService.isEditMode)
+                        ),
+                      ],
+                      if (contentService.isEditMode) ...[
+                        const SizedBox(width: 16),
                         Expanded(
                           flex: 20,
                           child: InfoCard(
@@ -128,7 +128,8 @@ class ServicesView extends StatelessWidget {
                             onTap: () => _addHotel(context, hotelConfigService),
                           ),
                         ),
-                    ].whereType<Widget>().toList(),
+                      ],
+                    ],
                   ),
                 ),
               ),

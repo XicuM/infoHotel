@@ -11,8 +11,8 @@ def handle_delete_image(request_handler):
         data = json.loads(body)
         path = data.get('path', '')
         
-        # Only allow deleting from hotel_assets/images/
-        if not path.startswith('hotel_assets/images/'):
+        # Only allow deleting from hotel_assets/
+        if not path.startswith('hotel_assets/'):
             raise ValueError("Invalid path for deletion")
             
         # Security: prevent directory traversal
@@ -75,6 +75,12 @@ def handle_save_image(request_handler):
         with open(dest_path, 'wb') as f:
             f.write(base64.b64decode(image_base64))
             
+        try:
+            from scripts.optimize_assets import optimize_single_file
+            optimize_single_file(dest_path)
+        except Exception as opt_err:
+            print(f"Asset optimizer warning: {opt_err}")
+
         relative_path = f"hotel_assets/images/{sub_folder}/{new_filename}"
         
         request_handler.send_response(200)
@@ -161,6 +167,12 @@ def handle_copy_usb_file(request_handler):
         import shutil
         shutil.copy2(usb_path, dest_path)
         
+        try:
+            from scripts.optimize_assets import optimize_single_file
+            optimize_single_file(dest_path)
+        except Exception as opt_err:
+            print(f"Asset optimizer warning: {opt_err}")
+
         relative_path = f"hotel_assets/images/{sub_folder}/{new_filename}"
         
         request_handler.send_response(200)

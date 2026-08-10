@@ -27,6 +27,14 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   void _handleKeyEvent(KeyEvent event) {
     if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
       windowManager.close();
@@ -43,7 +51,8 @@ class _HomeViewState extends State<HomeView> {
         final logoPath = config?.logo ?? '';
 
         return KeyboardListener(
-          focusNode: FocusNode()..requestFocus(),
+          focusNode: _focusNode,
+          autofocus: true,
           onKeyEvent: _handleKeyEvent,
           child: Scaffold(
             body: Stack(

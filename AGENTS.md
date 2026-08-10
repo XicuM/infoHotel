@@ -27,7 +27,7 @@
 - **F2**: Edit Mode toggle (UI to manage excursions/markets, saves to JSON).
 - **Ctrl+Alt+T** / **F4**: Open Terminal.
 - **Alt+T**: Cycle hotel layouts.
-- **Ctrl+M** / **F3**: Toggle cursor visibility.
+- **Alt+M**: Toggle cursor visibility.
 
 ## Flights
 - Departures departing in less than 30 minutes are hidden from the UI.

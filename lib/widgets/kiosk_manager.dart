@@ -6,6 +6,7 @@ import 'package:window_manager/window_manager.dart';
 import '../services/hotel_service.dart';
 import '../services/content_service.dart';
 import '../services/terminal_service.dart';
+import '../utils/cursor_helper.dart';
 import 'help_popup.dart';
 
 class KioskManager extends StatefulWidget {
@@ -23,6 +24,12 @@ class _KioskManagerState extends State<KioskManager> {
   bool _cursorVisible = kDebugMode;
 
   @override
+  void initState() {
+    super.initState();
+    setWebCursorVisible(_cursorVisible);
+  }
+
+  @override
   void dispose() {
     _focusNode.dispose();
     super.dispose();
@@ -32,10 +39,6 @@ class _KioskManagerState extends State<KioskManager> {
   Widget build(BuildContext context) {
     final hotelService = Provider.of<HotelService>(context, listen: false);
     final contentService = Provider.of<ContentService>(context, listen: false);
-
-    if (!_focusNode.hasFocus) {
-      FocusScope.of(context).requestFocus(_focusNode);
-    }
 
     return KeyboardListener(
       focusNode: _focusNode,
@@ -63,10 +66,10 @@ class _KioskManagerState extends State<KioskManager> {
             });
           } else if (event.logicalKey == LogicalKeyboardKey.f2) {
             contentService.toggleEditMode();
-          } else if ((isAltPressed && event.logicalKey == LogicalKeyboardKey.keyM) ||
-                     event.logicalKey == LogicalKeyboardKey.f3) {
+          } else if (isAltPressed && event.logicalKey == LogicalKeyboardKey.keyM) {
             setState(() {
               _cursorVisible = !_cursorVisible;
+              setWebCursorVisible(_cursorVisible);
             });
           } else if (isAltPressed && event.logicalKey == LogicalKeyboardKey.keyH) {
              setState(() {

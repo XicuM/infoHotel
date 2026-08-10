@@ -60,6 +60,8 @@ class _AssetImagePickerModalState extends State<AssetImagePickerModal> with Sing
 
   final List<String> _selectedPaths = [];
   final TextEditingController _customPathController = TextEditingController();
+  final TextEditingController _gallerySearchController = TextEditingController();
+  final TextEditingController _usbSearchController = TextEditingController();
 
   @override
   void initState() {
@@ -73,6 +75,8 @@ class _AssetImagePickerModalState extends State<AssetImagePickerModal> with Sing
   void dispose() {
     _tabController.dispose();
     _customPathController.dispose();
+    _gallerySearchController.dispose();
+    _usbSearchController.dispose();
     super.dispose();
   }
 
@@ -102,16 +106,19 @@ class _AssetImagePickerModalState extends State<AssetImagePickerModal> with Sing
     setState(() {
       final query = _gallerySearchQuery.toLowerCase().trim();
       _filteredAssets = _allAssets.where((f) {
+        final lowerPath = f.toLowerCase();
+        final filename = p.basename(f).toLowerCase();
+
         // PDF filter
-        if (!widget.allowPdf && f.toLowerCase().endsWith('.pdf')) {
+        if (!widget.allowPdf && lowerPath.endsWith('.pdf')) {
           return false;
         }
         // Subfolder filter
-        if (_selectedFolderFilter != 'All' && !f.contains('/$_selectedFolderFilter/')) {
+        if (_selectedFolderFilter != 'All' && !lowerPath.contains('/${_selectedFolderFilter.toLowerCase()}/')) {
           return false;
         }
         // Search query filter
-        if (query.isNotEmpty && !f.toLowerCase().contains(query)) {
+        if (query.isNotEmpty && !lowerPath.contains(query) && !filename.contains(query)) {
           return false;
         }
         return true;
@@ -195,6 +202,88 @@ class _AssetImagePickerModalState extends State<AssetImagePickerModal> with Sing
     }
   }
 
+  Future<void> _confirmDeleteAsset(String path) async {
+    final fileName = p.basename(path);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF252538),
+        title: const Text('Delete Asset?', style: TextStyle(color: Colors.white)),
+        content: Text(
+          'Are you sure you want to permanently delete "$fileName"? This action cannot be undone.',
+          style: const TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white60)),
+          ),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            icon: const Icon(Icons.delete, size: 16),
+            label: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final contentService = Provider.of<ContentService>(context, listen: false);
+      await contentService.deleteImage(path);
+      setState(() {
+        _selectedPaths.remove(path);
+      });
+      await _loadAssets();
+    }
+  }
+
+  Future<void> _confirmDeleteSelected() async {
+    if (_selectedPaths.isEmpty) return;
+    final count = _selectedPaths.length;
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF252538),
+        title: Text('Delete $count Selected Asset(s)?', style: const TextStyle(color: Colors.white)),
+        content: const Text(
+          'Are you sure you want to permanently delete the selected asset(s)? This action cannot be undone.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white60)),
+          ),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            icon: const Icon(Icons.delete, size: 16),
+            label: const Text('Delete All'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final contentService = Provider.of<ContentService>(context, listen: false);
+      final pathsToDelete = List<String>.from(_selectedPaths);
+      for (final p in pathsToDelete) {
+        await contentService.deleteImage(p);
+      }
+      setState(() {
+        _selectedPaths.clear();
+      });
+      await _loadAssets();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -255,11 +344,23 @@ class _AssetImagePickerModalState extends State<AssetImagePickerModal> with Sing
             // Footer / Actions
             Row(
               children: [
-                if (_selectedPaths.isNotEmpty)
+                if (_selectedPaths.isNotEmpty) ...[
                   Text(
                     'Selected: ${_selectedPaths.length} item(s)',
                     style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.w600),
                   ),
+                  const SizedBox(width: 12),
+                  OutlinedButton.icon(
+                    onPressed: _confirmDeleteSelected,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.redAccent,
+                      side: const BorderSide(color: Colors.redAccent),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                    icon: const Icon(Icons.delete_outline, size: 16),
+                    label: Text('Delete (${_selectedPaths.length})'),
+                  ),
+                ],
                 const Spacer(),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(null),
@@ -303,6 +404,7 @@ class _AssetImagePickerModalState extends State<AssetImagePickerModal> with Sing
             // Search Input
             Expanded(
               child: TextField(
+                controller: _gallerySearchController,
                 onChanged: (val) {
                   _gallerySearchQuery = val;
                   _applyFolderFilter();
@@ -312,6 +414,16 @@ class _AssetImagePickerModalState extends State<AssetImagePickerModal> with Sing
                   hintText: 'Search gallery images...',
                   hintStyle: const TextStyle(color: Colors.white38),
                   prefixIcon: const Icon(Icons.search, color: Colors.white54, size: 18),
+                  suffixIcon: _gallerySearchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, color: Colors.white54, size: 18),
+                          onPressed: () {
+                            _gallerySearchController.clear();
+                            _gallerySearchQuery = '';
+                            _applyFolderFilter();
+                          },
+                        )
+                      : null,
                   isDense: true,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   filled: true,
@@ -421,6 +533,25 @@ class _AssetImagePickerModalState extends State<AssetImagePickerModal> with Sing
                                 ),
                               ),
                             ),
+                            Positioned(
+                              top: 4,
+                              left: 4,
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () => _confirmDeleteAsset(path),
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.7),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    padding: const EdgeInsets.all(4),
+                                    child: const Icon(Icons.delete_outline, size: 16, color: Colors.redAccent),
+                                  ),
+                                ),
+                              ),
+                            ),
                             if (isSelected)
                               Positioned(
                                 top: 4,
@@ -480,6 +611,7 @@ class _AssetImagePickerModalState extends State<AssetImagePickerModal> with Sing
             // Search Input
             Expanded(
               child: TextField(
+                controller: _usbSearchController,
                 onChanged: (val) {
                   _usbSearchQuery = val;
                   _applyUsbFilter();
@@ -489,6 +621,16 @@ class _AssetImagePickerModalState extends State<AssetImagePickerModal> with Sing
                   hintText: 'Search USB files...',
                   hintStyle: const TextStyle(color: Colors.white38),
                   prefixIcon: const Icon(Icons.search, color: Colors.white54, size: 18),
+                  suffixIcon: _usbSearchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, color: Colors.white54, size: 18),
+                          onPressed: () {
+                            _usbSearchController.clear();
+                            _usbSearchQuery = '';
+                            _applyUsbFilter();
+                          },
+                        )
+                      : null,
                   isDense: true,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   filled: true,

@@ -68,7 +68,7 @@ A hotel information kiosk application built with Flutter, targeting Raspberry Pi
    - **F2**: Toggle Content Edit Mode (allows managing excursions and market data).
    - **F1**: Toggle Help Overlay.
    - **Alt+T**: Cycle through hotel layouts.
-   - **Ctrl+M** / **F3**: Toggle cursor visibility.
+   - **Alt+M**: Toggle cursor visibility.
 
 ## Project Structure
 - `lib/config`: Theming, environment variables, and constants.

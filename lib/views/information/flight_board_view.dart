@@ -59,11 +59,9 @@ class _FlightBoardViewState extends State<FlightBoardView> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_focusNode.hasFocus) {
-      FocusScope.of(context).requestFocus(_focusNode);
-    }
     return KeyboardListener(
       focusNode: _focusNode,
+      autofocus: true,
       onKeyEvent: (event) {
         if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.f5) {
           _loadFlights(forceRefresh: true);

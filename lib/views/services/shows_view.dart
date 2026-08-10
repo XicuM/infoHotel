@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../services/language_service.dart';
 import '../../services/content_service.dart';
 import '../../services/hotel_config_service.dart';
+import '../../services/hotel_service.dart';
 import '../../services/show_service.dart';
 import '../../models/hotel_config.dart';
 import '../../widgets/app_bar_widget.dart';
@@ -43,10 +44,9 @@ class _ShowsViewState extends State<ShowsView> {
       builder: (context, contentService, hotelConfigService, showService, child) {
         final isEditMode = contentService.isEditMode;
         final hotelConfigs = hotelConfigService.sortedHotelConfigs;
-        if (hotelConfigs.length < 2) return const SizedBox.shrink();
-
+        final hotelService = Provider.of<HotelService>(context);
         return Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.transparent,
           extendBodyBehindAppBar: true,
           appBar: CustomAppBar(
             titleKey: 'shows',
@@ -54,80 +54,43 @@ class _ShowsViewState extends State<ShowsView> {
             titleColor: Colors.white,
             onBack: () => Navigator.of(context).pop(),
           ),
-          body: Stack(
-            fit: StackFit.expand,
-            children: [
-              AppImage(
-                path: showService.getShowImage('background'),
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(color: Colors.grey[900]);
-                },
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black.withValues(alpha: 0.8),
-                      Colors.black.withValues(alpha: 0.4),
-                      Colors.black.withValues(alpha: 0.9),
-                    ],
-                  ),
-                ),
-              ),
-              if (isEditMode)
-                Positioned(
-                  top: 100,
-                  right: 20,
-                  child: FloatingActionButton.extended(
-                    heroTag: 'editBg',
-                    onPressed: () => _pickBgImage(context, showService),
-                    icon: const Icon(Icons.edit),
-                    label: const Text('Change Background'),
-                    backgroundColor: Colors.redAccent,
-                  ),
-                ),
-              SafeArea(
-                child: Consumer<LanguageService>(
-                  builder: (context, langService, child) {
-                    return Column(
-                      children: [
-                        _buildHeaderControls(
-                          context,
-                          langService,
-                          showService,
-                          hotelConfigs,
-                          isEditMode,
-                        ),
-                        Expanded(
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 24),
-                              child: _buildShowsGrid(
-                                context,
-                                langService,
-                                contentService,
-                                showService,
-                                hotelConfigs,
-                              ),
-                            ),
+          body: SafeArea(
+            child: Consumer<LanguageService>(
+              builder: (context, langService, child) {
+                return Column(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: _buildShowsGrid(
+                            context,
+                            langService,
+                            contentService,
+                            showService,
+                            hotelConfigs,
                           ),
                         ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-            ],
+                      ),
+                    ),
+                    _buildFooterControls(
+                      context,
+                      langService,
+                      showService,
+                      hotelConfigs,
+                      isEditMode,
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         );
       },
     );
   }
 
-  Widget _buildHeaderControls(
+  Widget _buildFooterControls(
     BuildContext context,
     LanguageService langService,
     ShowService showService,
@@ -260,6 +223,7 @@ class _ShowsViewState extends State<ShowsView> {
           final currentHotel = hotelConfigs[hotelIndex];
           final isToday = isCurrentWeek && (now.weekday == index + 1);
           final posterPath = showService.getShowImage(day, week: _selectedWeek);
+          final showTime = showService.getShowTime(day, week: _selectedWeek);
 
           return SizedBox(
             width: cardWidth,
@@ -268,7 +232,7 @@ class _ShowsViewState extends State<ShowsView> {
               children: [
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
                   decoration: BoxDecoration(
                     color: isToday ? Colors.amber.withValues(alpha: 0.9) : Colors.black54,
                     borderRadius: BorderRadius.circular(8),
@@ -276,18 +240,47 @@ class _ShowsViewState extends State<ShowsView> {
                       color: isToday ? Colors.amberAccent : Colors.white.withValues(alpha: 0.2),
                     ),
                   ),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      langService.getWeekday(index).toUpperCase(),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: isToday ? FontWeight.w800 : FontWeight.w600,
-                        letterSpacing: 0.5,
-                        color: isToday ? Colors.black : Colors.white,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          langService.getWeekday(index).toUpperCase(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: isToday ? FontWeight.w800 : FontWeight.w600,
+                            letterSpacing: 0.5,
+                            color: isToday ? Colors.black : Colors.white,
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 2),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.access_time_filled,
+                              size: 11,
+                              color: isToday ? Colors.black87 : Colors.amberAccent,
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              showTime,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.3,
+                                color: isToday ? Colors.black : Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 
@@ -461,6 +454,21 @@ class _ShowsViewState extends State<ShowsView> {
               },
             ),
             ListTile(
+              leading: const Icon(Icons.access_time, color: Colors.amberAccent),
+              title: Text(
+                langService.translate('edit_time'),
+                style: const TextStyle(color: Colors.white),
+              ),
+              subtitle: Text(
+                '${langService.translate('start_time')}: ${showService.getShowTime(dayKey, week: _selectedWeek)}',
+                style: const TextStyle(color: Colors.white54, fontSize: 12),
+              ),
+              onTap: () {
+                Navigator.of(ctx).pop();
+                _showEditTimeDialog(context, dayKey, showService, langService);
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.delete_outline, color: Colors.redAccent),
               title: Text(
                 langService.translate('remove_poster'),
@@ -483,11 +491,100 @@ class _ShowsViewState extends State<ShowsView> {
     );
   }
 
-  Future<void> _pickBgImage(BuildContext context, ShowService showService) async {
-    final selected = await AssetImagePickerModal.show(context, subFolder: 'shows');
-    if (selected is String && selected.isNotEmpty) {
-      showService.updateShowImage('background', selected);
-    }
+  Future<void> _showEditTimeDialog(
+    BuildContext context,
+    String dayKey,
+    ShowService showService,
+    LanguageService langService,
+  ) async {
+    final current = showService.getShowTime(dayKey, week: _selectedWeek);
+    final controller = TextEditingController(text: current);
+    final quickTimes = ['20:00', '20:30', '21:00', '21:30', '22:00', '22:30'];
+
+    await showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Colors.grey[900],
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Text(
+              langService.translate('edit_time'),
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  langService.translate('start_time'),
+                  style: const TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: controller,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.black,
+                    prefixIcon: const Icon(Icons.access_time, color: Colors.amberAccent),
+                    hintText: '21:30',
+                    hintStyle: const TextStyle(color: Colors.white38),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.amberAccent),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Quick Presets:',
+                  style: TextStyle(color: Colors.white54, fontSize: 12),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: quickTimes.map((t) {
+                    final isSelected = controller.text.trim() == t;
+                    return ActionChip(
+                      label: Text(t),
+                      backgroundColor: isSelected ? Colors.amberAccent : Colors.black45,
+                      labelStyle: TextStyle(
+                        color: isSelected ? Colors.black : Colors.white,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          controller.text = t;
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('Cancel', style: TextStyle(color: Colors.white70)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.amberAccent, foregroundColor: Colors.black),
+                onPressed: () {
+                  final newTime = controller.text.trim();
+                  if (newTime.isNotEmpty) {
+                    showService.updateShowTime(dayKey, newTime, week: _selectedWeek);
+                  }
+                  Navigator.of(ctx).pop();
+                },
+                child: const Text('Save'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   int _getWeekNumber(DateTime date) {
