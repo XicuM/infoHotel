@@ -65,7 +65,7 @@ class ServicesView extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      if (contentService.isEditMode || !hotelConfigs.every((h) => !h.showShows))
+                      if (contentService.isEditMode || !hotelConfigs.every((h) => !h.showShows)) ...[
                         Expanded(
                           flex: 20,
                           child: Stack(
@@ -101,6 +101,8 @@ class ServicesView extends StatelessWidget {
                             ],
                           ),
                         ),
+                        const SizedBox(width: 16),
+                      ],
                       for (int i = 0; i < hotelConfigs.length; i++) ...[
                         if (i > 0) const SizedBox(width: 16),
                         Expanded(
