@@ -213,7 +213,7 @@ class _ShowsViewState extends State<ShowsView> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final maxItemHeight = constraints.maxHeight;
-        final widthFromHeight = (maxItemHeight - 110) / 1.4142;
+        final widthFromHeight = (maxItemHeight - 122) / 1.4142;
         final widthFromWidth = (constraints.maxWidth - 40) / 7 - 8;
         final cardWidth = widthFromHeight < widthFromWidth ? widthFromHeight : widthFromWidth;
 
@@ -232,7 +232,7 @@ class _ShowsViewState extends State<ShowsView> {
               children: [
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 4),
                   decoration: BoxDecoration(
                     color: isToday ? Colors.amber.withValues(alpha: 0.9) : Colors.black54,
                     borderRadius: BorderRadius.circular(8),
@@ -249,10 +249,23 @@ class _ShowsViewState extends State<ShowsView> {
                           langService.getWeekday(index).toUpperCase(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 13,
                             fontWeight: isToday ? FontWeight.w800 : FontWeight.w600,
                             letterSpacing: 0.5,
                             color: isToday ? Colors.black : Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 1),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          _getDateString(index),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: isToday ? FontWeight.w800 : FontWeight.w500,
+                            color: isToday ? Colors.black87 : Colors.white70,
                           ),
                         ),
                       ),
@@ -264,14 +277,14 @@ class _ShowsViewState extends State<ShowsView> {
                           children: [
                             Icon(
                               Icons.access_time_filled,
-                              size: 11,
+                              size: 10,
                               color: isToday ? Colors.black87 : Colors.amberAccent,
                             ),
                             const SizedBox(width: 3),
                             Text(
                               showTime,
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 11,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.3,
                                 color: isToday ? Colors.black : Colors.white70,
@@ -585,6 +598,22 @@ class _ShowsViewState extends State<ShowsView> {
         },
       ),
     );
+  }
+
+  String _getDateString(int dayIndex) {
+    final now = DateTime.now();
+    final currentMonday = DateTime(now.year, now.month, now.day).subtract(Duration(days: now.weekday - 1));
+    final currentWeekParity = (_getWeekNumber(now) % 2 == 1) ? 1 : 2;
+
+    int weekOffset = 0;
+    if (_selectedWeek != currentWeekParity) {
+      weekOffset = _selectedWeek > currentWeekParity ? 1 : -1;
+    }
+
+    final targetDate = currentMonday.add(Duration(days: weekOffset * 7 + dayIndex));
+    final dayStr = targetDate.day.toString().padLeft(2, '0');
+    final monthStr = targetDate.month.toString().padLeft(2, '0');
+    return '$dayStr/$monthStr';
   }
 
   int _getWeekNumber(DateTime date) {
