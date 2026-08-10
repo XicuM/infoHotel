@@ -26,12 +26,15 @@ export COG_PLATFORM_WL_VIEW_FULLSCREEN=1
 # Enable remote Web Inspector for debugging (access at http://<pi-ip>:8081)
 export WEBKIT_INSPECTOR_SERVER=0.0.0.0:8081
 
+# Ensure transparent mouse cursor theme exists and is active for Wayland/Cage
+python3 "$HOME/infoHotel/scripts/create_transparent_cursor.py" "$HOME/.icons/transparent" 2>/dev/null || true
+export XCURSOR_THEME=transparent
+export XCURSOR_PATH="$HOME/.icons:/usr/share/icons"
+
 # Prevent wlroots/cage from crashing if no mouse or keyboard is plugged in
 export WLR_LIBINPUT_NO_DEVICES=1
 
-# Force software cursor rendering so Cog/WebKit's CSS `cursor: none` is
-# honoured by Cage. Without this, wlroots renders a hardware cursor on top
-# of the page that ignores the app's cursor:none style entirely.
+# Legacy/fallback flag for older wlroots versions
 export WLR_NO_HARDWARE_CURSORS=1
 
 # Disable the WebKit sandbox to fix the 'bwrap' / 'dbus-proxy' crash on Raspbian

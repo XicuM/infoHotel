@@ -52,6 +52,18 @@ gum style --foreground 72 "    ✓ Python backend dependencies installed."
 echo -e "${BLUE}--> Configuring hardware permissions for $USER...${NC}"
 sudo usermod -a -G video,render,tty,input $USER
 
+echo -e "${BLUE}--> Installing transparent cursor theme...${NC}"
+python3 $HOME/infoHotel/scripts/create_transparent_cursor.py $HOME/.icons/transparent 2>/dev/null || true
+sudo python3 $HOME/infoHotel/scripts/create_transparent_cursor.py /usr/share/icons/transparent 2>/dev/null || true
+sudo mkdir -p /usr/share/icons/default
+sudo tee /usr/share/icons/default/index.theme > /dev/null << 'EOF'
+[Icon Theme]
+Name=Default
+Comment=Default Cursor Theme
+Inherits=transparent
+EOF
+gum style --foreground 72 "    ✓ Transparent cursor theme installed."
+
 echo ""
 # Configure Screen Resolution
 if gum confirm "Do you want to configure a custom screen resolution for the kiosk?"; then
