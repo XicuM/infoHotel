@@ -79,3 +79,17 @@ A hotel information kiosk application built with Flutter, targeting Raspberry Pi
 
 ## Deployment Notes
 Data is loaded from the `hotel_assets` submodule directory (next to the executable or app documents) or falls back to baked-in defaults. Mutable content (excursions, markets, beaches) can be edited via F2 edit mode and saved to JSON. A deploy script is available at `scripts/deploy.sh` for building and deploying to a remote kiosk via SSH/Cloudflare Tunnel.
+
+## Git Workflow
+
+### Pull everything (code + submodule + LFS binaries)
+```bash
+git pull --recurse-submodules && git -C hotel_assets lfs pull
+```
+
+### Push asset changes (after editing via F2 Edit Mode)
+```bash
+git -C hotel_assets add . && git -C hotel_assets commit -m "chore: update assets" && git -C hotel_assets push origin master
+git add hotel_assets && git commit -m "chore: update submodule pointer" && git push origin main
+```
+
