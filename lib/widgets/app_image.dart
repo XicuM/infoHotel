@@ -115,15 +115,24 @@ class AppImage extends StatelessWidget {
       } else {
         // Force all path-based images to load from local file system
         final resolvedPath = PathResolver.resolve(path!);
-        image = Image.file(
-          File(resolvedPath),
-          width: width,
-          height: height,
-          fit: fit,
-          cacheWidth: finalCacheWidth,
-          cacheHeight: finalCacheWidth == null ? finalCacheHeight : null,
-          errorBuilder: errorBuilder ?? (context, error, stackTrace) => _buildError(context),
-        );
+        final file = File(resolvedPath);
+        final isImageExt = path!.endsWith('.jpg') || path!.endsWith('.jpeg') || path!.endsWith('.png') || path!.endsWith('.webp');
+
+        if (!file.existsSync() || (isImageExt && file.lengthSync() < 200)) {
+          image = errorBuilder != null 
+              ? errorBuilder!(context, 'File missing or invalid LFS pointer', null)
+              : _buildError(context);
+        } else {
+          image = Image.file(
+            file,
+            width: width,
+            height: height,
+            fit: fit,
+            cacheWidth: finalCacheWidth,
+            cacheHeight: finalCacheWidth == null ? finalCacheHeight : null,
+            errorBuilder: errorBuilder ?? (context, error, stackTrace) => _buildError(context),
+          );
+        }
       }
     } else {
       image = _buildError(context);
