@@ -62,7 +62,12 @@ Name=Default
 Comment=Default Cursor Theme
 Inherits=transparent
 EOF
-gum style --foreground 72 "    ✓ Transparent cursor theme installed."
+sudo mkdir -p /etc/gtk-3.0
+sudo tee /etc/gtk-3.0/settings.ini > /dev/null << 'EOF'
+[Settings]
+gtk-cursor-theme-name=transparent
+EOF
+gum style --foreground 72 "    ✓ Transparent cursor theme installed system-wide."
 
 echo ""
 # Configure Screen Resolution
