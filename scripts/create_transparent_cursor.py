@@ -71,12 +71,22 @@ def generate_transparent_theme(dest_dir):
 
     print(f"Generated transparent cursor theme in {dest_dir}")
 
+def configure_gtk_theme():
+    user_gtk = os.path.expanduser("~/.config/gtk-3.0/settings.ini")
+    os.makedirs(os.path.dirname(user_gtk), exist_ok=True)
+    with open(user_gtk, "w") as f:
+        f.write("[Settings]\ngtk-cursor-theme-name=transparent\n")
+
 def main():
     if len(sys.argv) > 1:
         target = sys.argv[1]
     else:
         target = os.path.expanduser("~/.icons/transparent")
     generate_transparent_theme(target)
+    try:
+        configure_gtk_theme()
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     main()
