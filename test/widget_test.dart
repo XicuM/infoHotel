@@ -26,6 +26,7 @@ void main() {
 
     // Verify the app renders without error
     expect(find.byType(InfoHotelApp), findsOneWidget);
+    expect(find.textContaining('Press Alt+H for help'), findsOneWidget);
 
     // Reset viewport size
     tester.view.resetPhysicalSize();

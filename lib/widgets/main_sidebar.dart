@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import '../services/hotel_service.dart';
@@ -98,16 +99,24 @@ class MainSidebar extends StatelessWidget {
             padding: EdgeInsets.only(top: 24, bottom: 12, left: 16, right: 16),
             child: LanguageSelector(),
           ),
-          // Help hint
-          const Padding(
-            padding: EdgeInsets.only(bottom: 12, left: 16, right: 16),
+          // Help hint and binary version
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12, left: 16, right: 16),
             child: Center(
-              child: Text(
-                'Press Alt+H for help',
-                style: TextStyle(
-                  color: Colors.white38,
-                  fontSize: 11,
-                ),
+              child: FutureBuilder<PackageInfo>(
+                future: PackageInfo.fromPlatform(),
+                builder: (context, snapshot) {
+                  final versionSuffix = snapshot.hasData
+                      ? ' • v${snapshot.data!.version}${snapshot.data!.buildNumber.isNotEmpty ? '+${snapshot.data!.buildNumber}' : ''}'
+                      : '';
+                  return Text(
+                    'Press Alt+H for help$versionSuffix',
+                    style: const TextStyle(
+                      color: Colors.white38,
+                      fontSize: 11,
+                    ),
+                  );
+                },
               ),
             ),
           ),
