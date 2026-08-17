@@ -46,27 +46,7 @@ echo ""
 
 
 
-# 3. Bus API
-if gum confirm "Enable Bus API (Ibiza GTFS)?"; then
-    if [[ -f ".env" ]]; then
-        BUS_KEY=$(get_env "BUS_API_KEY")
-        
-        if [[ -n "$BUS_KEY" && "$BUS_KEY" != "your_bus_api_key_here" ]]; then
-            gum style --foreground 46 " ✓ Bus API Key loaded."
-            DART_DEFINES="$DART_DEFINES --dart-define=BUS_API_KEY=$BUS_KEY"
-        elif [[ "$BUS_KEY" == "your_bus_api_key_here" ]]; then
-            gum style --foreground 220 " ⚠ Bus API Key is still the placeholder value in .env"
-        else
-            gum style --foreground 220 " ⚠ Bus API Key not found in .env"
-        fi
-    else
-        gum style --foreground 220 " ⚠ .env file not found."
-    fi
-else
-    gum style --foreground 240 " ✗ Skipped Bus API."
-fi
 
-echo ""
 
 # 2b. Skip hotel_assets
 if gum confirm "Skip hotel_assets (use baked-in defaults, no private data)?"; then

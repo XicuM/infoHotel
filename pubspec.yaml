@@ -1,7 +1,7 @@
 name: info_hotel
 description: "Hotel information kiosk application, built with Flutter"
 publish_to: 'none'
-version: 1.4.36+73
+version: 1.4.38+75
 
 environment:
   sdk: ^3.10.1

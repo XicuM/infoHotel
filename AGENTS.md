@@ -4,8 +4,8 @@
 - **No codegen**: (No `build_runner`, no `gen-l10n`).
 - **Target**: Raspberry Pi 3B+ kiosk (Wayland, `cage`/`cog` browser).
 - **Commands**:
-  - Dev: `flutter run --dart-define=AEMET_API_KEY=<k1> --dart-define=BUS_API_KEY=<k2>`
-  - Prod (Web): `flutter build web --dart-define=AEMET_API_KEY=<k1> --dart-define=BUS_API_KEY=<k2>`
+  - Dev: `flutter run --dart-define=AEMET_API_KEY=<k1>`
+  - Prod (Web): `flutter build web --dart-define=AEMET_API_KEY=<k1>`
 - **Testing**: `flutter test`. Live API tests correctly skip if keys are missing.
 
 ## Architecture & Data
@@ -19,7 +19,7 @@
 ## APIs
 - **Weather (AEMET)**: Municipality `07046` (Sant Antoni de Portmany). Requires `AEMET_API_KEY`.
 - **Flights**: Proxied through a backend scraper (`{proxyBaseUrl}/api/flights`). No client-side API key needed.
-- **Buses (ALSA Ibiza)**: GTFS data (ID 1133) for hotel bus stops. Requires `BUS_API_KEY`.
+- **Buses (ALSA Ibiza)**: Loaded offline from `hotel_assets/data/bus_timetable.json` via `StorageRepository`. Timetables can be re-extracted or updated using `scripts/extract_bus_timetable.py`.
 
 ## Keyboard Shortcuts
 - **F11**: Fullscreen kiosk toggle.
@@ -43,5 +43,5 @@
 - **pdfx overrides**: Edits to the PDF viewer go directly to `packages/pdfx` (local override).
 - **Scratch Files**: Place temporary files ONLY in `<appDataDir>/brain/<conversation-id>/scratch/`. Never pollute the workspace root.
 - **Version Control**: Update the application version in `pubspec.yaml` upon completing a task. Evaluate the change scope using Semantic Versioning (Major.Minor.Patch) and always increment the build number (+X).
-- **Git Operations**: Automatically commit your changes with a descriptive message and push them to the remote repository after completing a task.
+- **Git Operations**: Automatically commit your changes with a descriptive message and push them to the remote repository after completing a task. If changes were made inside `hotel_assets/`, always commit and push the submodule first, then commit and push the parent repository.
 - **Privacy & Security**: Never leak real hotel information, API keys, or sensitive data in logs, commits, or responses.

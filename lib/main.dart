@@ -91,7 +91,7 @@ class InfoHotelApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ShowService(storage: storage)..init()),
         ChangeNotifierProvider(create: (_) => BeachService(storage: storage)..init()),
         ChangeNotifierProvider(create: (_) => HotelConfigService(storage: storage)..init()),
-        ChangeNotifierProvider(create: (_) => BusService()),
+        ChangeNotifierProvider(create: (_) => BusService(storage: storage)..init()),
       ],
       child: MaterialApp(
         title: 'Info Hotel',

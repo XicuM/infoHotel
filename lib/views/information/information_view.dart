@@ -19,6 +19,17 @@ class InformationView extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<CardData> cards = [
       CardData(
+        imagePath: 'hotel_assets/images/information/bus.jpg',
+        titleKey: 'bus',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const BusView(),
+            ),
+          );
+        },
+      ),
+      CardData(
         imagePath: 'hotel_assets/images/information/maps.jpg',
         titleKey: 'maps',
         onTap: () {
@@ -40,18 +51,6 @@ class InformationView extends StatelessWidget {
           );
         },
       ),
-      if (Env.busApiKey.isNotEmpty)
-        CardData(
-          imagePath: 'hotel_assets/images/information/bus.jpg',
-          titleKey: 'bus',
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const BusView(),
-              ),
-            );
-          },
-        ),
       CardData(
         imagePath: 'hotel_assets/images/information/taxi.jpg',
         titleKey: 'taxi',

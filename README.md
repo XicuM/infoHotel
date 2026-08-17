@@ -33,7 +33,6 @@ A hotel information kiosk application built with Flutter, targeting Raspberry Pi
 ## Requirements
 - Flutter SDK `^3.10.1`
 - AEMET OpenData API Key (weather)
-- NAP API Key for ALSA Ibiza GTFS (buses)
 
 ## Getting Started
 
@@ -44,17 +43,17 @@ A hotel information kiosk application built with Flutter, targeting Raspberry Pi
    ```
 
 2. **Configuration**
-   The application requires API keys for real-time weather and bus information.
-   Provide them at compile time using `--dart-define` flags.
+   The application requires an API key for real-time weather.
+   Bus timetables are loaded offline from `hotel_assets/data/bus_timetable.json` (extractable via `scripts/extract_bus_timetable.py`).
 
    *Development Run:*
    ```bash
-   flutter run --dart-define=AEMET_API_KEY=<key1> --dart-define=BUS_API_KEY=<key2>
+   flutter run --dart-define=AEMET_API_KEY=<key1>
    ```
 
    *Production Build (Web):*
    ```bash
-   flutter build web --dart-define=AEMET_API_KEY=<key1> --dart-define=BUS_API_KEY=<key2>
+   flutter build web --dart-define=AEMET_API_KEY=<key1>
    ```
 
    *Skip Private Data (screenshots/demos):*

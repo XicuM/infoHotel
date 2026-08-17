@@ -22,12 +22,10 @@ get_env() {
 
 # 1. Gather API Keys
 API_KEY=""
-BUS_KEY=""
 
 if [ -f ".env" ]; then
     gum style --foreground 72 "Found .env file. Loading API keys..."
     API_KEY=$(get_env "AEMET_API_KEY")
-    BUS_KEY=$(get_env "BUS_API_KEY")
 fi
 
 # Fallbacks to user input if keys are missing
@@ -38,19 +36,9 @@ if [ "$API_KEY" = "skip" ]; then
     API_KEY=""
 fi
 
-while [ -z "$BUS_KEY" ]; do
-    BUS_KEY=$(gum input --placeholder "Enter your Bus API Key (or type 'skip' to skip)" --header "Bus API Key:")
-done
-if [ "$BUS_KEY" = "skip" ] || [ "$BUS_KEY" = "your_bus_api_key_here" ]; then
-    BUS_KEY=""
-fi
-
 BUILD_ARGS="--release"
 if [ -n "$API_KEY" ]; then
     BUILD_ARGS="$BUILD_ARGS --dart-define=AEMET_API_KEY=\"$API_KEY\""
-fi
-if [ -n "$BUS_KEY" ]; then
-    BUILD_ARGS="$BUILD_ARGS --dart-define=BUS_API_KEY=\"$BUS_KEY\""
 fi
 
 # 2. Build the Web App
