@@ -168,7 +168,7 @@ gum style \
     "Your Pi is now ready to receive the app."
 
 gum style --foreground 212 "Next steps:"
-gum style --foreground 15 "1. On your MAIN COMPUTER, run: ./scripts/build_for_pi.sh"
+gum style --foreground 15 "1. On your MAIN COMPUTER, run: ./scripts/deploy.sh"
 gum style --foreground 15 "2. Paste the provided command into this Raspberry Pi Connect terminal."
 gum style --foreground 15 "3. The kiosk will automatically launch!"
 echo ""

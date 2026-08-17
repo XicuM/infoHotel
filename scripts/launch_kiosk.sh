@@ -6,7 +6,7 @@ PORT=8080
 
 if [ ! -d "$WEB_DIR" ]; then
     echo "Error: Flutter Web directory not found at $WEB_DIR"
-    echo "Please transfer the build using the build_for_pi.sh script on your PC."
+    echo "Please transfer the build using the deploy.sh script on your PC."
     exit 1
 fi
 

@@ -69,3 +69,4 @@ infoHotel_web_kiosk.tar.gz
 
 # Ignore root-level temporary python scripts
 /*.py
+build/
