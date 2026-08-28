@@ -54,8 +54,6 @@ class _KioskManagerState extends State<KioskManager> {
             hotelService.cycleNextHotel();
           } else if (isAltPressed && event.logicalKey == LogicalKeyboardKey.keyS) {
             hotelService.cyclePreviousHotel();
-          } else if (isAltPressed && event.logicalKey == LogicalKeyboardKey.keyA) {
-            hotelService.cycleNextHotel();
           } else if (event.logicalKey == LogicalKeyboardKey.f11) {
             windowManager.isFullScreen().then((isFullScreen) async {
               bool willBeFullScreen = !isFullScreen;
