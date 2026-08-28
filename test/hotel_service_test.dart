@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:info_hotel/services/hotel_service.dart';
 
 void main() {
@@ -7,7 +8,8 @@ void main() {
   group('HotelService Tests', () {
     late HotelService hotelService;
 
-    setUp(() {
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
       hotelService = HotelService();
     });
 
