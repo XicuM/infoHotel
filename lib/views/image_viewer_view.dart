@@ -40,7 +40,7 @@ class _ImageViewerViewState extends State<ImageViewerView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.transparent,
       appBar: CustomAppBar(
         titleKey: widget.title,
         backgroundColor: widget.backgroundColor,
